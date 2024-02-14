@@ -9,7 +9,8 @@ import ProfileScreen from './screens/resident/profileScreen';
 
 const App = () => {
     return (
-        <View></View>
+        <>
+        </>
     );
 }
 

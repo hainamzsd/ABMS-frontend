@@ -20,21 +20,21 @@ const stylesHomeScreen = StyleSheet.create({
     marginTop: 26,
   },
   featureContainer: {
-    marginTop:36,
-    flexDirection: 'row', 
+    marginTop: 36,
+    flexDirection: 'row',
     flexWrap: 'wrap',
-    justifyContent: 'space-between', 
+    justifyContent: 'space-between',
   },
   featureBox: {
     ...SHADOW,
     backgroundColor: 'white',
     borderRadius: 10,
     width: '48%',
-    height: 100, 
+    height: 100,
     marginBottom: 10,
     flexDirection: 'row',
     alignItems: 'center',
-    padding:10
+    padding: 10
   },
   circle: {
     width: 60,
@@ -45,6 +45,35 @@ const stylesHomeScreen = StyleSheet.create({
     alignItems: 'center',
     marginRight: 10,
   },
+  callBox: {
+    backgroundColor: '#ED6666',
+    borderRadius: 10, padding: 6,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  newContainer: {
+    marginTop: 30,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center'
+  },
+  newImage: {
+    width: 236, 
+    height: 150, 
+    objectFit: 'cover', 
+    borderTopLeftRadius: 10, 
+    borderTopRightRadius: 10
+  },
+  newTitle:{
+    width: 236, 
+    height: 90, 
+    backgroundColor: 'white',
+    padding: 10, 
+    borderBottomLeftRadius: 10, 
+    borderBottomRightRadius: 10,
+    justifyContent: 'space-between'
+  }
 });
 
 export default stylesHomeScreen;

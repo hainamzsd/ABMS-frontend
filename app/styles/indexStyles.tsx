@@ -42,7 +42,7 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
     },
     primaryText:{
-        fontSize: 14,
+        fontSize: 16,
     },
     normalText:{
         fontSize: 14,
