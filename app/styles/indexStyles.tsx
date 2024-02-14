@@ -14,12 +14,12 @@ const styles = StyleSheet.create({
         overflow: 'hidden',
     },
     gradient: {
-        width: 300, 
-        height: 300, 
-        borderRadius: 150,
+        width: 350, 
+        height: 350, 
+        borderRadius: 225,
         position: 'absolute',
         top: -50, 
-        left: -100,
+        left: -80,
     },
     tabBar: {
         flexDirection: 'row',
@@ -34,20 +34,18 @@ const styles = StyleSheet.create({
     },
     selectedTab: {
         borderBottomWidth: 2,
-        borderBottomColor: 'blue',
+        borderBottomColor: 'black',
     },
-    avatar: {
-        objectFit: 'cover',
-        width: 74, 
-        height:74, 
-        borderRadius: 37, 
-    },
+   
     headerText: {
         fontSize: 24,
         fontWeight: 'bold',
     },
+    primaryText:{
+        fontSize: 14,
+    },
     normalText:{
-        fontSize: 16,
+        fontSize: 14,
     }
 });
 

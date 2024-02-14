@@ -10,6 +10,7 @@ import { useState } from 'react';
 import HomeScreen from './screens/resident/homeScreen';
 import ProfileScreen from './screens/resident/profileScreen';
 import NotificationScreen from './screens/resident/notificationScreen';
+import { Home, Bell, User } from 'lucide-react-native';
 const Layout = ({ children }:any) => {
 
     const [selectedTab, setSelectedTab] = useState('Home');
@@ -48,17 +49,17 @@ const Layout = ({ children }:any) => {
                 <TouchableOpacity
                     style={[styles.tabButton, selectedTab === 'Home' && styles.selectedTab]}
                     onPress={() => setSelectedTab('Home')}>
-                    <Text>Home</Text>
+                    <Home  size={30} color={'black'}/>
                 </TouchableOpacity>
                 <TouchableOpacity
                     style={[styles.tabButton, selectedTab === 'Profile' && styles.selectedTab]}
                     onPress={() => setSelectedTab('Profile')}>
-                    <Text>Profile</Text>
+                    <User  size={30} color={'black'}/>
                 </TouchableOpacity>
                 <TouchableOpacity
                     style={[styles.tabButton, selectedTab === 'Notifications' && styles.selectedTab]}
                     onPress={() => setSelectedTab('Notifications')}>
-                    <Text>Notifications</Text>
+                    <Bell  size={30} color={'black'}/>
                 </TouchableOpacity>
             </View>
         </View>
