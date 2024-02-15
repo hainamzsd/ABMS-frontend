@@ -39,7 +39,7 @@ const stylesProfileScreen = StyleSheet.create({
         marginTop:30,
         padding:30,
         alignItems:'center',
-        backgroundColor:COLORS.primary,
+        backgroundColor:'#AEBB81',
         borderRadius:20
       }
 })

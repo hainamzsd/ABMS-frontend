@@ -17,7 +17,7 @@ import { Home, Bell, User } from 'lucide-react-native';
 
 const Layout = ({ children }: any) => {
 
-    const [selectedTab, setSelectedTab] = useState<String>('Profile');
+    const [selectedTab, setSelectedTab] = useState<String>('Home');
 
     
     const renderScreen = () => {

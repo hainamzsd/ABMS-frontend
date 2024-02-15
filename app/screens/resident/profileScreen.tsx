@@ -1,4 +1,4 @@
-import Layout from '../../_layout';
+import Layout from '../../a';
 import { Image, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import styles from '../../styles/indexStyles';
 import stylesProfileScreen from './styles/profileScreenStyles';
@@ -54,22 +54,22 @@ const ProfileScreen = () => {
             <View style={{marginTop:30}}>
                 <TouchableOpacity style={stylesProfileScreen.feature}>
                     <View style={{flexDirection:'row'}}>
-                    <Pencil color={'black'} style={{marginRight:15}}></Pencil>
-                    <Text style={styles.primaryText}>Cập nhật thông tin</Text>
+                    <Pencil color={'black'} style={{marginRight:15}} strokeWidth={1.5}></Pencil>
+                    <Text >Cập nhật thông tin</Text>
                     </View>
                     <ChevronRight color={'black'} size={26} strokeWidth={1.75}></ChevronRight>
                 </TouchableOpacity>
                 <TouchableOpacity style={stylesProfileScreen.feature}>
                     <View style={{flexDirection:'row'}}>
-                    <KeyRound color={'black'} style={{marginRight:15}}></KeyRound>
-                    <Text style={styles.primaryText}>Đổi mật khẩu</Text>
+                    <KeyRound color={'black'} style={{marginRight:15}} strokeWidth={1.5}></KeyRound>
+                    <Text>Đổi mật khẩu</Text>
                     </View>
                     <ChevronRight color={'black'} size={26} strokeWidth={1.75}></ChevronRight>
                 </TouchableOpacity>
                 <TouchableOpacity style={stylesProfileScreen.feature}>
                     <View style={{flexDirection:'row'}}>
-                    <Languages color={'black'} style={{marginRight:15}}></Languages>
-                    <Text style={styles.primaryText}>Ngôn ngữ</Text>
+                    <Languages color={'black'} style={{marginRight:15}} strokeWidth={1.5}></Languages>
+                    <Text >Ngôn ngữ</Text>
                     </View>
                     <ChevronRight color={'black'} size={26} strokeWidth={1.75}></ChevronRight>
                 </TouchableOpacity>

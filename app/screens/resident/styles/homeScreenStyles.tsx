@@ -66,6 +66,7 @@ const stylesHomeScreen = StyleSheet.create({
     borderTopRightRadius: 10
   },
   newTitle:{
+    ...SHADOW, 
     width: 236, 
     height: 90, 
     backgroundColor: 'white',
