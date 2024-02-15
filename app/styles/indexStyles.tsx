@@ -4,6 +4,7 @@ const styles = StyleSheet.create({
     container:{
         flex: 1,
         backgroundColor: COLORS.background,
+        zIndex:-1
     },
     gradientContainer: {
         position: 'absolute',
@@ -12,6 +13,7 @@ const styles = StyleSheet.create({
         width: '100%',
         height: '100%',
         overflow: 'hidden',
+        zIndex:-1
     },
     gradient: {
         width: 350, 

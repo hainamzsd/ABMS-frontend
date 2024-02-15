@@ -1,10 +1,12 @@
-import { Image, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { Animated, Image, SafeAreaView, ScrollView, StatusBar, Text, TouchableOpacity, View } from 'react-native';
 import styles from "../../styles/indexStyles";
 import stylesHomeScreen from './styles/homeScreenStyles';
 import { Layers3, MessageSquareDiff, Phone, PhoneOutgoing, ReceiptText, Settings } from 'lucide-react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import ProfileScreen from './profileScreen';
 import NotificationScreen from './notificationScreen';
+import { COLORS } from '../../../constants/colors';
+import { LinearGradient } from 'expo-linear-gradient';
 
 const Tab = createBottomTabNavigator();
 
@@ -13,7 +15,22 @@ const Tab = createBottomTabNavigator();
 const HomeScreen = ({ navigation }: any) => {
     return (
         <>
-
+        <SafeAreaView style={{backgroundColor:COLORS.background, flex:1}}>
+        <Animated.View style={styles.gradientContainer}>
+                <LinearGradient
+                    colors={['#B2BC86', '#CCD6A6']}
+                    start={[0, 0]}
+                    end={[1, 1]}
+                    style={{
+                        width: 350,
+                        height: 350,
+                        borderRadius: 225,
+                        position: 'absolute',
+                        top: -50,
+                        left: -80,
+                    }}
+                />
+            </Animated.View>
             <ScrollView style={{ marginHorizontal: 26 }}>
                 <View
                     style={{
@@ -122,7 +139,7 @@ const HomeScreen = ({ navigation }: any) => {
                 </ScrollView>
 
 
-            </ScrollView></>
+            </ScrollView></SafeAreaView></>
     )
 }
 

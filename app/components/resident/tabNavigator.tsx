@@ -3,37 +3,56 @@ import ProfileScreen from "../../screens/resident/profileScreen"
 import HomeScreen from "../../screens/resident/homeScreen"
 import NotificationScreen from "../../screens/resident/notificationScreen"
 import { COLORS } from "../../../constants/colors"
-import { Home } from "lucide-react-native"
+import { Bell, Home, User } from "lucide-react-native"
 
 const Tab = createBottomTabNavigator()
 
 export function TabNavigator() {
   return (
-   <Tab.Navigator screenOptions = {{
-      headerShown:false,
-      tabBarStyle:{
-        backgroundColor:COLORS.background,
+    <Tab.Navigator screenOptions={{
+      headerShown: false,
+  
+      tabBarStyle: {
+        backgroundColor: COLORS.background,
         borderTopWidth: 1,
         borderTopColor: '#ccc',
-        paddingHorizontal: 10,
-        justifyContent:'center'
+        paddingBottom:0
       },
-      tabBarItemStyle:{
-        margin:5,
-        borderRadius:10,
-      },
-}
+    }
     }>
-   <Tab.Screen name='Home' component={HomeScreen}
-   options={{
-      tabBarShowLabel:false,
-      tabBarIcon: ({color,size}) => (
-      <Home size={30} color={'black'}></Home>
-   ),
-   
-   }} />
-   <Tab.Screen name='Profile' component={ProfileScreen} />
-   <Tab.Screen name='Notifications' component={NotificationScreen} />
- </Tab.Navigator>
-   )
+        <Tab.Screen name='Home' component={HomeScreen}
+          options={{
+              tabBarActiveTintColor: 'black',
+            tabBarInactiveTintColor: '#ccc',
+            tabBarLabel:"Trang chủ",
+            tabBarLabelStyle:{fontSize:14},
+            tabBarIcon: ({ color, size }) => (
+              <Home size={30} color={'black'}></Home>
+
+            ), 
+          }} />
+        <Tab.Screen name='Profile' component={ProfileScreen} 
+        options={{
+          tabBarActiveTintColor: 'black', 
+            tabBarInactiveTintColor: '#ccc',
+            tabBarLabel:"Trang cá nhân",
+            tabBarLabelStyle:{fontSize:14},
+          tabBarIcon: ({ color, size }) => (
+            <User size={30} color={'black'}></User>
+
+          ),
+        }}/>
+        <Tab.Screen name='Notifications' component={NotificationScreen}
+        options={{
+          tabBarActiveTintColor: 'black', 
+            tabBarInactiveTintColor: '#ccc',
+            tabBarLabel:"Thông báo",
+            tabBarLabelStyle:{fontSize:14},
+          tabBarIcon: ({ color, size }) => (
+            <Bell size={30} color={'black'}></Bell>
+
+          ), 
+        }} />
+      </Tab.Navigator>
+  )
 }
