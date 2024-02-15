@@ -37,6 +37,7 @@
     "@types/jest": "^29.5.12",
     "@types/react": "^18.2.55",
     "@types/react-test-renderer": "^18.0.7",
+    "metro-config": "^0.80.5",
     "typescript": "^5.3.3"
   },
   "private": true

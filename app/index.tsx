@@ -5,13 +5,15 @@ import HomeScreen from './screens/resident/homeScreen';
 import UserAvatar from './screens/resident/userAvatarScreen';
 import ProfileScreen from './screens/resident/profileScreen';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { TabNavigator } from './components/resident/tabNavigator';
 
 const App = () => {
     const Stack = createNativeStackNavigator();
     const Tab = createBottomTabNavigator();
     return (
-      <Stack.Navigator>
-        <Stack.Screen name="Home" component={HomeScreen} options={{headerShown:false}}  />
+      <Stack.Navigator initialRouteName='Home' screenOptions={{headerShown: false}}>
+        <Stack.Screen name="Home" component={TabNavigator}  />
+        <Stack.Screen name="Profile" component={TabNavigator}  />
         <Stack.Screen name="UserAvatar" component={UserAvatar} />
       </Stack.Navigator>
     );

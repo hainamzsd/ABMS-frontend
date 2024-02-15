@@ -15,20 +15,6 @@ const HomeScreen = ({ navigation }: any) => {
         <>
 
             <ScrollView style={{ marginHorizontal: 26 }}>
-            <Tab.Navigator initialRouteName="Home">
-                    <Tab.Screen
-                        name="Info"
-                        component={HomeScreen}
-                        options={{ title: 'aa' }}></Tab.Screen>
-                    <Tab.Screen
-                        name="Profile"
-                        component={ProfileScreen}
-                        options={{ title: 'aa' }}></Tab.Screen>
-                    <Tab.Screen
-                        name="Notifications"
-                        component={NotificationScreen}
-                        options={{ title: 'aa' }}></Tab.Screen>
-                </Tab.Navigator>
                 <View
                     style={{
                         flex: 1,
