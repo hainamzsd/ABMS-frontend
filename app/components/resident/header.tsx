@@ -10,12 +10,12 @@ const Header:React.FC<HeaderProps>= ({ headerTitle }) => {
     return(
     <Stack.Screen options={{
 
-        headerTitle: headerTitle    ,
+        headerTitle: headerTitle,
         headerTitleStyle: {
 
           fontWeight: 'bold',
           fontSize: 24,
-          color: 'white', // Assuming you want white title text
+          color: 'white', 
         },
         headerBackground: () => (
           <LinearGradient

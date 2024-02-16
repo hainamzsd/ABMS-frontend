@@ -40,7 +40,7 @@ const stylesHomeScreen = StyleSheet.create({
     width: 60,
     height: 60,
     borderRadius: 30,
-    backgroundColor: COLORS.lightPink, // Example background color for the circle
+    backgroundColor: COLORS.lightPink,
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 10,

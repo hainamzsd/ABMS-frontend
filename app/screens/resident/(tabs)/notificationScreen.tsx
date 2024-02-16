@@ -1,12 +1,14 @@
 import { FlatList, ScrollView, Text, View, TouchableOpacity, SafeAreaView } from 'react-native';
 import { notificationScreenStyles } from '../styles/notificationScreenStyles';
 import { COLORS } from '../../../../constants/colors';
+import Header from '../../../components/resident/header';
 
 const NotificationScreen = () => {
     return (
-        <><SafeAreaView style={{backgroundColor:COLORS.background, flex:1}}>
+        <>
+        <SafeAreaView style={{backgroundColor:COLORS.background, flex:1}}>
         <ScrollView style={{marginHorizontal:26}}>
-            <Text style={{marginVertical:20, fontSize:16}}>Danh sách tin</Text>
+            <Text style={{marginVertical:20, fontSize:24, fontWeight:'bold'}}>Danh sách thông báo</Text>
             <TouchableOpacity style={notificationScreenStyles.box}>
                 <View style={{marginBottom:20}}>
                     <Text style={{fontWeight:'bold', marginBottom:5}}>Thông báo chung</Text>
