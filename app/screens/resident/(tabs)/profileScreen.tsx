@@ -1,8 +1,8 @@
-import Layout from '../../a';
 import { Image, ScrollView, Text, TouchableOpacity, View } from 'react-native';
-import styles from '../../styles/indexStyles';
-import stylesProfileScreen from './styles/profileScreenStyles';
+import styles from '../../../styles/indexStyles';
+import stylesProfileScreen from '../styles/profileScreenStyles';
 import { ChevronRight, KeyRound, Languages, Pencil } from 'lucide-react-native';
+import { Link } from 'expo-router';
 
 const ProfileScreen = () => {
     return (
@@ -42,7 +42,7 @@ const ProfileScreen = () => {
                         width: 56,
                         height: 56
                     }}
-                    source={require('../../../assets/images/house1.png')}></Image>
+                    source={require('../../../../assets/images/house1.png')}></Image>
                 <View style={{
                     marginLeft: 20
                 }}>

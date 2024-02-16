@@ -1,6 +1,5 @@
-import Layout from '../../a';
 import { FlatList, ScrollView, Text, View, TouchableOpacity } from 'react-native';
-import { notificationScreenStyles } from './styles/notificationScreenStyles';
+import { notificationScreenStyles } from '../styles/notificationScreenStyles';
 
 const NotificationScreen = () => {
     return (

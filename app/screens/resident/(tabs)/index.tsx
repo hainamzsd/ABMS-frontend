@@ -1,12 +1,13 @@
 import { Animated, Image, SafeAreaView, ScrollView, StatusBar, Text, TouchableOpacity, View } from 'react-native';
-import styles from "../../styles/indexStyles";
-import stylesHomeScreen from './styles/homeScreenStyles';
+import styles from "../../../styles/indexStyles";
+import stylesHomeScreen from '../styles/homeScreenStyles';
 import { Layers3, MessageSquareDiff, Phone, PhoneOutgoing, ReceiptText, Settings } from 'lucide-react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import ProfileScreen from './profileScreen';
 import NotificationScreen from './notificationScreen';
-import { COLORS } from '../../../constants/colors';
+import { COLORS } from '../../../../constants/colors';
 import { LinearGradient } from 'expo-linear-gradient';
+import { Link } from 'expo-router';
 
 const Tab = createBottomTabNavigator();
 
@@ -16,6 +17,8 @@ const HomeScreen = ({ navigation }: any) => {
     return (
         <>
         <SafeAreaView style={{backgroundColor:COLORS.background, flex:1}}>
+        <StatusBar barStyle='dark-content'></StatusBar>
+
         <Animated.View style={styles.gradientContainer}>
                 <LinearGradient
                     colors={['#B2BC86', '#CCD6A6']}
@@ -43,11 +46,13 @@ const HomeScreen = ({ navigation }: any) => {
                         <Text style={styles.headerText}>Xin chào, Hoa La</Text>
                         <Text style={styles.normalText}>Quản lý ngôi nhà của bạn</Text>
                     </View>
-                    <TouchableOpacity onPress={() => { navigation.navigate('UserAvatar') }}>
+                <Link href="/screens/resident/userAvatarScreen">
+                    <TouchableOpacity>
                         <Image
                             style={stylesHomeScreen.avatar}
                             source={{ uri: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSiGAdWpsJQwrcEtjaAxG-aci3VxO7n2qYey0tI9Syx4Ai9ziAUea6-dAjlaGmRUNQW-Lo&usqp=CAU' }} />
                     </TouchableOpacity>
+                    </Link>
                 </View>
                 <TouchableOpacity style={stylesHomeScreen.room}>
                     <Image
@@ -55,7 +60,7 @@ const HomeScreen = ({ navigation }: any) => {
                             width: 56,
                             height: 56
                         }}
-                        source={require('../../../assets/images/house1.png')}></Image>
+                        source={require('../../../../assets/images/house1.png')}></Image>
                     <View style={{
                         marginLeft: 20
                     }}>

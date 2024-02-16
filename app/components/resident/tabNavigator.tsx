@@ -1,7 +1,7 @@
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs"
-import ProfileScreen from "../../screens/resident/profileScreen"
-import HomeScreen from "../../screens/resident/homeScreen"
-import NotificationScreen from "../../screens/resident/notificationScreen"
+import ProfileScreen from "../../screens/resident/(tabs)/profileScreen"
+import HomeScreen from "../../screens/resident/(tabs)"
+import NotificationScreen from "../../screens/resident/(tabs)/notificationScreen"
 import { COLORS } from "../../../constants/colors"
 import { Bell, Home, User } from "lucide-react-native"
 
