@@ -7,7 +7,7 @@ import ProfileScreen from './profileScreen';
 import NotificationScreen from './notificationScreen';
 import { COLORS } from '../../../../constants/colors';
 import { LinearGradient } from 'expo-linear-gradient';
-import { Link } from 'expo-router';
+import { Link, Stack } from 'expo-router';
 
 const Tab = createBottomTabNavigator();
 
@@ -18,8 +18,8 @@ const HomeScreen = ({ navigation }: any) => {
         <>
         <SafeAreaView style={{backgroundColor:COLORS.background, flex:1}}>
         <StatusBar barStyle='dark-content'></StatusBar>
-
-        <Animated.View style={styles.gradientContainer}>
+        <Stack.Screen options={{headerShown:false}}></Stack.Screen>
+        <View style={styles.gradientContainer}>
                 <LinearGradient
                     colors={['#B2BC86', '#CCD6A6']}
                     start={[0, 0]}
@@ -33,7 +33,7 @@ const HomeScreen = ({ navigation }: any) => {
                         left: -80,
                     }}
                 />
-            </Animated.View>
+            </View>
             <ScrollView style={{ marginHorizontal: 26 }}>
                 <View
                     style={{
@@ -47,14 +47,14 @@ const HomeScreen = ({ navigation }: any) => {
                         <Text style={styles.normalText}>Quản lý ngôi nhà của bạn</Text>
                     </View>
                 <Link href="/screens/resident/userAvatarScreen">
-                    <TouchableOpacity>
                         <Image
                             style={stylesHomeScreen.avatar}
                             source={{ uri: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSiGAdWpsJQwrcEtjaAxG-aci3VxO7n2qYey0tI9Syx4Ai9ziAUea6-dAjlaGmRUNQW-Lo&usqp=CAU' }} />
-                    </TouchableOpacity>
                     </Link>
                 </View>
                 <TouchableOpacity style={stylesHomeScreen.room}>
+                <Link href="screens/resident/roomScreen">
+
                     <Image
                         style={{
                             width: 56,
@@ -67,6 +67,7 @@ const HomeScreen = ({ navigation }: any) => {
                         <Text style={{ fontWeight: 'bold', marginBottom: 5 }}>R2.18A00</Text>
                         <Text style={{ fontWeight: '300' }}>Times city, Hà Nội</Text>
                     </View>
+                    </Link>
                 </TouchableOpacity>
 
                 <View style={stylesHomeScreen.featureContainer}>

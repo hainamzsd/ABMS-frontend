@@ -1,8 +1,10 @@
-import { FlatList, ScrollView, Text, View, TouchableOpacity } from 'react-native';
+import { FlatList, ScrollView, Text, View, TouchableOpacity, SafeAreaView } from 'react-native';
 import { notificationScreenStyles } from '../styles/notificationScreenStyles';
+import { COLORS } from '../../../../constants/colors';
 
 const NotificationScreen = () => {
     return (
+        <><SafeAreaView style={{backgroundColor:COLORS.background, flex:1}}>
         <ScrollView style={{marginHorizontal:26}}>
             <Text style={{marginVertical:20, fontSize:16}}>Danh sách tin</Text>
             <TouchableOpacity style={notificationScreenStyles.box}>
@@ -12,7 +14,7 @@ const NotificationScreen = () => {
                 </View>
                 <Text style={{fontSize:12, fontWeight:'300', color:'#9C9C9C'}}>22 tháng 1, 2024</Text>
             </TouchableOpacity>
-        </ScrollView>
+        </ScrollView></SafeAreaView></>
     )
 }
 

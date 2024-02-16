@@ -6,8 +6,9 @@ import {Stack } from 'expo-router'
 const _layout = () => {
     return (
         <View style={styles.container}>
-                    <StatusBar barStyle='dark-content'></StatusBar>
-            <Stack screenOptions={{headerShown:false}} >
+            <StatusBar barStyle='dark-content'></StatusBar>
+            <Stack>
+                <Stack.Screen name='screens/resident/(tabs)' options={{headerShown:false}}></Stack.Screen>
             </Stack>
         </View>
     )

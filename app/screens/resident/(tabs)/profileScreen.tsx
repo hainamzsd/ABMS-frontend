@@ -1,12 +1,33 @@
-import { Image, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { Image, SafeAreaView, ScrollView, StatusBar, Text, TouchableOpacity, View } from 'react-native';
 import styles from '../../../styles/indexStyles';
 import stylesProfileScreen from '../styles/profileScreenStyles';
 import { ChevronRight, KeyRound, Languages, Pencil } from 'lucide-react-native';
 import { Link } from 'expo-router';
+import { COLORS } from '../../../../constants/colors';
+import { LinearGradient } from 'expo-linear-gradient';
 
 const ProfileScreen = () => {
     return (
+        <>
+         <SafeAreaView style={{backgroundColor:COLORS.background, flex:1}}>
+        <StatusBar barStyle='dark-content'></StatusBar>
+        <View style={styles.gradientContainer}>
+                <LinearGradient
+                    colors={['#B2BC86', '#CCD6A6']}
+                    start={[0, 0]}
+                    end={[1, 1]}
+                    style={{
+                        width: 350,
+                        height: 350,
+                        borderRadius: 225,
+                        position: 'absolute',
+                        top: -40,
+                        right:-100,
+                    }}
+                />
+            </View>
         <ScrollView style={{ marginHorizontal: 26 }}>
+
             <View
                 style={{
                     flex: 1,
@@ -77,7 +98,7 @@ const ProfileScreen = () => {
             <TouchableOpacity style={stylesProfileScreen.logoutButton}>
                 <Text style={{fontSize:16, fontWeight:'bold', color:'white'}}>Đăng xuất</Text>
             </TouchableOpacity>
-        </ScrollView>
+        </ScrollView></SafeAreaView></>
     )
 }
 
