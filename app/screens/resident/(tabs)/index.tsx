@@ -84,16 +84,21 @@ const HomeScreen = () => {
                             <Text>Dịch vụ</Text>
                         </TouchableOpacity>
                         <TouchableOpacity style={stylesHomeScreen.featureBox}>
+
                             <View style={stylesHomeScreen.circle}>
                                 <ReceiptText color={'black'} strokeWidth={1.5}></ReceiptText>
                             </View>
                             <Text>Hóa đơn</Text>
                         </TouchableOpacity>
                         <TouchableOpacity style={stylesHomeScreen.featureBox}>
+                            <Link href={"/screens/resident/feedbackScreen"}>
+                            <View style={{alignItems:'center', flexDirection:'row'}}>
                             <View style={stylesHomeScreen.circle}>
                                 <MessageSquareDiff color={'black'} strokeWidth={1.5} ></MessageSquareDiff>
                             </View>
                             <Text>Phản ánh</Text>
+                            </View>
+                            </Link>
                         </TouchableOpacity>
                         <TouchableOpacity style={stylesHomeScreen.featureBox}>
                         <Link href={'/screens/resident/hotlineScreen'}>
