@@ -4,6 +4,7 @@ const styles = StyleSheet.create({
     container:{
         flex: 1,
         backgroundColor: COLORS.background,
+        zIndex:-1
     },
     gradientContainer: {
         position: 'absolute',
@@ -12,14 +13,15 @@ const styles = StyleSheet.create({
         width: '100%',
         height: '100%',
         overflow: 'hidden',
+        zIndex:-1
     },
     gradient: {
-        width: 300, 
-        height: 300, 
-        borderRadius: 150,
+        width: 350, 
+        height: 350, 
+        borderRadius: 225,
         position: 'absolute',
         top: -50, 
-        left: -100,
+        left: -80,
     },
     tabBar: {
         flexDirection: 'row',
@@ -34,20 +36,18 @@ const styles = StyleSheet.create({
     },
     selectedTab: {
         borderBottomWidth: 2,
-        borderBottomColor: 'blue',
+        borderBottomColor: 'black',
     },
-    avatar: {
-        objectFit: 'cover',
-        width: 74, 
-        height:74, 
-        borderRadius: 37, 
-    },
+   
     headerText: {
         fontSize: 24,
         fontWeight: 'bold',
     },
-    normalText:{
+    primaryText:{
         fontSize: 16,
+    },
+    normalText:{
+        fontSize: 14,
     }
 });
 

@@ -1,16 +1,5 @@
-import { View, Text } from 'react-native';
-import { NavigationContainer } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';
-import HomeScreen from './screens/resident/homeScreen';
-import NotificationScreen from './screens/resident/notificationScreen';
-import ProfileScreen from './screens/resident/profileScreen';
+import { Redirect } from "expo-router";
 
-
-
-const App = () => {
-    return (
-        <View></View>
-    );
+export default function Index(){
+    return <Redirect href="/screens/resident" />
 }
-
-export default App;
