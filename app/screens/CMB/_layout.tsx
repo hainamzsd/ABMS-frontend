@@ -17,7 +17,7 @@ const _layout = () => {
     };
 
     const pathName = usePathname();
-console.log(pathName);
+    console.log(pathName);
     const [windowWidth, setWindowWidth] = useState(Dimensions.get('window').width);
     const [isMobile, setIsMobile] = useState(windowWidth < 768);
     const [menuVisible, setMenuVisible] = useState(false);
@@ -42,7 +42,14 @@ console.log(pathName);
             <Stack.Screen options={{ headerShown: false }}></Stack.Screen>
 
             {!isMobile && (
-                <View style={{ backgroundColor: 'white', shadowColor: 'black', shadowOpacity: 1, shadowOffset: { width: 0, height: 2 }, elevation: 2 }}>
+                <View style={{
+                    backgroundColor: 'white',
+                    shadowColor: '#000',
+                    shadowOffset: { width: 0, height: 3 },
+                    shadowOpacity: 0.25,
+                    shadowRadius: 3,
+                    zIndex:1
+                }}>
                     <View style={{
                         flexDirection: 'row',
                         justifyContent: 'space-between',
@@ -60,12 +67,12 @@ console.log(pathName);
                             <View style={{ marginLeft: 8, flexDirection: 'row' }}>
                                 {navigation.map((item, index) => (
                                     <Link href={item.href} key={index}>
-                                    <TouchableOpacity
-                                        style={{ marginRight: 30, paddingVertical: 28, borderBottomWidth: 2, borderBottomColor: pathName === item.href ? '#374151' : 'transparent' }}
-                                        onPress={() => console.log(`Navigating to ${item.href}`)}
-                                    >
-                                        <Text style={{ fontSize: 16, fontWeight: '600', color: pathName === item.href ? '#333' : '#6B7280' }}>{item.name}</Text>
-                                    </TouchableOpacity>
+                                        <TouchableOpacity
+                                            style={{ marginRight: 30, paddingVertical: 28, borderBottomWidth: 2, borderBottomColor: pathName === item.href ? '#374151' : 'transparent' }}
+                                            onPress={() => console.log(`Navigating to ${item.href}`)}
+                                        >
+                                            <Text style={{ fontSize: 16, fontWeight: '600', color: pathName === item.href ? '#333' : '#6B7280' }}>{item.name}</Text>
+                                        </TouchableOpacity>
                                     </Link>
                                 ))}
                             </View>
