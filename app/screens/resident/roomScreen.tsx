@@ -1,5 +1,5 @@
 import { SafeAreaView, Text, View } from "react-native";
-import Header from "../../components/resident/header";
+import Header from "../../../components/resident/header";
 import { COLORS } from "../../../constants/colors";
 import roomInformationStyles from "./styles/roomInformationStyles";
 import { CircleUser, CircleUserRound, Info } from "lucide-react-native";

@@ -52,9 +52,8 @@ const HomeScreen = ({ navigation }: any) => {
                             source={{ uri: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSiGAdWpsJQwrcEtjaAxG-aci3VxO7n2qYey0tI9Syx4Ai9ziAUea6-dAjlaGmRUNQW-Lo&usqp=CAU' }} />
                     </Link>
                 </View>
+                <Link href="resident/roomScreen">
                 <TouchableOpacity style={stylesHomeScreen.room}>
-                <Link href="screens/resident/roomScreen">
-
                     <Image
                         style={{
                             width: 56,
@@ -67,8 +66,8 @@ const HomeScreen = ({ navigation }: any) => {
                         <Text style={{ fontWeight: 'bold', marginBottom: 5 }}>R2.18A00</Text>
                         <Text style={{ fontWeight: '300' }}>Times city, Hà Nội</Text>
                     </View>
-                    </Link>
                 </TouchableOpacity>
+                </Link>
 
                 <View style={stylesHomeScreen.featureContainer}>
                     <TouchableOpacity style={stylesHomeScreen.featureBox}>

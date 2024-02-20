@@ -6,7 +6,7 @@ import { LinearGradient } from 'expo-linear-gradient'
 import { ChevronLeft } from 'lucide-react-native'
 import * as ImagePicker from 'expo-image-picker';
 import userAvatarStyles from './styles/userAvatarScreen'
-import Header from '../../components/resident/header'
+import Header from '../../../components/resident/header'
 const UserAvatar = () => {
   const navigation = useNavigation();
 
