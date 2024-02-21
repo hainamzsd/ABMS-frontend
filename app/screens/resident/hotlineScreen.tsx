@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { Animated, Easing, SafeAreaView, Text, TouchableOpacity, View, UIManager, LayoutAnimation } from 'react-native';
-import Header from '../../components/resident/header';
+import Header from '../../../components/resident/header';
 import { COLORS } from '../../../constants/colors';
 import HotlineScreenStyles from './styles/hotlineScreenStyles';
 import { ChevronRight, Phone } from 'lucide-react-native';

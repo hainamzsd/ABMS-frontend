@@ -1,5 +1,5 @@
 import { SafeAreaView, Text, TextInput, View } from "react-native";
-import Header from "../../components/resident/header";
+import Header from "../../../components/resident/header";
 import { COLORS } from "../../../constants/colors";
 
 export default function FeedBack() {
