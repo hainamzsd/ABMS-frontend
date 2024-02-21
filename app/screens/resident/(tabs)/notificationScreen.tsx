@@ -1,7 +1,7 @@
 import { FlatList, ScrollView, Text, View, TouchableOpacity, SafeAreaView } from 'react-native';
 import { notificationScreenStyles } from '../styles/notificationScreenStyles';
 import { COLORS } from '../../../../constants/colors';
-import Header from '../../../components/resident/header';
+import Header from '../../../../components/resident/header';
 
 const NotificationScreen = () => {
     return (
