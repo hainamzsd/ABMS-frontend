@@ -33,6 +33,7 @@ const stylesProfileScreen = StyleSheet.create({
       feature:{
         flex:1,
         flexDirection:'row',
+        alignItems:'center',
         justifyContent:'space-between',
         marginTop:25,
       },

@@ -74,19 +74,20 @@ const ProfileScreen = () => {
 
                     <View style={{ marginTop: 30 }}>
                         <Link href="/screens/resident/personalInformationScreen">
-                            <View style={{ width: '100%' }}>
-                                <TouchableOpacity style={stylesProfileScreen.feature}>
-
+                            <View style={{width: '100%',flex:1}}>
+                                <View style={stylesProfileScreen.feature}>
                                     <View style={{ flexDirection: 'row' }}>
                                         <Pencil color={'black'} style={{ marginRight: 15 }} strokeWidth={1.5}></Pencil>
-                                        <Text >Cập nhật thông tin</Text>
+                                        <Text>Cập nhật thông tin</Text>
                                     </View>
+                                    <View>
                                     <ChevronRight color={'black'} size={26} strokeWidth={1.75}></ChevronRight>
-                                </TouchableOpacity>
+                                    </View>
+                                </View>
                             </View>
                         </Link>
                         <Link href="/screens/resident/changePasswordScreen">
-                            <View style={{ width: '100%' }}>
+                            <View style={{ width: '100%',flex:1 }}>
                                 <TouchableOpacity style={stylesProfileScreen.feature}>
                                     <View style={{ flexDirection: 'row' }}>
                                         <KeyRound color={'black'} style={{ marginRight: 15 }} strokeWidth={1.5}></KeyRound>

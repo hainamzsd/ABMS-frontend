@@ -1,15 +1,10 @@
 import { Stack } from 'expo-router';
 import React from 'react';
 import { View, StyleSheet, Dimensions, Text, TextInput } from 'react-native';
-import { Input } from '@rneui/themed';
 import Svg, { Path } from 'react-native-svg';
 import SHADOW from '../constants/shadow';
 import { COLORS } from '../constants/colors';
-import { Phone } from 'lucide-react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
-const WIDTH = Dimensions.get('screen').width;
-const screenHeight = Dimensions.get('screen').height;
-const sixtyPercentHeight = screenHeight * 0.9;
 const LoginScreen = () => {
     return (
         <>
@@ -29,6 +24,7 @@ const LoginScreen = () => {
                     <TextInput
                         style={styles.input}
                         placeholder="Mật khẩu"
+
                         placeholderTextColor="#A9A9A9"
                         secureTextEntry={true}
                     />

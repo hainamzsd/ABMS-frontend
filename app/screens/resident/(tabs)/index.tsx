@@ -40,7 +40,7 @@ const HomeScreen = () => {
                             flex: 1,
                             flexDirection: 'row',
                             justifyContent: 'space-between',
-                            marginTop: 30,
+                            marginVertical: 20,
                         }}>
                         <View style={{ flex: 1 }}>
                             <Text style={styles.headerText}>Xin chào, Hoa La</Text>
@@ -52,25 +52,25 @@ const HomeScreen = () => {
                                 source={{ uri: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSiGAdWpsJQwrcEtjaAxG-aci3VxO7n2qYey0tI9Syx4Ai9ziAUea6-dAjlaGmRUNQW-Lo&usqp=CAU' }} />
                         </Link>
                     </View>
-                    <Link href="/screens/resident/roomScreen">
                     <View style={stylesHomeScreen.room} >
-                            <View style={{alignItems:'center', flexDirection:'row',width: '100%'}}>
-                            <Image
-                                style={{
-                                    width: 56,
-                                    height: 56
-                                }}
-                                source={require('../../../../assets/images/house1.png')}></Image>
-                            <View style={{
-                                marginLeft: 20
-                            }}>
-                                <Text style={{ fontWeight: 'bold', marginBottom: 5 }}>R2.18A00</Text>
-                                <Text style={{ fontWeight: '300' }}>Times city, Hà Nội</Text>
-                            </View>
-                            </View>
-                    </View>
-                    </Link>
+                        <Link href={"/screens/resident/roomScreen"}>
 
+                            <View style={{ alignItems: 'center', flexDirection: 'row', width: '100%' }}>
+                                <Image
+                                    style={{
+                                        width: 56,
+                                        height: 56
+                                    }}
+                                    source={require('../../../../assets/images/house1.png')}></Image>
+                                <View style={{
+                                    marginLeft: 20
+                                }}>
+                                    <Text style={{ fontWeight: 'bold', marginBottom: 5 }}>R2.18A00</Text>
+                                    <Text style={{ fontWeight: '300' }}>Times city, Hà Nội</Text>
+                                </View>
+                            </View>
+                        </Link>
+                    </View>
                     <View style={stylesHomeScreen.featureContainer}>
                         <TouchableOpacity style={stylesHomeScreen.featureBox}>
                             <View style={stylesHomeScreen.circle}>
@@ -92,24 +92,24 @@ const HomeScreen = () => {
                             <Text>Hóa đơn</Text>
                         </TouchableOpacity>
                         <TouchableOpacity style={stylesHomeScreen.featureBox}>
-                            <Link href={"/screens/resident/feedbackScreen"} style={{width:'100%'}}>
-                            <View style={{alignItems:'center', flexDirection:'row'}}>
-                            <View style={stylesHomeScreen.circle}>
-                                <MessageSquareDiff color={'black'} strokeWidth={1.5} ></MessageSquareDiff>
-                            </View>
-                            <Text>Phản ánh</Text>
-                            </View>
+                            <Link href={"/screens/resident/feedbackScreen"} style={{ width: '100%' }}>
+                                <View style={{ alignItems: 'center', flexDirection: 'row' }}>
+                                    <View style={stylesHomeScreen.circle}>
+                                        <MessageSquareDiff color={'black'} strokeWidth={1.5} ></MessageSquareDiff>
+                                    </View>
+                                    <Text>Phản ánh</Text>
+                                </View>
                             </Link>
                         </TouchableOpacity>
-                        <TouchableOpacity  style={stylesHomeScreen.featureBox}>
-                        <Link href={'/screens/resident/hotlineScreen'} style={{width:'100%'}}>
-                            <View style={{alignItems:'center', flexDirection:'row'}}>
-                            <View style={stylesHomeScreen.circle}>
-                                <PhoneOutgoing color={'black'} strokeWidth={1.5} ></PhoneOutgoing>
-                            </View>
-                            <Text>Liên hệ</Text>
-                            </View>
-                        </Link>
+                        <TouchableOpacity style={stylesHomeScreen.featureBox}>
+                            <Link href={'/screens/resident/hotlineScreen'} style={{ width: '100%' }}>
+                                <View style={{ alignItems: 'center', flexDirection: 'row' }}>
+                                    <View style={stylesHomeScreen.circle}>
+                                        <PhoneOutgoing color={'black'} strokeWidth={1.5} ></PhoneOutgoing>
+                                    </View>
+                                    <Text>Liên hệ</Text>
+                                </View>
+                            </Link>
                         </TouchableOpacity>
 
                     </View>
