@@ -1,41 +1,41 @@
 import { Link } from "expo-router";
-import { SafeAreaView, Text, TextInput, View } from "react-native";
+import { SafeAreaView, Text, View, ScrollView } from "react-native";
 import Button from "../../../../components/ui/button";
 import { Cell, TableComponent, TableRow } from "../../../../components/ui/table";
 import Input from "../../../../components/ui/input";
+
 export default function AccountManagement() {
     const headers = ['Header 1', 'Header 2', 'Header 3', 'edaed', ''];
     const data = [
         ['Data 1', 'Data 2', 'Data 3', 'Data 4', 'Data 412',],
     ];
 
-    return (<>
-        <View style={{ flex: 1, paddingHorizontal: 100, paddingVertical: 30, backgroundColor: '#F9FAFB' }}>
+    return (
+        <View style={{ flex: 1,backgroundColor: '#F9FAFB' }}>
             <SafeAreaView>
-                <View style={{ marginBottom: 20 }}>
-                    <Text style={{ fontWeight: 'bold', fontSize: 20, marginBottom: 5 }}>Danh sách tài khoản</Text>
-                    <Text>Thông tin tài khoản của lễ tân</Text>
-                </View>
-                <View style={{marginBottom:20}}>
-                    <Input placeholder="Tìm tên tài khoản" style={{width:250, paddingVertical:10, }}></Input>
-                </View>
-                <View style={{ flex: 1 }}>
+                <ScrollView style={{ paddingHorizontal: 100, paddingVertical: 30 }}>
+                    <View style={{ marginBottom: 20 }}>
+                        <Text style={{ fontWeight: 'bold', fontSize: 20, marginBottom: 5 }}>Danh sách tài khoản</Text>
+                        <Text>Thông tin tài khoản của lễ tân</Text>
+                    </View>
+                    <View style={{ marginBottom: 20 }}>
+                        <Input placeholder="Tìm tên tài khoản" style={{ width: '100%', paddingVertical: 10 }} />
+                    </View>
                     <TableComponent headers={headers}>
-
                         <TableRow>
                             <Cell>aaa</Cell>
                             <Cell>â</Cell>
                             <Cell>aaa</Cell>
                             <Cell>aaa</Cell>
                             <Cell>
-                                <Button  text="Chi tiết" ></Button>
+                                <Link href={'accountDetail'}>
+                                    <Button text="Chi tiết" />
+                                </Link>
                             </Cell>
                         </TableRow>
-
                     </TableComponent>
-                </View>
+                </ScrollView>
             </SafeAreaView>
         </View>
-
-    </>)
+    );
 }
