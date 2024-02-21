@@ -10,6 +10,7 @@ const stylesHomeScreen = StyleSheet.create({
   },
   room: {
     ...SHADOW,
+    flex:1,
     flexDirection: 'row',
     alignItems: 'center',
     width: '100%',

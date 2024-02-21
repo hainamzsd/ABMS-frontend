@@ -1,4 +1,4 @@
-import { Animated, Image, SafeAreaView, ScrollView, StatusBar, Text, TouchableOpacity, View } from 'react-native';
+import { Animated, Image, Pressable, SafeAreaView, ScrollView, StatusBar, Text, TouchableOpacity, View } from 'react-native';
 import styles from "../../../styles/indexStyles";
 import stylesHomeScreen from '../styles/homeScreenStyles';
 import { Layers3, MessageSquareDiff, Phone, PhoneOutgoing, ReceiptText, Settings } from 'lucide-react-native';
@@ -52,9 +52,9 @@ const HomeScreen = () => {
                                 source={{ uri: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSiGAdWpsJQwrcEtjaAxG-aci3VxO7n2qYey0tI9Syx4Ai9ziAUea6-dAjlaGmRUNQW-Lo&usqp=CAU' }} />
                         </Link>
                     </View>
-                    <TouchableOpacity style={stylesHomeScreen.room}>
-                        <Link href="screens/resident/roomScreen">
-                            <View style={{alignItems:'center', flexDirection:'row'}}>
+                    <Link href="/screens/resident/roomScreen">
+                    <View style={stylesHomeScreen.room} >
+                            <View style={{alignItems:'center', flexDirection:'row',width: '100%'}}>
                             <Image
                                 style={{
                                     width: 56,
@@ -66,9 +66,10 @@ const HomeScreen = () => {
                             }}>
                                 <Text style={{ fontWeight: 'bold', marginBottom: 5 }}>R2.18A00</Text>
                                 <Text style={{ fontWeight: '300' }}>Times city, Hà Nội</Text>
-                            </View></View>
-                        </Link>
-                    </TouchableOpacity>
+                            </View>
+                            </View>
+                    </View>
+                    </Link>
 
                     <View style={stylesHomeScreen.featureContainer}>
                         <TouchableOpacity style={stylesHomeScreen.featureBox}>
@@ -91,7 +92,7 @@ const HomeScreen = () => {
                             <Text>Hóa đơn</Text>
                         </TouchableOpacity>
                         <TouchableOpacity style={stylesHomeScreen.featureBox}>
-                            <Link href={"/screens/resident/feedbackScreen"}>
+                            <Link href={"/screens/resident/feedbackScreen"} style={{width:'100%'}}>
                             <View style={{alignItems:'center', flexDirection:'row'}}>
                             <View style={stylesHomeScreen.circle}>
                                 <MessageSquareDiff color={'black'} strokeWidth={1.5} ></MessageSquareDiff>
@@ -100,8 +101,8 @@ const HomeScreen = () => {
                             </View>
                             </Link>
                         </TouchableOpacity>
-                        <TouchableOpacity style={stylesHomeScreen.featureBox}>
-                        <Link href={'/screens/resident/hotlineScreen'}>
+                        <TouchableOpacity  style={stylesHomeScreen.featureBox}>
+                        <Link href={'/screens/resident/hotlineScreen'} style={{width:'100%'}}>
                             <View style={{alignItems:'center', flexDirection:'row'}}>
                             <View style={stylesHomeScreen.circle}>
                                 <PhoneOutgoing color={'black'} strokeWidth={1.5} ></PhoneOutgoing>
@@ -110,6 +111,7 @@ const HomeScreen = () => {
                             </View>
                         </Link>
                         </TouchableOpacity>
+
                     </View>
 
                     <View style={stylesHomeScreen.room}>
