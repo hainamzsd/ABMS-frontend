@@ -10,7 +10,7 @@ export default function AccountManagement() {
     return (
         <View style={{ flex: 1,backgroundColor: '#F9FAFB' }}>
             <SafeAreaView>
-                <ScrollView style={{ paddingHorizontal: 100, paddingVertical: 30 }}>
+                <ScrollView style={{ paddingHorizontal: 30, paddingVertical: 30 }}>
                     <View style={{ marginBottom: 20 }}>
                         <Text style={{ fontWeight: 'bold', fontSize: 20, marginBottom: 5 }}>Danh sách tài khoản</Text>
                         <Text>Thông tin tài khoản của lễ tân</Text>
@@ -25,7 +25,7 @@ export default function AccountManagement() {
                             <Cell>aaa</Cell>
                             <Cell>aaa</Cell>
                             <Cell>
-                                <Link href={'accountDetail'}>
+                                <Link href={'/screens/CMB/accountManagement/accountDetail'}>
                                     <Button text="Chi tiết" />
                                 </Link>
                             </Cell>

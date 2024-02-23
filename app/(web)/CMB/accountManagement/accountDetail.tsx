@@ -31,7 +31,7 @@ const accountDetail = () => {
 
 
     return (
-        <View style={{ flex: 1, paddingHorizontal: 100, paddingVertical: 30, backgroundColor: '#F9FAFB' }}>
+        <View style={{ flex: 1, paddingHorizontal: 30, paddingVertical: 30, backgroundColor: '#F9FAFB' }}>
             <SafeAreaView>
                 <ScrollView>
                     <Button style={{ width: 100, marginBottom: 20 }} text='Quay Lại'
