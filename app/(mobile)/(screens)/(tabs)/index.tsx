@@ -1,10 +1,8 @@
 import { Animated, Image, SafeAreaView, ScrollView, StatusBar, Text, TouchableOpacity, View } from 'react-native';
-import styles from "../../../styles/indexStyles";
+import styles from "../../styles/indexStyles";
 import stylesHomeScreen from '../styles/homeScreenStyles';
 import { Layers3, MessageSquareDiff, Phone, PhoneOutgoing, ReceiptText, Settings } from 'lucide-react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import ProfileScreen from './profileScreen';
-import NotificationScreen from './notificationScreen';
 import { COLORS } from '../../../../constants/colors';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Link, Stack } from 'expo-router';
@@ -46,14 +44,14 @@ const HomeScreen = () => {
                             <Text style={styles.headerText}>Xin chào, Hoa La</Text>
                             <Text style={styles.normalText}>Quản lý ngôi nhà của bạn</Text>
                         </View>
-                        <Link href="/screens/resident/userAvatarScreen">
+                        <Link href="/(mobile)/(screens)/userAvatarScreen">
                             <Image
                                 style={stylesHomeScreen.avatar}
                                 source={{ uri: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSiGAdWpsJQwrcEtjaAxG-aci3VxO7n2qYey0tI9Syx4Ai9ziAUea6-dAjlaGmRUNQW-Lo&usqp=CAU' }} />
                         </Link>
                     </View>
                     <TouchableOpacity style={stylesHomeScreen.room}>
-                        <Link href={'/screens/resident/roomScreen'}>
+                        <Link href={'/(mobile)/(screens)/roomScreen'}>
                             <View style={{alignItems:'center', flexDirection:'row'}}>
                             <Image
                                 style={{
@@ -91,7 +89,7 @@ const HomeScreen = () => {
                             <Text>Hóa đơn</Text>
                         </TouchableOpacity>
                         <TouchableOpacity style={stylesHomeScreen.featureBox}>
-                            <Link href={"/screens/resident/feedbackScreen"}>
+                            <Link href={"/(mobile)/(screens)/feedbackScreen"}>
                             <View style={{alignItems:'center', flexDirection:'row'}}>
                             <View style={stylesHomeScreen.circle}>
                                 <MessageSquareDiff color={'black'} strokeWidth={1.5} ></MessageSquareDiff>
@@ -101,7 +99,7 @@ const HomeScreen = () => {
                             </Link>
                         </TouchableOpacity>
                         <TouchableOpacity style={stylesHomeScreen.featureBox}>
-                        <Link href={'/screens/resident/hotlineScreen'}>
+                        <Link href={'/(mobile)/(screens)/hotlineScreen'}>
                             <View style={{alignItems:'center', flexDirection:'row'}}>
                             <View style={stylesHomeScreen.circle}>
                                 <PhoneOutgoing color={'black'} strokeWidth={1.5} ></PhoneOutgoing>

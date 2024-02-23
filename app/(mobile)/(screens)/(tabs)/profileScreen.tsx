@@ -1,5 +1,5 @@
 import { Image, SafeAreaView, ScrollView, StatusBar, Text, TouchableOpacity, View } from 'react-native';
-import styles from '../../../styles/indexStyles';
+import styles from '../../styles/indexStyles';
 import stylesProfileScreen from '../styles/profileScreenStyles';
 import { ChevronRight, KeyRound, Languages, Pencil } from 'lucide-react-native';
 import { Link } from 'expo-router';
@@ -73,7 +73,7 @@ const ProfileScreen = () => {
                     </TouchableOpacity>
 
                     <View style={{ marginTop: 30 }}>
-                        <Link href="/screens/resident/personalInformationScreen">
+                        <Link href="/(mobile)/(screens)/personalInformationScreen">
                             <View style={{width: '100%',flex:1}}>
                                 <View style={stylesProfileScreen.feature}>
                                     <View style={{ flexDirection: 'row' }}>
@@ -86,7 +86,7 @@ const ProfileScreen = () => {
                                 </View>
                             </View>
                         </Link>
-                        <Link href="/screens/resident/changePasswordScreen">
+                        <Link href="/(mobile)/(screens)/changePasswordScreen">
                             <View style={{ width: '100%',flex:1 }}>
                                 <TouchableOpacity style={stylesProfileScreen.feature}>
                                     <View style={{ flexDirection: 'row' }}>

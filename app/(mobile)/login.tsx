@@ -1,11 +1,23 @@
 import { Stack } from 'expo-router';
-import React from 'react';
+import React, { useState } from 'react';
 import { View, StyleSheet, Dimensions, Text, TextInput } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
-import SHADOW from '../constants/shadow';
-import { COLORS } from '../constants/colors';
+import SHADOW from '../../constants/shadow';
+import { COLORS } from '../../constants/colors';
 import { TouchableOpacity } from 'react-native-gesture-handler';
+import { useAuth } from './context/AuthContext';
+import { Hand } from 'lucide-react-native';
 const LoginScreen = () => {
+    const [phone, setPhone] = useState('');
+    const [password, setPassword] = useState('');
+    const {onLogin} = useAuth();
+    const HandleLogin = async () => {
+        const result = await onLogin!(phone, password);
+        if(result && result.error){
+            console.log(result.msg + "aa");
+        }
+    }
+
     return (
         <>
             <Stack.Screen options={{ headerShown: false }}></Stack.Screen>
@@ -20,18 +32,19 @@ const LoginScreen = () => {
                         style={styles.input}
                         placeholder="Số điện thoại"
                         placeholderTextColor="#A9A9A9"
+                        onChangeText={(text:string) => setPhone(text)} value={phone}
                     />
                     <TextInput
                         style={styles.input}
                         placeholder="Mật khẩu"
-
                         placeholderTextColor="#A9A9A9"
                         secureTextEntry={true}
+                        onChangeText={(text: string) => setPassword(text)} value={password}
                     />
                     <View style={{alignItems:'flex-end'}}>
                         <Text>Quên mật khẩu</Text>
                     </View>
-                     <TouchableOpacity style={styles.button}>
+                     <TouchableOpacity style={styles.button} onPress={HandleLogin}>
                         <Text style={{ fontSize: 16, fontWeight: 'bold' }}>Đăng nhập</Text>
                     </TouchableOpacity>
                 </View>

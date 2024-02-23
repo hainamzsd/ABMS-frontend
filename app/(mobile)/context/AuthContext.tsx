@@ -1,15 +1,18 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import axios from 'axios';
 import SecureStore from 'expo-secure-store';
+
 interface AuthProps{
     authState?: {token: string | null; authenticated:boolean|null};
     onLogin?:(phone:string,password:string) => Promise<any>;
-    onLogout?:(phone:string,password:string) => Promise<any>; 
+    onLogout?:() => Promise<any>; 
 }
 
 const TOKEN_KEY = '';
 export const API_URL = "https://api.developbetterapps.com";
-const AuthContext = createContext<AuthProps>({});
+const AuthContext = createContext<AuthProps>({
+});
+
 
 export const useAuth = () => {
     return useContext(AuthContext);
@@ -43,9 +46,10 @@ export const AuthProvider = ({children}:any) => {
     }, [])
     
 
-    const login = async (phone: string, password: string)=>{
+    const login = async (phone:string,password:string)=>{
         try{
             const result = await axios.post(`${API_URL}/auth`, {phone,password});
+            console.log("lmao")
             console.log(result);
             setAuthState({
                 authenticated: true,
@@ -76,10 +80,9 @@ export const AuthProvider = ({children}:any) => {
         })
     }
 
-    const value = {
+    return <AuthContext.Provider value={{
         onLogin: login,
         onLogout: logout,
-        authState
-    };
-    return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
+        authState: authState
+    }}>{children}</AuthContext.Provider>
 }

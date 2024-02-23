@@ -3,15 +3,13 @@ import { COLORS } from "../../../../constants/colors";
 import { Bell, Home, User } from "lucide-react-native";
 import { View } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
-import styles from "../../../styles/indexStyles";
+import styles from "../../styles/indexStyles";
 
 export default function _layout() {
     return (
         <View style={styles.container}> 
-           
             <Tabs screenOptions={{
                 headerShown: false,
-
                 tabBarStyle: {
                     backgroundColor: COLORS.background,
                     borderTopWidth: 1,
@@ -22,6 +20,7 @@ export default function _layout() {
             }>
                 <Tabs.Screen name='index'
                     options={{
+                        headerShown:false,
                         tabBarActiveTintColor: 'black',
                         tabBarInactiveTintColor: '#ccc',
                         tabBarLabel: "Trang chủ",
