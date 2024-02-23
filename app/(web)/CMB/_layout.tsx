@@ -4,6 +4,7 @@ import { Link, Stack, useNavigation, usePathname } from 'expo-router'
 import styles from './styles'
 import { Menu } from 'lucide-react-native'
 import SHADOW from '../../../constants/shadow'
+import { SafeAreaView } from 'react-native-safe-area-context'
 const _layout = () => {
     const navigation = [
         { name: 'Trang chính', href: '/screens/CMB' },
@@ -92,11 +93,11 @@ const _layout = () => {
 
             {/* Mobile Menu */}
             {isMobile && (
-                <View style={{ backgroundColor: 'white', flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center', paddingHorizontal: 16, height: 64 }}>
+                <SafeAreaView style={{ backgroundColor: 'white', flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center', paddingHorizontal: 16, height: 64 }}>
                     <TouchableOpacity onPress={toggleMenu}>
-                        <Menu />
+                        <Menu width={32} height={32} />
                     </TouchableOpacity>
-                </View>
+                </SafeAreaView>
             )}
 
             <Modal visible={menuVisible} animationType="slide">
@@ -123,7 +124,7 @@ const _layout = () => {
                             <View style={styles.menuItem}>
                                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                                     <Image
-                                        style={{ width: 32, height: 32, borderRadius: 16 }}
+                                        style={{ width: 54, height: 54, borderRadius: 28 }}
                                         source={{ uri: 'https://i.ytimg.com/vi/7KxBpKTIl98/maxresdefault.jpg' }}
                                     />
                                     <View style={{ marginLeft: 8 }}>
@@ -148,8 +149,8 @@ const _layout = () => {
             </Modal>
             <View style={styles.container} >
                 <Stack screenOptions={{ headerShown: false }}>
-                    <Stack.Screen name='screens/CMB'></Stack.Screen>
-                    <Stack.Screen name='screens/CMB/accountManagement/accountMangement'></Stack.Screen>
+                    <Stack.Screen name='/screens/CMB'></Stack.Screen>
+                    <Stack.Screen name='/screens/CMB/accountManagement/accountMangement'></Stack.Screen>
                 </Stack>
             </View></>
     )

@@ -53,7 +53,7 @@ const HomeScreen = () => {
                         </Link>
                     </View>
                     <TouchableOpacity style={stylesHomeScreen.room}>
-                        <Link href="screens/resident/roomScreen">
+                        <Link href={'/screens/resident/roomScreen'}>
                             <View style={{alignItems:'center', flexDirection:'row'}}>
                             <Image
                                 style={{

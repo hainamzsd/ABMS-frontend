@@ -10,10 +10,10 @@ const stylesHomeScreen = StyleSheet.create({
   },
   room: {
     ...SHADOW,
+    flex:1,
     flexDirection: 'row',
     alignItems: 'center',
     width: '100%',
-    height: 100,
     backgroundColor: 'white',
     borderRadius: 10,
     padding: 20,
