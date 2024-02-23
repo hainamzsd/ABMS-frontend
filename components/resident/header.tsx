@@ -2,6 +2,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import { Stack, useNavigation } from "expo-router";
 import { ChevronLeft } from "lucide-react-native";
 import { TouchableOpacity, View } from "react-native";
+import { COLORS } from "../../constants/colors";
 interface HeaderProps {
     headerTitle: string;
   }
@@ -19,7 +20,7 @@ const Header:React.FC<HeaderProps>= ({ headerTitle }) => {
         },
         headerBackground: () => (
           <LinearGradient
-            colors={['#A2BC86', '#CCD6A6']}
+            colors={[COLORS.primary, COLORS.secondary]}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
             style={{ flex: 1 }}

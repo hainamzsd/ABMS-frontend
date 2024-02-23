@@ -31,7 +31,9 @@ const stylesProfileScreen = StyleSheet.create({
         marginTop: 26,
       },
       feature:{
+        flex:1,
         flexDirection:'row',
+        alignItems:'center',
         justifyContent:'space-between',
         marginTop:25,
       },
@@ -39,7 +41,7 @@ const stylesProfileScreen = StyleSheet.create({
         marginTop:30,
         padding:30,
         alignItems:'center',
-        backgroundColor:'#AEBB81',
+        backgroundColor:COLORS.primary,
         borderRadius:20
       }
 })
