@@ -6,9 +6,6 @@ import Input from "../../../../components/ui/input";
 
 export default function AccountManagement() {
     const headers = ['Header 1', 'Header 2', 'Header 3', 'edaed', ''];
-    const data = [
-        ['Data 1', 'Data 2', 'Data 3', 'Data 4', 'Data 412',],
-    ];
 
     return (
         <View style={{ flex: 1,backgroundColor: '#F9FAFB' }}>

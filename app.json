@@ -4,9 +4,18 @@
     "web": {
       "bundler": "metro"
     },
+    "ios": {
+      "config": {
+        "usesNonExemptEncryption": false
+      }
+    },
     "plugins": [
-      "expo-router"
+      "expo-router",
+      "expo-secure-store"
     ],
+    "experiments": {
+      "typedRoutes": true
+    },
     "name": "code",
     "slug": "code"
   }
