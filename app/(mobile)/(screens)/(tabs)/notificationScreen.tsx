@@ -8,10 +8,11 @@ import {
 } from "react-native";
 import { notificationScreenStyles } from "../styles/notificationScreenStyles";
 import { useTheme } from "../../context/ThemeContext";
+import { useTranslation } from "react-i18next";
 
 const NotificationScreen = () => {
   const { theme } = useTheme();
-
+  const { t } = useTranslation();
   return (
     <>
       <SafeAreaView style={{ backgroundColor: theme.background, flex: 1 }}>
@@ -19,7 +20,7 @@ const NotificationScreen = () => {
           <Text
             style={{ marginVertical: 20, fontSize: 24, fontWeight: "bold" }}
           >
-            Danh sách thông báo
+            {t("Notification list")}
           </Text>
           <TouchableOpacity style={notificationScreenStyles.box}>
             <View style={{ marginBottom: 20 }}>

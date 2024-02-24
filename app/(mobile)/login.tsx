@@ -14,12 +14,23 @@ import { TouchableOpacity } from "react-native";
 import { useSession } from "./context/AuthContext";
 import { router } from "expo-router";
 import { useTheme } from "./context/ThemeContext";
+import { StatusBar } from "react-native";
+import { useTranslation } from "react-i18next";
+import i18n from "../../utils/i18next";
+import { Pressable } from "react-native";
+import { Image } from "react-native";
 
 const LoginScreen = () => {
+  const [currentLanguage, setCurrentLanguage] = useState(i18n.language);
+  const changeLanguage = (languageCode: string) => {
+    i18n.changeLanguage(languageCode);
+    setCurrentLanguage(languageCode);
+  };
+
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
   const { theme } = useTheme();
-
+  const { t } = useTranslation();
   // const HandleLogin = async () => {
   //   const result = await onLogin!(phone, password);
   //   if (result && result.error) {
@@ -28,34 +39,33 @@ const LoginScreen = () => {
   // };
   const { signIn } = useSession();
   return (
-    <SafeAreaView style={{ backgroundColor: theme.background, flex: 1 }}>
+    <View style={{ backgroundColor: theme.background, flex: 1 }}>
+      <StatusBar barStyle="dark-content" backgroundColor={"red"} />
       <View style={[styles.container]}>
         {/* <Stack.Screen options={{ headerShown: false }}></Stack.Screen> */}
         <View>
           <View style={styles.headerContainer}>
-            <Text style={styles.header}>Đăng nhập</Text>
-            <Text style={styles.subHeader}>
-              Nhập thông tin tài khoản của bạn
-            </Text>
+            <Text style={styles.header}>{t("Login")}</Text>
+            <Text style={styles.subHeader}>{t("Start manage your home")}</Text>
           </View>
 
           <TextInput
             style={styles.input}
-            placeholder="Số điện thoại"
+            placeholder={t("Phone")}
             placeholderTextColor="#A9A9A9"
             onChangeText={(text: string) => setPhone(text)}
             value={phone}
           />
           <TextInput
             style={styles.input}
-            placeholder="Mật khẩu"
+            placeholder={t("Password")}
             placeholderTextColor="#A9A9A9"
             secureTextEntry={true}
             onChangeText={(text: string) => setPassword(text)}
             value={password}
           />
           <View style={{ alignItems: "flex-end" }}>
-            <Text>Quên mật khẩu</Text>
+            <Text>{t("Forgot password")}</Text>
           </View>
           <TouchableOpacity
             style={[styles.button, { backgroundColor: theme.primary }]}
@@ -64,8 +74,52 @@ const LoginScreen = () => {
               router.replace("/");
             }}
           >
-            <Text style={{ fontSize: 16, fontWeight: "bold" }}>Đăng nhập</Text>
+            <Text style={{ fontSize: 16, fontWeight: "bold" }}>
+              {t("Login")}
+            </Text>
           </TouchableOpacity>
+          <View
+            style={{
+              justifyContent: "center",
+              flexDirection: "row",
+              marginTop: 30,
+            }}
+          >
+            <Pressable
+              style={{ paddingRight: 20, alignItems: "center" }}
+              onPress={() => changeLanguage("vi")}
+            >
+              <Text style={{ fontWeight: "600", marginBottom: 10 }}>
+                {t("Vietnam")}
+              </Text>
+              <Image
+                style={{
+                  height: 30,
+                  width: 40,
+                  borderRadius: 5,
+                  marginRight: 10,
+                }}
+                source={require("../../assets/images/vietnam.png")}
+              />
+            </Pressable>
+            <Pressable
+              style={{ alignItems: "center" }}
+              onPress={() => changeLanguage("en")}
+            >
+              <Text style={{ fontWeight: "600", marginBottom: 10 }}>
+                {t("English")}
+              </Text>
+              <Image
+                style={{
+                  height: 30,
+                  width: 40,
+                  borderRadius: 5,
+                  marginRight: 10,
+                }}
+                source={require("../../assets/images/england.png")}
+              />
+            </Pressable>
+          </View>
         </View>
       </View>
 
@@ -75,7 +129,7 @@ const LoginScreen = () => {
           fill={theme.primary}
         />
       </Svg>
-    </SafeAreaView>
+    </View>
   );
 };
 

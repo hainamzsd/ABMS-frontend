@@ -3,18 +3,19 @@ import Header from "../../../components/resident/header";
 import roomInformationStyles from "./styles/roomInformationStyles";
 import { CircleUser, CircleUserRound, Info } from "lucide-react-native";
 import { useTheme } from "../context/ThemeContext";
+import { useTranslation } from "react-i18next";
 
 export default function Room() {
   const { theme } = useTheme();
-
+  const { t } = useTranslation();
   return (
     <>
-      <Header headerTitle="Thông tin căn hộ"></Header>
+      <Header headerTitle={t("Room information")}></Header>
       <SafeAreaView style={{ backgroundColor: theme.background, flex: 1 }}>
         <View style={{ marginHorizontal: 26 }}>
           <View style={roomInformationStyles.headerTextContainer}>
             <Info color={"black"}></Info>
-            <Text style={roomInformationStyles.headerText}>Căn hộ</Text>
+            <Text style={roomInformationStyles.headerText}>{t("Room")}</Text>
           </View>
           <View style={roomInformationStyles.roomBox}>
             <View style={{ borderBottomWidth: 0.5 }}>
@@ -28,14 +29,14 @@ export default function Room() {
               </View>
             </View>
             <View style={{ padding: 20 }}>
-              <Text>Thành viên: 4</Text>
+              <Text>{t("Member")}: 4</Text>
             </View>
           </View>
           <View style={roomInformationStyles.memberInformationContainer}>
             <Text style={roomInformationStyles.memberInformationHeader}>
-              Thông tin thành viên
+              {t("Member information")}
             </Text>
-            <Text style={{ fontWeight: "300" }}>Thành viên đã đăng ký</Text>
+            <Text style={{ fontWeight: "300" }}>{t("Registered member")}</Text>
           </View>
           <View style={roomInformationStyles.memberBox}>
             <View style={{ flexDirection: "row", alignItems: "center" }}>

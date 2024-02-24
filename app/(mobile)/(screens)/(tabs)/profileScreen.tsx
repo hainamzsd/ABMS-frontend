@@ -20,11 +20,13 @@ import { Link, useNavigation } from "expo-router";
 import { LinearGradient } from "expo-linear-gradient";
 import { useSession } from "../../context/AuthContext";
 import { useTheme } from "../../context/ThemeContext";
+import { useTranslation } from "react-i18next";
 
 const ProfileScreen = () => {
   const { signOut } = useSession();
   const { theme } = useTheme();
-  const navigation = useNavigation();
+  const { t } = useTranslation();
+
   return (
     <>
       <SafeAreaView style={{ backgroundColor: theme.background, flex: 1 }}>
@@ -54,8 +56,8 @@ const ProfileScreen = () => {
             }}
           >
             <View style={{ flex: 1 }}>
-              <Text style={styles.headerText}>Tài khoản</Text>
-              <Text style={styles.normalText}>Quản lý thông tin cá nhân</Text>
+              <Text style={styles.headerText}>{t("Account")}</Text>
+              <Text style={styles.normalText}>{t("ManageAccount")}</Text>
             </View>
             <TouchableOpacity>
               <Image
@@ -69,7 +71,7 @@ const ProfileScreen = () => {
 
           <View style={stylesProfileScreen.box}>
             <View style={{ flexDirection: "row" }}>
-              <Text>Họ và tên:</Text>
+              <Text>{t("Fullname")}:</Text>
               <Text
                 style={{ marginLeft: 5, fontWeight: "bold", marginBottom: 5 }}
               >
@@ -77,7 +79,7 @@ const ProfileScreen = () => {
               </Text>
             </View>
             <View style={{ flexDirection: "row" }}>
-              <Text>Số điện thoại:</Text>
+              <Text>{t("Phone")}:</Text>
               <Text style={{ marginLeft: 5 }}>0123 232 2312</Text>
             </View>
           </View>
@@ -111,7 +113,7 @@ const ProfileScreen = () => {
                     style={{ marginRight: 15 }}
                     strokeWidth={1.5}
                   ></Pencil>
-                  <Text>Cập nhật thông tin</Text>
+                  <Text>{t("Update Information")}</Text>
                 </View>
               </Link>
             </View>
@@ -123,7 +125,7 @@ const ProfileScreen = () => {
                     style={{ marginRight: 15 }}
                     strokeWidth={1.5}
                   ></KeyRound>
-                  <Text>Đổi mật khẩu</Text>
+                  <Text>{t("Change password")}</Text>
                 </View>
               </Link>
             </View>
@@ -135,20 +137,22 @@ const ProfileScreen = () => {
                     style={{ marginRight: 15 }}
                     strokeWidth={1.5}
                   ></Palette>
-                  <Text>Đổi màu giao diện</Text>
+                  <Text>{t("Change color pallete")}</Text>
                 </View>
               </Link>
             </View>
-            <TouchableOpacity style={stylesProfileScreen.feature}>
-              <View style={{ flexDirection: "row" }}>
-                <Languages
-                  color={"black"}
-                  style={{ marginRight: 15 }}
-                  strokeWidth={1.5}
-                ></Languages>
-                <Text>Ngôn ngữ</Text>
-              </View>
-            </TouchableOpacity>
+            <View style={stylesProfileScreen.feature}>
+              <Link href={"/languageModal"}>
+                <View style={{ flexDirection: "row" }}>
+                  <Languages
+                    color={"black"}
+                    style={{ marginRight: 15 }}
+                    strokeWidth={1.5}
+                  ></Languages>
+                  <Text>{t("Change language")}</Text>
+                </View>
+              </Link>
+            </View>
           </View>
           <TouchableOpacity
             style={[
@@ -159,7 +163,9 @@ const ProfileScreen = () => {
               signOut();
             }}
           >
-            <Text style={{ fontSize: 16, fontWeight: "bold" }}>Đăng xuất</Text>
+            <Text style={{ fontSize: 16, fontWeight: "bold" }}>
+              {t("Logout")}
+            </Text>
           </TouchableOpacity>
         </ScrollView>
       </SafeAreaView>

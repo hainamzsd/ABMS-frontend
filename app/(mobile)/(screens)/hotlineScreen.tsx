@@ -13,10 +13,11 @@ import Header from "../../../components/resident/header";
 import HotlineScreenStyles from "./styles/hotlineScreenStyles";
 import { ChevronRight, Phone } from "lucide-react-native";
 import { useTheme } from "../context/ThemeContext";
+import { useTranslation } from "react-i18next";
 
 export default function Hotline() {
   const { theme } = useTheme();
-
+  const { t } = useTranslation();
   const [expanded, setExpanded] = useState(false);
   const [animation] = useState(new Animated.Value(0));
   const [rotateAnimation] = useState(new Animated.Value(0));
@@ -53,7 +54,7 @@ export default function Hotline() {
 
   return (
     <>
-      <Header headerTitle="Liên hệ" />
+      <Header headerTitle={t("Contact")} />
       <SafeAreaView style={{ backgroundColor: theme.background, flex: 1 }}>
         <View style={{ marginHorizontal: 26 }}>
           <TouchableOpacity onPress={toggleExpand}>

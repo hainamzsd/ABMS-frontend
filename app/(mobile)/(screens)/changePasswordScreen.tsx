@@ -11,10 +11,11 @@ import Header from "../../../components/resident/header";
 import SHADOW from "../../../constants/shadow";
 import { validatePassword } from "../../../utils/passwordValidate";
 import { useTheme } from "../context/ThemeContext";
+import { useTranslation } from "react-i18next";
 
 const changePasswordScreen = () => {
   const { theme } = useTheme();
-
+  const { t } = useTranslation();
   const [oldPassword, setOldPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [reEnterPassword, setReEnterPassword] = useState("");
@@ -25,14 +26,11 @@ const changePasswordScreen = () => {
 
   return (
     <>
-      <Header headerTitle="Đổi mật khẩu"></Header>
+      <Header headerTitle={t("Change password")}></Header>
       <SafeAreaView style={{ backgroundColor: theme.background, flex: 1 }}>
         <View style={{ marginHorizontal: 26 }}>
           <View style={{ marginTop: 30 }}>
-            <Text style={{ fontSize: 16 }}>
-              Mật khẩu phải tối thiểu 8 kí tự và bao gồm: chữ hoa, chữ thường,
-              số, kí tự đặc biệt
-            </Text>
+            <Text style={{ fontSize: 16 }}>{t("Password policy")}</Text>
           </View>
 
           <View style={{ marginTop: 30 }}>
@@ -43,10 +41,10 @@ const changePasswordScreen = () => {
                 marginBottom: 10,
               }}
             >
-              <Text>Mật khẩu cũ</Text>
+              <Text>{t("Old password")}</Text>
             </View>
             <TextInput
-              placeholder="Điền mật khẩu cũ"
+              placeholder=""
               placeholderTextColor={"#9C9C9C"}
               style={[
                 styles.input,
@@ -66,10 +64,10 @@ const changePasswordScreen = () => {
                 marginBottom: 10,
               }}
             >
-              <Text>Mật khẩu mới</Text>
+              <Text>{t("New password")}</Text>
             </View>
             <TextInput
-              placeholder="Điền mật khẩu mới"
+              placeholder=""
               placeholderTextColor={"#9C9C9C"}
               style={[
                 styles.input,
@@ -89,10 +87,10 @@ const changePasswordScreen = () => {
                 marginBottom: 10,
               }}
             >
-              <Text>Nhập lại mật khẩu</Text>
+              <Text>{t("Re-enter password")}</Text>
             </View>
             <TextInput
-              placeholder="Nhập lại mật khẩu"
+              placeholder=""
               placeholderTextColor={"#9C9C9C"}
               style={[
                 styles.input,
@@ -104,13 +102,13 @@ const changePasswordScreen = () => {
             />
           </View>
           {!isReEnterPasswordValid && (
-            <Text style={styles.errorText}>Mật khẩu không khớp</Text>
+            <Text style={styles.errorText}>{t("Password does not match")}</Text>
           )}
           <TouchableOpacity
             style={[styles.button, { backgroundColor: theme.primary }]}
           >
             <Text style={{ fontSize: 16, fontWeight: "bold" }}>
-              Đổi mật khẩu
+              {t("Change password")}
             </Text>
           </TouchableOpacity>
         </View>

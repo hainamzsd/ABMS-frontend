@@ -5,9 +5,13 @@ import { Redirect } from "expo-router";
 import styles from "../styles/indexStyles";
 import { useTheme } from "../context/ThemeContext";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { StatusBar } from "react-native";
+import { useTranslation } from "react-i18next";
 export default function AppLayout() {
   const { session, isLoading } = useSession();
   const { theme } = useTheme();
+  const { t } = useTranslation();
+
   if (isLoading) {
     return <Text>Loading...</Text>;
   }
@@ -15,21 +19,30 @@ export default function AppLayout() {
     return <Redirect href="/login" />;
   }
   return (
-    <View style={styles.container}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen
-          name="themeModal"
-          options={{
-            presentation: "modal",
-            title: "Đổi màu",
-            headerTitleStyle: {
-              fontWeight: "bold",
-              fontSize: 24,
-            },
-          }}
-        />
-      </Stack>
-    </View>
+    <Stack>
+      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+      <Stack.Screen
+        name="themeModal"
+        options={{
+          presentation: "modal",
+          headerTitle: t("Change color pallete"),
+          headerTitleStyle: {
+            fontWeight: "bold",
+            fontSize: 24,
+          },
+        }}
+      />
+      <Stack.Screen
+        name="languageModal"
+        options={{
+          presentation: "modal",
+          headerTitle: t("Change language"),
+          headerTitleStyle: {
+            fontWeight: "bold",
+            fontSize: 24,
+          },
+        }}
+      />
+    </Stack>
   );
 }

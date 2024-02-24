@@ -1,18 +1,33 @@
 import { Stack } from "expo-router";
 import { useTheme } from "../context/ThemeContext";
 import { ColorPalettes } from "../../../constants/colors";
-import { StyleSheet, View, Text } from "react-native";
+import { StyleSheet, View, Text, Image } from "react-native";
 import { FlatList } from "react-native";
 import { Pressable } from "react-native";
 import { StatusBar } from "react-native";
 import { Check } from "lucide-react-native";
+import i18n from "../../../utils/i18next";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
-export default function ThemeModal() {
+export default function languageModal() {
   const { theme, currentThemeName, switchTheme } = useTheme();
-  const themes = Object.keys(ColorPalettes);
   const { t } = useTranslation();
-  const handleSelectTheme = (themeName: keyof typeof ColorPalettes) => {
-    switchTheme(themeName);
+  const languages = [
+    {
+      code: "en",
+      name: "English",
+      img: require("../../../assets/images/england.png"),
+    },
+    {
+      code: "vi",
+      name: "Vietnam",
+      img: require("../../../assets/images/vietnam.png"),
+    },
+  ];
+  const [currentLanguage, setCurrentLanguage] = useState(i18n.language);
+  const changeLanguage = (languageCode: string) => {
+    i18n.changeLanguage(languageCode);
+    setCurrentLanguage(languageCode);
   };
 
   return (
@@ -20,7 +35,7 @@ export default function ThemeModal() {
       <StatusBar barStyle={"light-content"} />
       <View style={[styles.modalView, { backgroundColor: theme.background }]}>
         <FlatList
-          data={themes}
+          data={languages}
           renderItem={({ item }) => (
             <View
               style={{
@@ -38,34 +53,29 @@ export default function ThemeModal() {
                   alignItems: "center",
                 }}
               >
-                <View
+                <Image
                   style={{
-                    height: 20,
+                    height: 30,
                     width: 40,
-                    backgroundColor: ColorPalettes[item].primary,
                     borderRadius: 5,
                     marginRight: 10,
                   }}
-                ></View>
-                <Pressable
-                  onPress={() =>
-                    handleSelectTheme(item as keyof typeof ColorPalettes)
-                  }
-                >
-                  <Text style={styles.themeText}>{t(item)}</Text>
+                  source={item.img}
+                />
+                <Pressable onPress={() => changeLanguage(item.code)}>
+                  <Text style={styles.themeText}>{t(item.name)}</Text>
                 </Pressable>
               </View>
-              {currentThemeName === item && <Check color={"black"} />}
+              {currentLanguage === item.code && <Check color={"black"} />}
             </View>
           )}
-          keyExtractor={(item) => item}
+          keyExtractor={(item) => item.code}
         />
       </View>
     </View>
   );
 }
 
-// Update your StyleSheet to include the selectedThemeItem style
 const styles = StyleSheet.create({
   modalView: {
     margin: 20,

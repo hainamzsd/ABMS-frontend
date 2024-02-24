@@ -21,10 +21,11 @@ import {
 import { LinearGradient } from "expo-linear-gradient";
 import { Link, Stack } from "expo-router";
 import { useTheme } from "../../context/ThemeContext";
+import { useTranslation } from "react-i18next";
 
 const HomeScreen = () => {
   const { theme } = useTheme();
-
+  const { t } = useTranslation();
   return (
     <>
       <SafeAreaView style={{ backgroundColor: theme.background, flex: 1 }}>
@@ -55,8 +56,8 @@ const HomeScreen = () => {
             }}
           >
             <View style={{ flex: 1 }}>
-              <Text style={styles.headerText}>Xin chào, Hoa La</Text>
-              <Text style={styles.normalText}>Quản lý ngôi nhà của bạn</Text>
+              <Text style={styles.headerText}>{t("Greet")}, Hoa La</Text>
+              <Text style={styles.normalText}>{t("SubGreet")}</Text>
             </View>
             <Link href="/(mobile)/(screens)/userAvatarScreen">
               <Image
@@ -101,7 +102,7 @@ const HomeScreen = () => {
               >
                 <Layers3 color={"black"} strokeWidth={1.5}></Layers3>
               </View>
-              <Text>Tiện ích</Text>
+              <Text>{t("Utility")}</Text>
             </TouchableOpacity>
             <TouchableOpacity style={stylesHomeScreen.featureBox}>
               <View
@@ -112,7 +113,7 @@ const HomeScreen = () => {
               >
                 <Settings color={"black"} strokeWidth={1.5}></Settings>
               </View>
-              <Text>Dịch vụ</Text>
+              <Text>{t("Service")}</Text>
             </TouchableOpacity>
             <TouchableOpacity style={stylesHomeScreen.featureBox}>
               <View
@@ -123,7 +124,7 @@ const HomeScreen = () => {
               >
                 <ReceiptText color={"black"} strokeWidth={1.5}></ReceiptText>
               </View>
-              <Text>Hóa đơn</Text>
+              <Text>{t("Bill")}</Text>
             </TouchableOpacity>
             <TouchableOpacity style={stylesHomeScreen.featureBox}>
               <Link href={"/(mobile)/(screens)/feedbackScreen"}>
@@ -139,7 +140,7 @@ const HomeScreen = () => {
                       strokeWidth={1.5}
                     ></MessageSquareDiff>
                   </View>
-                  <Text>Phản ánh</Text>
+                  <Text>{t("Feedback")}</Text>
                 </View>
               </Link>
             </TouchableOpacity>
@@ -157,7 +158,7 @@ const HomeScreen = () => {
                       strokeWidth={1.5}
                     ></PhoneOutgoing>
                   </View>
-                  <Text>Liên hệ</Text>
+                  <Text>{t("Contact")}</Text>
                 </View>
               </Link>
             </TouchableOpacity>
@@ -165,7 +166,7 @@ const HomeScreen = () => {
 
           <View style={stylesHomeScreen.room}>
             <View style={{ flex: 0.8 }}>
-              <Text style={styles.normalText}>Hotline chăm sóc khách hàng</Text>
+              <Text style={styles.normalText}>{t("HotlineText")}</Text>
               <Text style={{ fontWeight: "bold" }}>0933 123 242</Text>
             </View>
             <View style={{ flex: 0.3 }}>
@@ -174,7 +175,7 @@ const HomeScreen = () => {
                 <Text
                   style={{ fontWeight: "bold", color: "white", marginLeft: 3 }}
                 >
-                  Gọi
+                  {t("Call")}
                 </Text>
               </View>
             </View>
@@ -182,9 +183,9 @@ const HomeScreen = () => {
 
           <View style={stylesHomeScreen.newContainer}>
             <Text style={{ fontWeight: "bold", fontSize: 20 }}>
-              Bảng tin cư dân
+              {t("News")}
             </Text>
-            <Text style={{ color: "#9C9C9C" }}>Xem tất cả</Text>
+            <Text style={{ color: "#9C9C9C" }}>{t("NewsSub")}</Text>
           </View>
           <ScrollView
             style={{
