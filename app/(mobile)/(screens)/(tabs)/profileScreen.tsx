@@ -9,22 +9,29 @@ import {
 } from "react-native";
 import styles from "../../styles/indexStyles";
 import stylesProfileScreen from "../styles/profileScreenStyles";
-import { ChevronRight, KeyRound, Languages, Pencil } from "lucide-react-native";
-import { Link } from "expo-router";
-import { COLORS } from "../../../../constants/colors";
+import {
+  ChevronRight,
+  KeyRound,
+  Languages,
+  Palette,
+  Pencil,
+} from "lucide-react-native";
+import { Link, useNavigation } from "expo-router";
 import { LinearGradient } from "expo-linear-gradient";
 import { useSession } from "../../context/AuthContext";
+import { useTheme } from "../../context/ThemeContext";
 
 const ProfileScreen = () => {
   const { signOut } = useSession();
-
+  const { theme } = useTheme();
+  const navigation = useNavigation();
   return (
     <>
-      <SafeAreaView style={{ backgroundColor: COLORS.background, flex: 1 }}>
+      <SafeAreaView style={{ backgroundColor: theme.background, flex: 1 }}>
         <StatusBar barStyle="dark-content"></StatusBar>
         <View style={styles.gradientContainer}>
           <LinearGradient
-            colors={["#B2BC86", "#CCD6A6"]}
+            colors={[theme.primary, theme.secondary]}
             start={[0, 0]}
             end={[1, 1]}
             style={{
@@ -96,47 +103,42 @@ const ProfileScreen = () => {
           </TouchableOpacity>
 
           <View style={{ marginTop: 30 }}>
-            <Link href="/(mobile)/(screens)/personalInformationScreen">
-              <View style={{ width: "100%", flex: 1 }}>
-                <View style={stylesProfileScreen.feature}>
-                  <View style={{ flexDirection: "row" }}>
-                    <Pencil
-                      color={"black"}
-                      style={{ marginRight: 15 }}
-                      strokeWidth={1.5}
-                    ></Pencil>
-                    <Text>Cập nhật thông tin</Text>
-                  </View>
-                  <View>
-                    <ChevronRight
-                      color={"black"}
-                      size={26}
-                      strokeWidth={1.75}
-                    ></ChevronRight>
-                  </View>
-                </View>
-              </View>
-            </Link>
-            <Link href="/(mobile)/(screens)/changePasswordScreen">
-              <View style={{ width: "100%", flex: 1 }}>
-                <TouchableOpacity style={stylesProfileScreen.feature}>
-                  <View style={{ flexDirection: "row" }}>
-                    <KeyRound
-                      color={"black"}
-                      style={{ marginRight: 15 }}
-                      strokeWidth={1.5}
-                    ></KeyRound>
-                    <Text>Đổi mật khẩu</Text>
-                  </View>
-                  <ChevronRight
+            <View style={stylesProfileScreen.feature}>
+              <Link href="/(mobile)/(screens)/personalInformationScreen">
+                <View style={{ flexDirection: "row" }}>
+                  <Pencil
                     color={"black"}
-                    size={26}
-                    strokeWidth={1.75}
-                  ></ChevronRight>
-                </TouchableOpacity>
-              </View>
-            </Link>
-
+                    style={{ marginRight: 15 }}
+                    strokeWidth={1.5}
+                  ></Pencil>
+                  <Text>Cập nhật thông tin</Text>
+                </View>
+              </Link>
+            </View>
+            <View style={stylesProfileScreen.feature}>
+              <Link href="/(mobile)/(screens)/changePasswordScreen">
+                <View style={{ flexDirection: "row" }}>
+                  <KeyRound
+                    color={"black"}
+                    style={{ marginRight: 15 }}
+                    strokeWidth={1.5}
+                  ></KeyRound>
+                  <Text>Đổi mật khẩu</Text>
+                </View>
+              </Link>
+            </View>
+            <View style={stylesProfileScreen.feature}>
+              <Link href={"/themeModal"}>
+                <View style={{ flexDirection: "row" }}>
+                  <Palette
+                    color={"black"}
+                    style={{ marginRight: 15 }}
+                    strokeWidth={1.5}
+                  ></Palette>
+                  <Text>Đổi màu giao diện</Text>
+                </View>
+              </Link>
+            </View>
             <TouchableOpacity style={stylesProfileScreen.feature}>
               <View style={{ flexDirection: "row" }}>
                 <Languages
@@ -146,15 +148,13 @@ const ProfileScreen = () => {
                 ></Languages>
                 <Text>Ngôn ngữ</Text>
               </View>
-              <ChevronRight
-                color={"black"}
-                size={26}
-                strokeWidth={1.75}
-              ></ChevronRight>
             </TouchableOpacity>
           </View>
           <TouchableOpacity
-            style={stylesProfileScreen.logoutButton}
+            style={[
+              stylesProfileScreen.logoutButton,
+              { backgroundColor: theme.primary },
+            ]}
             onPress={() => {
               signOut();
             }}

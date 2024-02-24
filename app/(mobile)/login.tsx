@@ -10,13 +10,16 @@ import {
 } from "react-native";
 import Svg, { Path } from "react-native-svg";
 import SHADOW from "../../constants/shadow";
-import { COLORS } from "../../constants/colors";
 import { TouchableOpacity } from "react-native";
 import { useSession } from "./context/AuthContext";
 import { router } from "expo-router";
+import { useTheme } from "./context/ThemeContext";
+
 const LoginScreen = () => {
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
+  const { theme } = useTheme();
+
   // const HandleLogin = async () => {
   //   const result = await onLogin!(phone, password);
   //   if (result && result.error) {
@@ -25,8 +28,8 @@ const LoginScreen = () => {
   // };
   const { signIn } = useSession();
   return (
-    <SafeAreaView style={{ backgroundColor: COLORS.background, flex: 1 }}>
-      <View style={styles.container}>
+    <SafeAreaView style={{ backgroundColor: theme.background, flex: 1 }}>
+      <View style={[styles.container]}>
         {/* <Stack.Screen options={{ headerShown: false }}></Stack.Screen> */}
         <View>
           <View style={styles.headerContainer}>
@@ -55,7 +58,7 @@ const LoginScreen = () => {
             <Text>Quên mật khẩu</Text>
           </View>
           <TouchableOpacity
-            style={styles.button}
+            style={[styles.button, { backgroundColor: theme.primary }]}
             onPress={() => {
               signIn("dwa", "daw");
               router.replace("/");
@@ -69,7 +72,7 @@ const LoginScreen = () => {
       <Svg viewBox="0 0 100 100" preserveAspectRatio="none" style={styles.Box}>
         <Path
           d="M0 0 L0 50 Q25 60 50 50 Q75 40 100 50 L100 0 Z"
-          fill={COLORS.primary}
+          fill={theme.primary}
         />
       </Svg>
     </SafeAreaView>
@@ -115,7 +118,6 @@ const styles = StyleSheet.create({
     marginTop: 40,
     padding: 20,
     alignItems: "center",
-    backgroundColor: COLORS.primary,
     borderRadius: 20,
   },
 });

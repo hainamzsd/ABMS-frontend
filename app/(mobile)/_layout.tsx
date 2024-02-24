@@ -1,15 +1,17 @@
 import React from "react";
-import { StatusBar, Text, View } from "react-native";
+import { StatusBar, Text, View, SafeAreaView } from "react-native";
 import styles from "./styles/indexStyles";
-import { router, Stack } from "expo-router";
 import { AuthProvider, useSession } from "./context/AuthContext";
 import { Slot } from "expo-router";
+import { ThemeProvider } from "./context/ThemeContext";
 import { Redirect } from "expo-router";
 const Root = () => {
   return (
-    <AuthProvider>
-      <Slot />
-    </AuthProvider>
+    <ThemeProvider>
+      <AuthProvider>
+        <Slot />
+      </AuthProvider>
+    </ThemeProvider>
   );
 };
 
