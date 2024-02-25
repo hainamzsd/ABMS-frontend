@@ -6,14 +6,15 @@ import {
   Text,
   TouchableOpacity,
   View,
-  UIManager,
   LayoutAnimation,
+  Alert,
 } from "react-native";
 import Header from "../../../components/resident/header";
 import HotlineScreenStyles from "./styles/hotlineScreenStyles";
 import { ChevronRight, Phone } from "lucide-react-native";
 import { useTheme } from "../context/ThemeContext";
 import { useTranslation } from "react-i18next";
+import { Linking } from "react-native";
 
 export default function Hotline() {
   const { theme } = useTheme();
@@ -51,6 +52,24 @@ export default function Hotline() {
     inputRange: [0, 1],
     outputRange: ["0deg", "90deg"],
   });
+  const handleCallPress = (phoneNumber: string) => {
+    // Check if the device supports phone calls
+    Linking.canOpenURL(`tel:${phoneNumber}`)
+      .then((supported) => {
+        if (!supported) {
+          Alert.alert(
+            "Phone call not supported",
+            "Your device does not support phone calls.",
+          );
+        } else {
+          // Open the phone dialer with the provided phone number
+          Linking.openURL(`tel:${phoneNumber}`);
+        }
+      })
+      .catch((error) => {
+        console.error("Error opening phone call:", error);
+      });
+  };
 
   return (
     <>
@@ -80,7 +99,9 @@ export default function Hotline() {
                     </Text>
                     <Text>0923124234</Text>
                   </View>
-                  <TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={() => handleCallPress("0923124234")}
+                  >
                     <View style={HotlineScreenStyles.callBox}>
                       <Phone
                         fill={"white"}

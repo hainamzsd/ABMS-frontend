@@ -44,6 +44,16 @@
     "default": "Màu mặc định",
     "lovely": "Hường phấn",
     "ocean": "Đại dương",
-    "summer": "Nắng hạ"
+    "summer": "Nắng hạ",
+    "Choose service": "Chọn dịch vụ",
+    "Description": "Mô tả",
+    "Type": "Nhập",
+    "Choose image": "Chọn ảnh",
+    "Send": "Gửi",
+    "Service list": "Danh sách dịch vụ",
+    "Utility list": "Danh sách tiện ích",
+    "Register parking card": "Đăng ký thẻ gửi xe",
+    "Register use elevator": "Đăng ký sử dụng thang máy",
+    "Register construction": "Đăng ký thi công"
   }
 }

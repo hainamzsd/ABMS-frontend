@@ -44,6 +44,16 @@
     "default": "Default color",
     "lovely": "Lovely",
     "ocean": "Ocean",
-    "summer": "Summer"
+    "summer": "Summer",
+    "Choose service": "Choose service",
+    "Description": "Description",
+    "Type": "Type",
+    "Choose image": "Choose image",
+    "Send": "Send",
+    "Service list": "Service list",
+    "Utility list": "Utility list",
+    "Register parking card": "Register parking card",
+    "Register use elevator": "Register use elevator",
+    "Register construction": "Register construction"
   }
 }
