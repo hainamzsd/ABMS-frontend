@@ -7,6 +7,7 @@ import {
   Text,
   TouchableOpacity,
   View,
+  Pressable,
 } from "react-native";
 import styles from "../../styles/indexStyles";
 import stylesHomeScreen from "../styles/homeScreenStyles";
@@ -68,7 +69,7 @@ const HomeScreen = () => {
               />
             </Link>
           </View>
-          <TouchableOpacity style={stylesHomeScreen.room}>
+          <Pressable style={stylesHomeScreen.room}>
             <Link href={"/(mobile)/(screens)/roomScreen"}>
               <View style={{ alignItems: "center", flexDirection: "row" }}>
                 <Image
@@ -90,31 +91,39 @@ const HomeScreen = () => {
                 </View>
               </View>
             </Link>
-          </TouchableOpacity>
+          </Pressable>
 
           <View style={stylesHomeScreen.featureContainer}>
-            <TouchableOpacity style={stylesHomeScreen.featureBox}>
-              <View
-                style={[
-                  stylesHomeScreen.circle,
-                  { backgroundColor: theme.sub },
-                ]}
-              >
-                <Layers3 color={"black"} strokeWidth={1.5}></Layers3>
-              </View>
-              <Text>{t("Utility")}</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={stylesHomeScreen.featureBox}>
-              <View
-                style={[
-                  stylesHomeScreen.circle,
-                  { backgroundColor: theme.sub },
-                ]}
-              >
-                <Settings color={"black"} strokeWidth={1.5}></Settings>
-              </View>
-              <Text>{t("Service")}</Text>
-            </TouchableOpacity>
+            <Pressable style={stylesHomeScreen.featureBox}>
+              <Link href={"/(mobile)/(screens)/(utility)/utilityListScreen"}>
+                <View style={{ alignItems: "center", flexDirection: "row" }}>
+                  <View
+                    style={[
+                      stylesHomeScreen.circle,
+                      { backgroundColor: theme.sub },
+                    ]}
+                  >
+                    <Layers3 color={"black"} strokeWidth={1.5}></Layers3>
+                  </View>
+                  <Text>{t("Utility")}</Text>
+                </View>
+              </Link>
+            </Pressable>
+            <Pressable style={stylesHomeScreen.featureBox}>
+              <Link href={"/(mobile)/(screens)/(service)/serviceListScreen"}>
+                <View style={{ alignItems: "center", flexDirection: "row" }}>
+                  <View
+                    style={[
+                      stylesHomeScreen.circle,
+                      { backgroundColor: theme.sub },
+                    ]}
+                  >
+                    <Settings color={"black"} strokeWidth={1.5}></Settings>
+                  </View>
+                  <Text>{t("Service")}</Text>
+                </View>
+              </Link>
+            </Pressable>
             <TouchableOpacity style={stylesHomeScreen.featureBox}>
               <View
                 style={[
