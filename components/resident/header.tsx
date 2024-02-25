@@ -2,38 +2,43 @@ import { LinearGradient } from "expo-linear-gradient";
 import { Stack, useNavigation } from "expo-router";
 import { ChevronLeft } from "lucide-react-native";
 import { TouchableOpacity, View } from "react-native";
-import { COLORS } from "../../constants/colors";
+import { useTheme } from "../../app/(mobile)/context/ThemeContext";
 interface HeaderProps {
-    headerTitle: string;
-  }
-const Header:React.FC<HeaderProps>= ({ headerTitle }) => {
-    const navigation = useNavigation();
-    return(
-    <Stack.Screen options={{
+  headerTitle: string;
+}
 
+const Header: React.FC<HeaderProps> = ({ headerTitle }) => {
+  const { theme } = useTheme();
+
+  const navigation = useNavigation();
+  return (
+    <Stack.Screen
+      options={{
         headerTitle: headerTitle,
         headerTitleStyle: {
-
-          fontWeight: 'bold',
+          fontWeight: "bold",
           fontSize: 24,
-          color: 'white', 
+          color: "white",
         },
         headerBackground: () => (
           <LinearGradient
-            colors={[COLORS.primary, COLORS.secondary]}
+            colors={[theme.primary, theme.secondary]}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
             style={{ flex: 1 }}
           />
-        ), headerTintColor: 'white',
+        ),
+        headerTintColor: "white",
         headerLeft: () => (
           <TouchableOpacity onPress={() => navigation.goBack()}>
             <View style={{ marginLeft: 10 }}>
-              <ChevronLeft strokeWidth={5} color='white' />
+              <ChevronLeft strokeWidth={5} color="white" />
             </View>
           </TouchableOpacity>
         ),
-      }} ></Stack.Screen>)
-}
+      }}
+    ></Stack.Screen>
+  );
+};
 
 export default Header;
