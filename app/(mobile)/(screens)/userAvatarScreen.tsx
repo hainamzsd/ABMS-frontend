@@ -1,16 +1,21 @@
-import React, { useState } from 'react'
-import { Image, SafeAreaView, Text, TouchableOpacity, View } from 'react-native'
-import { COLORS } from '../../../constants/colors'
-import { Stack, useNavigation } from 'expo-router'
-import { LinearGradient } from 'expo-linear-gradient'
-import { ChevronLeft } from 'lucide-react-native'
-import * as ImagePicker from 'expo-image-picker';
-import userAvatarStyles from './styles/userAvatarScreen'
-import Header from '../../../components/resident/header'
-const UserAvatar = () => {
-  const navigation = useNavigation();
+import React, { useState } from "react";
+import {
+  Image,
+  SafeAreaView,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import * as ImagePicker from "expo-image-picker";
+import userAvatarStyles from "./styles/userAvatarScreen";
+import Header from "../../../components/resident/header";
+import { useTheme } from "../context/ThemeContext";
 
-  const [image, setImage] = useState<string | undefined>('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSiGAdWpsJQwrcEtjaAxG-aci3VxO7n2qYey0tI9Syx4Ai9ziAUea6-dAjlaGmRUNQW-Lo&usqp=CAU');
+const UserAvatar = () => {
+  const { theme } = useTheme();
+  const [image, setImage] = useState<string | undefined>(
+    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSiGAdWpsJQwrcEtjaAxG-aci3VxO7n2qYey0tI9Syx4Ai9ziAUea6-dAjlaGmRUNQW-Lo&usqp=CAU",
+  );
 
   const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -27,30 +32,28 @@ const UserAvatar = () => {
     }
   };
 
-
   return (
     <>
-      <Header headerTitle='Thông tin người dùng'></Header>
-      <SafeAreaView style={{ backgroundColor: COLORS.background, flex: 1 }}>
-        <View style={{ marginHorizontal: 26, }}>
-          <View style={{ marginTop: 30, alignItems: 'center' }}>
+      <Header headerTitle="Thông tin người dùng"></Header>
+      <SafeAreaView style={{ backgroundColor: theme.background, flex: 1 }}>
+        <View style={{ marginHorizontal: 26 }}>
+          <View style={{ marginTop: 30, alignItems: "center" }}>
             <TouchableOpacity onPress={pickImage}>
-              {image && <Image
-                source={{ uri: image }}
-                style={{
-                  width: 120,
-                  height: 120,
-                  borderRadius: 65,
-                }}
-              />}
-
+              {image && (
+                <Image
+                  source={{ uri: image }}
+                  style={{
+                    width: 120,
+                    height: 120,
+                    borderRadius: 65,
+                  }}
+                />
+              )}
             </TouchableOpacity>
             <Text style={{ marginTop: 10 }}>Đổi ảnh đại diện</Text>
           </View>
           <View style={userAvatarStyles.personalInformation}>
-            <Text style={userAvatarStyles.headerText}>
-              Thông tin cá nhân
-            </Text>
+            <Text style={userAvatarStyles.headerText}>Thông tin cá nhân</Text>
             <View style={userAvatarStyles.informationBox}>
               <View style={userAvatarStyles.informationContainer}>
                 <Text>Họ và tên</Text>
@@ -69,7 +72,7 @@ const UserAvatar = () => {
         </View>
       </SafeAreaView>
     </>
-  )
-}
+  );
+};
 
-export default UserAvatar
+export default UserAvatar;

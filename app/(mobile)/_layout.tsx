@@ -1,26 +1,36 @@
-import React from 'react'
-import { StatusBar, View } from 'react-native'
-import styles from './styles/indexStyles'
-import { Stack } from 'expo-router'
-import { useAuth } from './context/AuthContext'
+import React, { Fragment } from "react";
+import { StatusBar, Text, View } from "react-native";
+import styles from "./styles/indexStyles";
+import { AuthProvider, useSession } from "./context/AuthContext";
+import { Slot } from "expo-router";
+import { ThemeProvider } from "./context/ThemeContext";
+import {
+  SafeAreaProvider,
+  SafeAreaView,
+  useSafeAreaInsets,
+} from "react-native-safe-area-context";
+import { Stack } from "expo-router";
+import LoginScreen from "./login";
+import { LanguageProvider } from "./context/LanguageContext";
 const Layout = () => {
-    const { authState, onLogout } = useAuth();
+  const insets = useSafeAreaInsets();
+  return (
+    <ThemeProvider>
+      <LanguageProvider>
+        <AuthProvider>
+          <View
+            style={{
+              marginBottom: -insets.bottom,
+              marginTop: -insets.top,
+              flex: 1,
+            }}
+          >
+            <Slot />
+          </View>
+        </AuthProvider>
+      </LanguageProvider>
+    </ThemeProvider>
+  );
+};
 
-    return (
-        <View style={styles.container}>
-            <StatusBar barStyle='dark-content'></StatusBar>
-            <Stack>
-                {authState?.authenticated ?
-                    (
-                        <Stack.Screen name='(mobile)/resident/(tabs)' options={{ headerShown: false }}></Stack.Screen>
-                    ) : (
-                        <Stack.Screen name=''></Stack.Screen>
-                    )
-                }
-
-            </Stack>
-        </View>
-    )
-}
-
-export default Layout
+export default Layout;
