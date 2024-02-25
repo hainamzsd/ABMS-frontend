@@ -11,21 +11,24 @@ import {
 } from "react-native-safe-area-context";
 import { Stack } from "expo-router";
 import LoginScreen from "./login";
+import { LanguageProvider } from "./context/LanguageContext";
 const Layout = () => {
   const insets = useSafeAreaInsets();
   return (
     <ThemeProvider>
-      <AuthProvider>
-        <View
-          style={{
-            marginBottom: -insets.bottom,
-            marginTop: -insets.top,
-            flex: 1,
-          }}
-        >
-          <Slot />
-        </View>
-      </AuthProvider>
+      <LanguageProvider>
+        <AuthProvider>
+          <View
+            style={{
+              marginBottom: -insets.bottom,
+              marginTop: -insets.top,
+              flex: 1,
+            }}
+          >
+            <Slot />
+          </View>
+        </AuthProvider>
+      </LanguageProvider>
     </ThemeProvider>
   );
 };

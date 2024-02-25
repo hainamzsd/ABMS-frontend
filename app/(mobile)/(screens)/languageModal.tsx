@@ -9,6 +9,7 @@ import { Check } from "lucide-react-native";
 import i18n from "../../../utils/i18next";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useLanguage } from "../context/LanguageContext";
 export default function languageModal() {
   const { theme, currentThemeName, switchTheme } = useTheme();
   const { t } = useTranslation();
@@ -24,10 +25,9 @@ export default function languageModal() {
       img: require("../../../assets/images/vietnam.png"),
     },
   ];
-  const [currentLanguage, setCurrentLanguage] = useState(i18n.language);
-  const changeLanguage = (languageCode: string) => {
-    i18n.changeLanguage(languageCode);
-    setCurrentLanguage(languageCode);
+  const { currentLanguage, setLanguage } = useLanguage();
+  const handleChangeLanguage = (newLanguage: string) => {
+    setLanguage(newLanguage);
   };
 
   return (
@@ -62,7 +62,7 @@ export default function languageModal() {
                   }}
                   source={item.img}
                 />
-                <Pressable onPress={() => changeLanguage(item.code)}>
+                <Pressable onPress={() => handleChangeLanguage(item.code)}>
                   <Text style={styles.themeText}>{t(item.name)}</Text>
                 </Pressable>
               </View>
