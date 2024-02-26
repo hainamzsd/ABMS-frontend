@@ -21,7 +21,7 @@ export default function UtilityList() {
       }}
       onPress={() =>
         router.push({
-          pathname: `/(mobile)/(screens)/(utility)/1`,
+          pathname: `/(mobile)/(screens)/(utility)/schedules/1  `,
           params: item,
         })
       }
@@ -34,7 +34,7 @@ export default function UtilityList() {
   );
   return (
     <>
-      <Header headerTitle={t("Utility list")}></Header>
+      <Header headerTitle={t("Utility list")} headerRight></Header>
       <SafeAreaView style={{ backgroundColor: theme.background, flex: 1 }}>
         <View style={{ marginHorizontal: 26 }}>
           <View style={styles.container}>

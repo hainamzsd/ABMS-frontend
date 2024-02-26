@@ -54,6 +54,9 @@
     "Utility list": "Utility list",
     "Register parking card": "Register parking card",
     "Register use elevator": "Register use elevator",
-    "Register construction": "Register construction"
+    "Register construction": "Register construction",
+    "Register utility": "Register utility",
+    "Choose hour": "Choose hour",
+    "Continue" : "Continue"
   }
 }
