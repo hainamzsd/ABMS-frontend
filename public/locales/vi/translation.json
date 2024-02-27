@@ -57,6 +57,20 @@
     "Register construction": "Đăng ký thi công",
     "Register utility": "Đăng ký tiện ích",
     "Choose hour": "Chọn giờ",
-    "Continue" : "Tiếp tục"
+    "Continue" : "Tiếp tục",
+    "Ticket fee": "Phí vé",
+    "Number of tickets": "Số lượng vé",
+    "Register confirmation": "Xác nhận đăng ký",
+    "Reservation information":"Thông tin đặt chỗ",
+    "Date":"Ngày",
+    "Time":"Thời gian",
+    "Total fee":"Tổng phí",
+    "Booker information":"Thông tin người đặt",
+    "Yes":"Xác nhận",
+    "No":"Hủy",
+    "Confirm":"Xác nhận",
+    "Do you confirm your utility reservation?":"Bạn có xác nhận đặt chỗ tiện ích?",
+    "Booking successful":"Đặt chỗ thành công",
+    "You will be redirected to home page":"Bạn sẽ được chuyển về trang chủ"
   }
 }

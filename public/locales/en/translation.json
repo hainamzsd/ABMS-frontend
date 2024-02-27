@@ -57,6 +57,20 @@
     "Register construction": "Register construction",
     "Register utility": "Register utility",
     "Choose hour": "Choose hour",
-    "Continue" : "Continue"
+    "Continue" : "Continue",
+    "Ticket fee": "Ticket fee",
+    "Number of tickets": "Number of tickets",
+    "Register confirmation":"Register confirmation",
+    "Reservation information":"Reservation information",
+    "Date":"Ngày",
+    "Time":"Time",
+    "Total fee":"Total fee",
+    "Booker information":"Booker information",
+    "Yes":"Yes",
+    "No":"No",
+    "Confirm":"Xác nhận",
+    "Do you confirm your utility reservation?":"Do you confirm your utility reservation?",
+    "Booking successful":"Booking successful",
+    "You will be redirected to home page":"You will be redirected to home page"
   }
 }

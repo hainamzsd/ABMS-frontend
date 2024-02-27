@@ -21,7 +21,7 @@ export default function UtilityList() {
       }}
       onPress={() =>
         router.push({
-          pathname: `/(mobile)/(screens)/(utility)/schedules/1  `,
+          pathname: `/(mobile)/(screens)/(utility)/schedules/${item.name}`,
           params: item,
         })
       }

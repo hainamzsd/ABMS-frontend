@@ -19,7 +19,7 @@ export default function AppLayout() {
     return <Redirect href="/login" />;
   }
   return (
-    <Stack>
+    <Stack initialRouteName="(tabs)" >
       <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
       <Stack.Screen
         name="themeModal"
