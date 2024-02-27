@@ -124,17 +124,21 @@ const HomeScreen = () => {
                 </View>
               </Link>
             </Pressable>
-            <TouchableOpacity style={stylesHomeScreen.featureBox}>
-              <View
-                style={[
-                  stylesHomeScreen.circle,
-                  { backgroundColor: theme.sub },
-                ]}
-              >
-                <ReceiptText color={"black"} strokeWidth={1.5}></ReceiptText>
-              </View>
-              <Text>{t("Bill")}</Text>
-            </TouchableOpacity>
+            <Pressable style={stylesHomeScreen.featureBox}>
+              <Link href={"/(mobile)/(screens)/bill"}>
+                <View style={{ alignItems: "center", flexDirection: "row" }}>
+                  <View
+                    style={[
+                      stylesHomeScreen.circle,
+                      { backgroundColor: theme.sub },
+                    ]}
+                  >
+                    <ReceiptText color={"black"} strokeWidth={1.5}></ReceiptText>
+                  </View>
+                  <Text>{t("Bill")}</Text>
+                </View>
+              </Link>
+            </Pressable>
             <TouchableOpacity style={stylesHomeScreen.featureBox}>
               <Link href={"/(mobile)/(screens)/feedbackScreen"}>
                 <View style={{ alignItems: "center", flexDirection: "row" }}>
@@ -191,10 +195,12 @@ const HomeScreen = () => {
           </View>
 
           <View style={stylesHomeScreen.newContainer}>
-            <Text style={{ fontWeight: "bold", fontSize: 20 }}>
+            <Text style={{ fontWeight: "bold", fontSize: 16 }}>
               {t("News")}
             </Text>
-            <Text style={{ color: "#9C9C9C" }}>{t("NewsSub")}</Text>
+            <Link 
+            href={"/(mobile)/(screens)/postList"}
+            style={{ color: "#9C9C9C" }}>{t("NewsSub")}</Link>
           </View>
           <ScrollView
             style={{
@@ -208,11 +214,13 @@ const HomeScreen = () => {
               <Image
                 style={stylesHomeScreen.newImage}
                 source={{
-                  uri: "https://i1-giaitri.vnecdn.net/2024/02/08/argylle-wins-the-domestic-weekend-box-office-but-has-a-slow-bbb3-jpeg-1707378873-1707378888.jpg?w=380&h=228&q=100&dpr=1&fit=crop&s=575ev_g3HGOnN0JCv2QpYw",
+                  uri: "https://media.istockphoto.com/id/868592684/vector/blue-and-purple-landscape-with-silhouettes-of-mountains-hills-and-forest-and-stars-in-the-sky.jpg?s=612x612&w=0&k=20&c=JmQZI8O2OHVfSeblJTf_73owa0913htm_ItABKYUCuE=",
                 }}
               ></Image>
               <View style={stylesHomeScreen.newTitle}>
-                <Text style={{ fontWeight: "bold" }}>Lorem</Text>
+                <Text 
+                numberOfLines={2}
+                style={{ fontWeight: "bold", marginBottom:5 }}>LoremLoremLoremLoremLoremLoremLoremLoremLoremLoremLorem</Text>
                 <Text
                   style={{ fontWeight: "300", fontSize: 12, color: "#9C9C9C" }}
                 >
@@ -224,11 +232,13 @@ const HomeScreen = () => {
               <Image
                 style={stylesHomeScreen.newImage}
                 source={{
-                  uri: "https://i1-giaitri.vnecdn.net/2024/02/08/argylle-wins-the-domestic-weekend-box-office-but-has-a-slow-bbb3-jpeg-1707378873-1707378888.jpg?w=380&h=228&q=100&dpr=1&fit=crop&s=575ev_g3HGOnN0JCv2QpYw",
+                  uri: "https://c.pxhere.com/photos/f2/3d/street_road_horizon_endless_flatland_america_usa_road_trip-1243541.jpg!d",
                 }}
               ></Image>
               <View style={stylesHomeScreen.newTitle}>
-                <Text style={{ fontWeight: "bold" }}>Lorem</Text>
+                <Text
+                numberOfLines={2}
+                style={{ fontWeight: "bold", marginBottom:5 }}>Lorem</Text>
                 <Text
                   style={{ fontWeight: "300", fontSize: 12, color: "#9C9C9C" }}
                 >

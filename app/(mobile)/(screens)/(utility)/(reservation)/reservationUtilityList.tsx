@@ -66,7 +66,7 @@ const ReservationUtilityList = () => {
       };
     const renderFooter = () => {
     if (isLoadingMore) {
-      return <ActivityIndicator size="small" />;
+      return <ActivityIndicator size="small"  color={theme.primary}/>;
     }
     return null;
   };

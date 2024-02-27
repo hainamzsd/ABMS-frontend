@@ -14,6 +14,7 @@ import SHADOW from "../../../constants/shadow";
 import * as ImagePicker from "expo-image-picker";
 import RNPickerSelect from "react-native-picker-select";
 import { useState } from "react";
+import Label from "../../../components/resident/lable";
 export default function FeedBack() {
   const { theme } = useTheme();
   const { t } = useTranslation();
@@ -47,11 +48,7 @@ export default function FeedBack() {
       <SafeAreaView style={{ backgroundColor: theme.background, flex: 1 }}>
         <View style={{ marginHorizontal: 26 }}>
           <View style={{ marginTop: 30 }}>
-            <View style={{ flexDirection: "row" }}>
-              <Text style={{ fontSize: 16 }}>{t("Choose service")}</Text>
-              <Text style={{ fontSize: 16, color: "red" }}>*</Text>
-            </View>
-
+            <Label text={t("Service")} required></Label>
             <RNPickerSelect
               style={{
                 inputIOS: styles.picker,
@@ -65,10 +62,7 @@ export default function FeedBack() {
               ]}
             />
             <View style={{ marginTop: 30 }}>
-              <View style={{ flexDirection: "row" }}>
-                <Text style={{ fontSize: 16 }}>{t("Description")}</Text>
-                <Text style={{ fontSize: 16, color: "red" }}>*</Text>
-              </View>
+              <Label text={t("Description")} required></Label>
               <TextInput
                 multiline={true}
                 numberOfLines={4}

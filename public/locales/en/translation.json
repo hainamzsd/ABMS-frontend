@@ -101,7 +101,11 @@
     "Fill in construction information": "Fill in construction information",
     "Name of construction unit": "Name of construction unit",
     "Contact phone number": "Contact phone number",
-    "Project name": "Project name",
-    "Phone contact": "Phone contact"
+    "Project name": "Project name", 
+    "Phone contact": "Phone contact",
+    "All news":"All news",
+    "Post":"Post",
+    "List bill for room":"List bill for room",
+    "Bill list":"Bill list"
   }
 }
