@@ -36,7 +36,7 @@ const Header: React.FC<HeaderProps> = ({ headerTitle, headerRight, rightPath }) 
         headerLeft: () => (
           <Pressable onPress={() => navigation.goBack()}>
             <View style={{ marginLeft: 10 }}>
-              <ChevronLeft strokeWidth={2} color="black" />
+              <ChevronLeft strokeWidth={2} color="black" size={30} />
             </View>
           </Pressable>
         ),

@@ -78,6 +78,25 @@
     "Create date":"Create date",
     "Success":"Success",
     "Pending":"Pending",
-    "Unsuccess":"Unsuccess" 
+    "Unsuccess":"Unsuccess",
+    "Elevator request":"Elevator request",
+    "Register visitor":"Register visitor",
+    "Register information": "Register information",
+    "This information is used to register visitor": "This information is used to register visitor",
+    "Arrival date":"Arrival date",
+    "Departure date":"Departure date",
+    "Male":"Male",
+    "Female":"Female",
+    "Choose gender": "Choose gender",
+    "Gender":"Gender",
+    "Identity number":"Identity number",
+    "Image":"Image",
+    "Visitor face": "Visitor face",
+    "Identity card iamge(Both sides)":"Identity card iamge(Both sides)",
+    "Register using elevator for personal purpose":"Register using elevator for personal purpose",
+    "Start date":"Start date",
+    "End date":"End date",
+    "Choose date":"Choose date",
+    "Note" : "Note"
   }
 }

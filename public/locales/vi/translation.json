@@ -77,6 +77,25 @@
     "Create date":"Ngày tạo",
     "Successful":"Thành công",
     "Pending":"Đang chờ",
-    "Unsuccessful":"Không thành công" 
+    "Unsuccessful":"Không thành công",
+    "Elevator request":"Yêu cầu thang máy",
+    "Register visitor":"Đăng kí khách thăm",
+    "Register information": "Thông tin đăng ký",
+    "This information is used to register visitor":"Thông tin này sẽ được sử dụng để đăng ký khách thăm",
+    "Arrival date":"Thời gian đến",
+    "Departure date":"Thời gian đi",
+    "Male":"Nam",
+    "Female":"Nữ",
+    "Choose gender": "Chọn giới tính",
+    "Gender":"Giới tính",
+    "Identity number":"Số CMND",
+    "Image":"Ảnh",
+    "Visitor face": "Ảnh mặt khách",
+    "Identity card iamge(Both sides)":"Ảnh CMND(2 mặt)",
+    "Register using elevator for personal purpose":"Đăng ký sử dụng thang máy cho mục đích cá nhân",
+    "Start date":"Ngày bắt đầu",
+    "End date":"Ngày kết thúc",
+    "Choose date": "Chọn ngày",
+    "Note" : "Ghi chú"
   }
 }
