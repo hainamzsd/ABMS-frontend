@@ -34,7 +34,8 @@ export default function UtilityList() {
   );
   return (
     <>
-      <Header headerTitle={t("Utility list")} headerRight></Header>
+      <Header headerTitle={t("Utility list")} headerRight
+      rightPath={"reservationUtilityList"}></Header>
       <SafeAreaView style={{ backgroundColor: theme.background, flex: 1 }}>
         <View style={{ marginHorizontal: 26 }}>
           <View style={styles.container}>

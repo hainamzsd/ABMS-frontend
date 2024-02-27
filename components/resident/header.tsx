@@ -1,14 +1,15 @@
 import { LinearGradient } from "expo-linear-gradient";
-import { Stack, useNavigation } from "expo-router";
+import { Link, Stack, useNavigation } from "expo-router";
 import { ChevronLeft, MenuSquare } from "lucide-react-native";
 import { TouchableOpacity, View,Pressable } from "react-native";
 import { useTheme } from "../../app/(mobile)/context/ThemeContext";
 interface HeaderProps {
   headerTitle: string;
   headerRight?: boolean | null;
+  rightPath?: string| any;
 }
 
-const Header: React.FC<HeaderProps> = ({ headerTitle, headerRight }) => {
+const Header: React.FC<HeaderProps> = ({ headerTitle, headerRight, rightPath }) => {
   const { theme } = useTheme();
 
   const navigation = useNavigation();
@@ -40,12 +41,13 @@ const Header: React.FC<HeaderProps> = ({ headerTitle, headerRight }) => {
           </Pressable>
         ),
         headerRight: () => 
-        headerRight &&
-          <Pressable>
+        headerRight && rightPath && 
           <View style={{ marginRight: 10 }}>
+          <Link href={rightPath}>
            <MenuSquare strokeWidth={2} color="black" />
+       </Link>
+
          </View>
-       </Pressable>
       }}
     ></Stack.Screen>
   );

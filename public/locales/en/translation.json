@@ -62,7 +62,7 @@
     "Number of tickets": "Number of tickets",
     "Register confirmation":"Register confirmation",
     "Reservation information":"Reservation information",
-    "Date":"Ngày",
+    "Date":"Date",
     "Time":"Time",
     "Total fee":"Total fee",
     "Booker information":"Booker information",
@@ -71,6 +71,13 @@
     "Confirm":"Xác nhận",
     "Do you confirm your utility reservation?":"Do you confirm your utility reservation?",
     "Booking successful":"Booking successful",
-    "You will be redirected to home page":"You will be redirected to home page"
+    "You will be redirected to home page":"You will be redirected to home page",
+    "Booking history":"Booking history",
+    "Delete":"Delete",
+    "Code":"Code",
+    "Create date":"Create date",
+    "Success":"Success",
+    "Pending":"Pending",
+    "Unsuccess":"Unsuccess" 
   }
 }

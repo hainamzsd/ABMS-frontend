@@ -71,6 +71,12 @@
     "Confirm":"Xác nhận",
     "Do you confirm your utility reservation?":"Bạn có xác nhận đặt chỗ tiện ích?",
     "Booking successful":"Đặt chỗ thành công",
-    "You will be redirected to home page":"Bạn sẽ được chuyển về trang chủ"
+    "You will be redirected to home page":"Bạn sẽ được chuyển về trang chủ",
+    "Delete":"Xóa",
+    "Code":"Mã",
+    "Create date":"Ngày tạo",
+    "Successful":"Thành công",
+    "Pending":"Đang chờ",
+    "Unsuccessful":"Không thành công" 
   }
 }
