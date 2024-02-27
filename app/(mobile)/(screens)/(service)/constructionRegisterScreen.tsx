@@ -1,26 +1,26 @@
+import { ScrollView } from "react-native";
 import {
+  SafeAreaView,
   View,
   Text,
-  SafeAreaView,
-  ScrollView,
-  StyleSheet,
-  Pressable,
   TextInput,
+  Pressable,
+  StyleSheet,
 } from "react-native";
-import React, { useState } from "react";
-import LoadingComponent from "../../../../components/resident/loading";
 import Header from "../../../../components/resident/header";
+import LoadingComponent from "../../../../components/resident/loading";
 import { useTheme } from "../../context/ThemeContext";
 import { useTranslation } from "react-i18next";
-import { Calendar, Info } from "lucide-react-native";
+import { useState } from "react";
+import { Info, Calendar } from "lucide-react-native";
 import Label from "../../../../components/resident/lable";
+import { useLanguage } from "../../context/LanguageContext";
 import RNDateTimePicker from "@react-native-community/datetimepicker";
 import SHADOW from "../../../../constants/shadow";
-import { useLanguage } from "../../context/LanguageContext";
-const ElevatorRegisterScreen = () => {
-  const [loading, setLoading] = useState(false);
+export default function ConstructionRegisterScreen() {
   const { theme } = useTheme();
   const { t } = useTranslation();
+  const [loading, setLoading] = useState(false);
   const { currentLanguage } = useLanguage();
   const [startDate, setStartDate] = useState<Date>(new Date());
   const [showStartDate, setShowStartDate] = useState(false);
@@ -44,8 +44,13 @@ const ElevatorRegisterScreen = () => {
   return (
     <>
       <LoadingComponent loading={loading}></LoadingComponent>
-      <Header headerTitle={t("Elevator request")}></Header>
-      <SafeAreaView style={{ backgroundColor: theme.background, flex: 1 }}>
+      <Header headerTitle={t("Register construction")}></Header>
+      <SafeAreaView
+        style={{
+          backgroundColor: theme.background,
+          flex: 1,
+        }}
+      >
         <ScrollView automaticallyAdjustKeyboardInsets={true}>
           <View style={{ marginHorizontal: 26, paddingVertical: 20 }}>
             <View
@@ -55,7 +60,37 @@ const ElevatorRegisterScreen = () => {
               ]}
             >
               <Info color={"black"} style={{ marginRight: 5 }}></Info>
-              <Text>{t("Register using elevator for personal purpose")}</Text>
+              <Text>{t("Fill in construction information")}</Text>
+            </View>
+            <View style={{ marginTop: 20 }}>
+              <Label required text={t("Project name")}></Label>
+              <View style={[styles.inputContainer]}>
+                <TextInput
+                  placeholder={t("Type") + "..."}
+                  placeholderTextColor={"#9C9C9C"}
+                  style={[styles.textInput]}
+                />
+              </View>
+            </View>
+            <View style={{ marginTop: 20 }}>
+              <Label required text={t("Name of construction unit")}></Label>
+              <View style={[styles.inputContainer]}>
+                <TextInput
+                  placeholder={t("Type") + "..."}
+                  placeholderTextColor={"#9C9C9C"}
+                  style={[styles.textInput]}
+                />
+              </View>
+            </View>
+            <View style={{ marginTop: 20 }}>
+              <Label required text={t("Phone contact")}></Label>
+              <View style={[styles.inputContainer]}>
+                <TextInput
+                  placeholder={t("Type") + "..."}
+                  placeholderTextColor={"#9C9C9C"}
+                  style={[styles.textInput]}
+                />
+              </View>
             </View>
             <View style={{ marginTop: 20 }}>
               <Label text={t("Start date")} required></Label>
@@ -146,7 +181,7 @@ const ElevatorRegisterScreen = () => {
       </SafeAreaView>
     </>
   );
-};
+}
 
 const styles = StyleSheet.create({
   headerBox: {
@@ -154,6 +189,7 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     padding: 15,
     borderRadius: 10,
+    textAlign: "center",
     flexDirection: "row",
     flexWrap: "wrap",
   },
@@ -178,5 +214,3 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
 });
-
-export default ElevatorRegisterScreen;
