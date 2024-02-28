@@ -11,7 +11,13 @@ import { useTheme } from "../../context/ThemeContext";
 import { useTranslation } from "react-i18next";
 import { Link } from "expo-router";
 import SHADOW from "../../../../constants/shadow";
-import { CarFront, Hammer, Settings } from "lucide-react-native";
+import {
+  CarFront,
+  Contact,
+  GanttChart,
+  Hammer,
+  Settings,
+} from "lucide-react-native";
 
 export default function ServiceList() {
   const { theme } = useTheme();
@@ -19,25 +25,30 @@ export default function ServiceList() {
   const data = [
     {
       serviceName: "Register parking card",
-      path: "/(mobile)/(screens)/(service)/serviceListScreen",
+      path: "/(mobile)/(screens)/(service)/parkingCardRegisterScreen",
       icon: <CarFront color={"black"} strokeWidth={1.5}></CarFront>,
     },
     {
       serviceName: t("Register construction"),
-      path: "/(mobile)/(screens)/(service)/serviceListScreen",
+      path: "/(mobile)/(screens)/(service)/constructionRegisterScreen",
       icon: <Hammer color={"black"} strokeWidth={1.5}></Hammer>,
+    },
+    {
+      serviceName: t("Elevator request"),
+      path: "/(mobile)/(screens)/(service)/elevatorRegisterScreen",
+      icon: <GanttChart color={"black"} strokeWidth={1.5}></GanttChart>,
+    },
+    {
+      serviceName: t("Register visitor"),
+      path: "/(mobile)/(screens)/(service)/visitorRegisterScreen",
+      icon: <Contact color={"black"} strokeWidth={1.5}></Contact>,
     },
   ];
 
   const renderItem = ({ item }: any) => (
     <Pressable style={styles.featureBox}>
       <Link href={item.path}>
-        <View
-          style={{
-            alignItems: "center",
-            flexDirection: "row",
-          }}
-        >
+        <View style={{}}>
           <View style={[styles.circle, { backgroundColor: theme.sub }]}>
             {item.icon}
           </View>
@@ -71,31 +82,26 @@ export default function ServiceList() {
 const styles = StyleSheet.create({
   featureContainer: {
     marginTop: 36,
-    flexDirection: "row",
-    flexWrap: "wrap",
   },
   featureBox: {
     ...SHADOW,
     backgroundColor: "white",
     borderRadius: 10,
     width: "45%",
-    height: 100,
+    justifyContent: "center",
+    height: 130,
     marginBottom: 10,
-    flexDirection: "row",
-    alignItems: "center",
     padding: 10,
     marginHorizontal: 5,
   },
   circle: {
     width: 60,
     height: 60,
+    marginBottom: 10,
     borderRadius: 30,
     justifyContent: "center",
     alignItems: "center",
     marginRight: 10,
   },
-  textContainer: {
-    flex: 1, // Take up remaining space
-    flexDirection: "column", // Stack text vertically if needed
-  },
+  textContainer: {},
 });

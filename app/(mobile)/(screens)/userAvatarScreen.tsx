@@ -13,22 +13,26 @@ import { useTheme } from "../context/ThemeContext";
 
 const UserAvatar = () => {
   const { theme } = useTheme();
-  const [image, setImage] = useState<string | undefined>(
+  const [image, setImage] = useState<string>(
     "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSiGAdWpsJQwrcEtjaAxG-aci3VxO7n2qYey0tI9Syx4Ai9ziAUea6-dAjlaGmRUNQW-Lo&usqp=CAU",
   );
-
+  
   const pickImage = async () => {
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.All,
-      allowsEditing: true,
+    const options: any = {
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowEditing: true,
       aspect: [4, 3],
       quality: 1,
-    });
+    };
 
-    console.log(result);
-
-    if (!result.canceled) {
-      setImage(result?.assets[0]?.uri);
+    try {
+      const result = await ImagePicker.launchImageLibraryAsync(options);
+      if (!result.canceled) {
+        setImage(result.assets[0].uri);
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
     }
   };
 
