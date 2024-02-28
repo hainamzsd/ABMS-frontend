@@ -105,7 +105,24 @@
     "Phone contact": "Phone contact",
     "All news":"All news",
     "Post":"Post",
-    "List bill for room":"List bill for room",
-    "Bill list":"Bill list"
+    "List of unpaid bills for the room":"List of unpaid bills for the apartment",
+    "Bill list":"Bill list",
+    "Bill detail":"Chi tiết hóa đơn",
+    "Bill history": "Bill history",
+    "Below is a list of the bills you have paid":"Below is a list of the bills you have paid",
+    "Updated information will be displayed in the profile" : "Updated information will be displayed in the profile",
+    "The information will be used to register for parking in the apartment":"The information will be used to register for parking in the apartment",
+    "Color":"Color",
+    "License plate":"License plate",
+    "Vehicle type":"Vehicle type",
+    "Car" : "Ô tô",
+    "Motorbike":"Xe máy",
+    "Bicycle":"Xe đạp",
+    "Choose vehicle type":"Choose vehicle type" ,
+    "Full photo of vehicle registration certificate": "Full photo of vehicle registration certificate",
+    "Photo of the vehicle with clear colors. For bicycles, the photo needs to have the brand logo":"Photo of the vehicle with clear colors. For bicycles, the photo needs to have the brand logo",
+    "Apartment contract":"Apartment contract",
+    "Identification documents to authenticate the owner":"Identification documents to authenticate the owner",
+    "Maximum number of images":"Maximum number of images"
   }
 }

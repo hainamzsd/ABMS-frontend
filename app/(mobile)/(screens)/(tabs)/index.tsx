@@ -125,7 +125,7 @@ const HomeScreen = () => {
               </Link>
             </Pressable>
             <Pressable style={stylesHomeScreen.featureBox}>
-              <Link href={"/(mobile)/(screens)/bill"}>
+              <Link href={"/(mobile)/(screens)/(bill)/bill"}>
                 <View style={{ alignItems: "center", flexDirection: "row" }}>
                   <View
                     style={[

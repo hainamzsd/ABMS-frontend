@@ -25,7 +25,7 @@ export default function ServiceList() {
   const data = [
     {
       serviceName: "Register parking card",
-      path: "/(mobile)/(screens)/(service)/serviceListScreen",
+      path: "/(mobile)/(screens)/(service)/parkingCardRegisterScreen",
       icon: <CarFront color={"black"} strokeWidth={1.5}></CarFront>,
     },
     {

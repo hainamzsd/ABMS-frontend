@@ -104,7 +104,24 @@
     "Phone contact": "Số điện thoại liên hệ",
     "All news":"Tất cả tin",
     "Post":"Bài viết",
-    "List bill for room":"Danh sách hóa đơn cho căn hộ",
-    "Bill list":"Danh sách hóa đơn"
+    "List of unpaid bills for the room":"Danh sách hóa đơn chưa thanh toán cho căn hộ",
+    "Bill list":"Danh sách hóa đơn",
+    "Bill detail":"Chi tiết hóa đơn",
+    "Bill history": "Lịch sử hóa đơn",
+    "Below is a list of the bills you have paid":"Dưới đây là danh sách các hóa đơn bạn đã thanh toán", 
+    "Updated information will be displayed in the profile":"Thông tin cập nhật sẽ được hiển thị trong hồ sơ",
+    "The information will be used to register for parking in the apartment":"Thông tin sẽ được sử dụng để đăng ký gửi xe trong chung cư",
+    "Color":"Màu",
+    "License plate":"Biển số xe",
+    "Vehicle type":"Loại xe",
+    "Car" : "Ô tô",
+    "Motorbike":"Xe máy",
+    "Bicycle":"Xe đạp",
+    "Choose vehicle type":"Chọn loại xe",
+    "Full photo of vehicle registration certificate": "Ảnh chụp đầy đủ giấy đăng ký xe",
+    "Photo of the vehicle with clear colors. For bicycles, the photo needs to have the brand logo":"Ảnh chụp xe toàn cảnh rõ ràng màu sắc, với xe đạp thì ảnh cần có logo nhãn hiệu",
+    "Apartment contract":"Hợp đồng căn hộ",
+    "Identification documents to authenticate the owner":"Giấy tờ tùy thân để xác thực chủ sở hữu",
+    "Maximum number of images":"Số ảnh tối đa"
   }
 }

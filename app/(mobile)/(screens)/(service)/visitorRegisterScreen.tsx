@@ -4,7 +4,7 @@ import Header from '../../../../components/resident/header'
 import { useTranslation } from 'react-i18next'
 import { useTheme } from '../../context/ThemeContext'
 import RNDateTimePicker from '@react-native-community/datetimepicker'
-import { Calendar, X } from 'lucide-react-native'
+import { Calendar, Camera, X } from 'lucide-react-native'
 import SHADOW from '../../../../constants/shadow'
 import { Picker } from '@react-native-picker/picker';
 import { Dropdown } from 'react-native-element-dropdown';
@@ -202,23 +202,29 @@ const visitorRegisterScreen = () => {
                                 <View style={{ marginLeft: 10 }}>
                                     <Text style={styles.imageText}>• {t("Visitor face")}</Text>
                                     <Text style={styles.imageText}>• {t("Identity card iamge(Both sides)")}</Text>
+                                    <Text style={styles.imageText}>• {t("Maximum number of images")}: 5</Text>
                                 </View>
                             </View>
-                            <View style={{ marginTop: 20 }}>
-                                <Button title={t("Choose image")} onPress={pickImages} /> 
-                                {selectedImages.length > 0 &&
-                                <SectionList
-                                horizontal
-                                    sections={[{ data: selectedImages }]} 
-                                    renderItem={({ item, index }) => <View style={styles.imageContainer}>
-                                        <Image source={{ uri: item.uri }} style={styles.image} />
-                                        <Pressable style={styles.closeButton} onPress={() => removeImage(index)}>
-                                           <X color="white" />
-                                        </Pressable>
-                                    </View>}
-                                    keyExtractor={(item) => item.uri}
-                                />}
-                            </View>
+                            <View style={{ flexDirection:'row', alignItems:'center', marginTop:10 }}>
+              <Pressable style={styles.chooseImageBox} onPress={pickImages}>
+                  <View style={{alignItems:'center'}}>
+                    <Camera color={'black'} size={30}></Camera>
+                    <Text>{t("Choose image")}</Text>
+                  </View>
+              </Pressable>
+              {selectedImages.length > 0 &&
+                <SectionList
+                  horizontal
+                  sections={[{ data: selectedImages }]}
+                  renderItem={({ item, index }) => <View style={styles.imageContainer}>
+                    <Image source={{ uri: item.uri }} style={styles.image} />
+                    <Pressable style={styles.closeButton} onPress={() => removeImage(index)}>
+                      <X color="white" />
+                    </Pressable>
+                  </View>}
+                  keyExtractor={(item) => item.uri}
+                />}
+            </View>
                             <View style={{marginTop:10}}>
                                 <Pressable
                                     disabled={isButtonDisabled}
@@ -242,6 +248,15 @@ const visitorRegisterScreen = () => {
     )
 }
 const styles = StyleSheet.create({
+    chooseImageBox: {
+        width: 150,
+        height: 150,
+        justifyContent: "center",
+        alignItems: "center",
+        borderWidth: 1,
+        borderStyle: "dashed",
+        marginRight:5
+      },
     container: {
         flex: 1,
         justifyContent: 'center',
@@ -272,7 +287,6 @@ const styles = StyleSheet.create({
         padding: 10,
     }, imageContainer: {
         position: 'relative', // Position the close button relative to the image
-        marginBottom: 10,
     },
     image: {
         width: 150,
