@@ -5,7 +5,7 @@ import { Cell, TableComponent, TableRow } from '../../../../components/ui/table'
 import { Link } from 'expo-router'
 import Button from '../../../../components/ui/button'
 
-const BuildingList = () => {
+const Page = () => {
   const headers = ['Name', 'Address', 'Number of floors', 'Room/floor', 'Status', ""];
   return (
     <View style={{ flex: 1,backgroundColor: '#F9FAFB' }}>
@@ -16,7 +16,7 @@ const BuildingList = () => {
                 <Text>Thông tin các tòa nhà</Text>
             </View>
             <View style={{marginBottom:20}}>
-              <Link href={'/web/CMB/buildingManagement/create'}>
+              <Link href={'/web/CMB/buildings/create'}>
               <Button text='Tạo tòa nhà mới' style={{width:150}}></Button>
               </Link>
             </View>
@@ -31,7 +31,7 @@ const BuildingList = () => {
                     <Cell>30</Cell>
                     <Cell>1</Cell>
                     <Cell>
-                        <Link href={'/web/CMB/accountManagement/1'}>
+                        <Link href={'/web/CMB/accounts/1'}>
                             <Button text="Chi tiết" />
                         </Link>
                     </Cell>
@@ -44,4 +44,4 @@ const BuildingList = () => {
   )
 }
 
-export default BuildingList
+export default Page

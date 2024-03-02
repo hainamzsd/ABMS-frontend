@@ -27,11 +27,11 @@ const _layout = () => {
     { name: "Trang chính", href: "/web/CMB" },
     {
       name: "Quản lý tài khoản",
-      href: "/web/CMB/accountManagement/accountManagement",
+      href: "/web/CMB/accounts/",
     },
     {
       name: "Quản lý tòa nhà",
-      href: "/web/CMB/buildingManagement/buildings",
+      href: "/web/CMB/buildings",
     },
   ];
   const user = {

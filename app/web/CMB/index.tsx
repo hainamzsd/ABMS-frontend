@@ -27,7 +27,7 @@ export default function Dashboard() {
             </Text>
             <Text>Danh sách thống kê</Text>
           </View>
-          <Link href={"/web/CMB/accountManagement/accountManagement"}>
+          <Link href={"/web/CMB/accounts/"}>
             Account
           </Link>
         </SafeAreaView>
