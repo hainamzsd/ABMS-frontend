@@ -4,9 +4,9 @@ import { useAuth } from "../context/AuthContext";
 import { Redirect } from "expo-router";
 
 export default function Dashboard() {
-  const { user, isLoading } = useAuth();
+  const { user, isLoading,session} = useAuth();
 
-  if (!user) {
+  if (!session) {
     return <Redirect href="/web/login" />;
   }
 
@@ -27,7 +27,7 @@ export default function Dashboard() {
             </Text>
             <Text>Danh sách thống kê</Text>
           </View>
-          <Link href={"screens/CMB/accountManagement/accountManagement"}>
+          <Link href={"/web/CMB/accountManagement/accountManagement"}>
             Account
           </Link>
         </SafeAreaView>

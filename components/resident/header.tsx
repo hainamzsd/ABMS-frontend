@@ -1,13 +1,15 @@
 import { LinearGradient } from "expo-linear-gradient";
-import { Stack, useNavigation } from "expo-router";
-import { ChevronLeft } from "lucide-react-native";
-import { TouchableOpacity, View } from "react-native";
+import { Link, Stack, useNavigation } from "expo-router";
+import { ChevronLeft, MenuSquare } from "lucide-react-native";
+import { TouchableOpacity, View,Pressable } from "react-native";
 import { useTheme } from "../../app/(mobile)/context/ThemeContext";
 interface HeaderProps {
   headerTitle: string;
+  headerRight?: boolean | null;
+  rightPath?: string| any;
 }
 
-const Header: React.FC<HeaderProps> = ({ headerTitle }) => {
+const Header: React.FC<HeaderProps> = ({ headerTitle, headerRight, rightPath }) => {
   const { theme } = useTheme();
 
   const navigation = useNavigation();
@@ -18,8 +20,10 @@ const Header: React.FC<HeaderProps> = ({ headerTitle }) => {
         headerTitleStyle: {
           fontWeight: "bold",
           fontSize: 24,
-          color: "white",
+          color: "black",
+          
         },
+        headerTitleAlign:'center',
         headerBackground: () => (
           <LinearGradient
             colors={[theme.primary, theme.secondary]}
@@ -28,14 +32,22 @@ const Header: React.FC<HeaderProps> = ({ headerTitle }) => {
             style={{ flex: 1 }}
           />
         ),
-        headerTintColor: "white",
+        headerTintColor: "black",
         headerLeft: () => (
-          <TouchableOpacity onPress={() => navigation.goBack()}>
+          <Pressable onPress={() => navigation.goBack()}>
             <View style={{ marginLeft: 10 }}>
-              <ChevronLeft strokeWidth={5} color="white" />
+              <ChevronLeft strokeWidth={2} color="black" size={30} />
             </View>
-          </TouchableOpacity>
+          </Pressable>
         ),
+        headerRight: () => 
+        headerRight && rightPath && 
+          <View style={{ marginRight: 10 }}>
+          <Link href={rightPath}>
+           <MenuSquare strokeWidth={2} color="black" />
+       </Link>
+
+         </View>
       }}
     ></Stack.Screen>
   );

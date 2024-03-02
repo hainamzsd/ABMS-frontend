@@ -9,25 +9,30 @@ import {
   View,
   Pressable,
 } from "react-native";
-import { Link, Stack, useNavigation, usePathname } from "expo-router";
+import { Link, Stack, router, usePathname } from "expo-router";
 import styles from "./styles";
 import SHADOW from "../../../constants/shadow";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useTheme } from "react-native-paper";
 import { Menu as PaperMenu } from "react-native-paper";
 import { Menu } from "lucide-react-native";
+import { useAuth } from "../context/AuthContext";
 const _layout = () => {
   const theme = useTheme();
   const [visible, setVisible] = React.useState(false);
+  const { logout} = useAuth();
   const openMenu = () => setVisible(true);
   const closeMenu = () => setVisible(false);
-  const navigation = [
-    { name: "Trang chính", href: "/web" },
+  const navigation:any[] = [
+    { name: "Trang chính", href: "/web/CMB" },
     {
       name: "Quản lý tài khoản",
-      href: "/screens/CMB/accountManagement/accountManagement",
+      href: "/web/CMB/accountManagement/accountManagement",
     },
-    { name: "Contact", href: "/contact" },
+    {
+      name: "Quản lý tòa nhà",
+      href: "/web/CMB/buildingManagement/buildings",
+    },
   ];
   const user = {
     name: "John Doe",
@@ -108,7 +113,7 @@ const _layout = () => {
                         style={{
                           fontSize: 16,
                           fontWeight: "600",
-                          color: pathName === item.href ? "#333" : "#6B7280",
+                          color: pathName.includes(item.href)  ? "#333" : "#6B7280",
                         }}
                       >
                         {item.name}
@@ -119,7 +124,7 @@ const _layout = () => {
               </View>
             </View>
             <PaperMenu
-              style={{ padding: 8, marginTop: 20 }}
+              style={{ padding: 8, marginTop: 50 }}
               visible={visible}
               onDismiss={closeMenu}
               anchor={
@@ -133,7 +138,10 @@ const _layout = () => {
                 </Pressable>
               }
             >
-              <PaperMenu.Item onPress={() => {}} title="Item 1" />
+              <PaperMenu.Item onPress={() => {
+                logout();
+                router.replace("/web/login");
+                }} title="Logout" />
             </PaperMenu>
           </View>
         </View>

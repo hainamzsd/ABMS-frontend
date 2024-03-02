@@ -7,12 +7,13 @@ import React, {
 } from "react";
 import * as SecureStore from "expo-secure-store";
 import axios from "axios";
-
+import { useStorageState } from "./SecureStorage";
 interface AuthContextType {
-  user: any; // Define a more specific type based on your user data
+  user: any; 
   login: (email: string, password: string) => Promise<void>;
   logout: () => void;
   isLoading: boolean;
+  session?: string | null;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -23,8 +24,7 @@ interface AuthProviderProps {
 
 export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [user, setUser] = useState<any>(null);
-  const [isLoading, setIsLoading] = useState(true);
-
+  const [[isLoading, session], setSession] = useStorageState("sessionWeb");
   // useEffect(() => {
   //   const initializeAuth = async () => {
   //     const token = await SecureStore.getItemAsync("userToken");
@@ -41,7 +41,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   // }, []);
 
   const login = async (email: string, password: string) => {
-    setIsLoading(true);
     // try {
     //   const response = await axios.post("https://yourapi.com/api/login", {
     //     email,
@@ -62,13 +61,11 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     // } finally {
     //   setIsLoading(false);
     // }
-    setUser("lmo");
-    setIsLoading(false);
+    setSession("lmo");
   };
 
   const logout = async () => {
-    await SecureStore.deleteItemAsync("userToken");
-    setUser(null);
+    setSession(null);
   };
 
   // const makeAuthenticatedRequest = async (url: string, method: string = 'GET', data: any = {}) => {
@@ -93,7 +90,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   // };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, isLoading }}>
+    <AuthContext.Provider value={{ user, login, logout, session,isLoading }}>
       {children}
     </AuthContext.Provider>
   );
