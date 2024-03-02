@@ -25,7 +25,7 @@ export default function AccountManagement() {
                             <Cell>aaa</Cell>
                             <Cell>aaa</Cell>
                             <Cell>
-                                <Link href={'/web/CMB/accountManagement/1'}>
+                                <Link href={'/web/CMB/accounts/1'}>
                                     <Button text="Chi tiết" />
                                 </Link>
                             </Cell>
