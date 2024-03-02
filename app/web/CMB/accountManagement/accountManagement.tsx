@@ -25,11 +25,12 @@ export default function AccountManagement() {
                             <Cell>aaa</Cell>
                             <Cell>aaa</Cell>
                             <Cell>
-                                <Link href={'/screens/CMB/accountManagement/accountDetail'}>
+                                <Link href={'/web/CMB/accountManagement/1'}>
                                     <Button text="Chi tiết" />
                                 </Link>
                             </Cell>
                         </TableRow>
+                        
                     </TableComponent>
                 </ScrollView>
             </SafeAreaView>

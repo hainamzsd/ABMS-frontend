@@ -53,7 +53,7 @@ const accountDetail = () => {
             <Text style={{ marginBottom: 10, fontWeight: "600", fontSize: 16 }}>
               Tên
             </Text>
-            <Input placeholder="Họ và tên" style={{ width: "100%" }}></Input>
+            <Input placeholder="Họ và tên" style={{ width: "100%" }} editable={false}></Input>
           </View>
           <View>
             <Text style={{ marginBottom: 10, fontWeight: "600", fontSize: 16 }}>

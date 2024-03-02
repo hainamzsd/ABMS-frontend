@@ -35,7 +35,7 @@ const Login: React.FC = () => {
         style={{ width: 500 }}
         onPress={() => {
           login("a", "a");
-          router.replace("/web/(CMB)");
+          router.replace("/web/CMB/");
         }}
       ></Button>
     </View>
