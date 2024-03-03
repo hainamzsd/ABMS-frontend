@@ -16,7 +16,7 @@ import {
   Palette,
   Pencil,
 } from "lucide-react-native";
-import { Link, useNavigation } from "expo-router";
+import { Link, router, useNavigation } from "expo-router";
 import { LinearGradient } from "expo-linear-gradient";
 import { useSession } from "../../context/AuthContext";
 import { useTheme } from "../../context/ThemeContext";
@@ -59,7 +59,9 @@ const ProfileScreen = () => {
               <Text style={styles.headerText}>{t("Account")}</Text>
               <Text style={styles.normalText}>{t("ManageAccount")}</Text>
             </View>
-            <TouchableOpacity>
+            <TouchableOpacity onPress={()=>{
+              router.push("/(mobile)/(screens)/userAvatarScreen")
+            }}>
               <Image
                 style={stylesProfileScreen.avatar}
                 source={{
@@ -113,7 +115,7 @@ const ProfileScreen = () => {
                     style={{ marginRight: 15 }}
                     strokeWidth={1.5}
                   ></Pencil>
-                  <Text>{t("Update Information")}</Text>
+                  <Text style={stylesProfileScreen.text}>{t("Update Information")}</Text>
                 </View>
               </Link>
             </View>
@@ -125,7 +127,7 @@ const ProfileScreen = () => {
                     style={{ marginRight: 15 }}
                     strokeWidth={1.5}
                   ></KeyRound>
-                  <Text>{t("Change password")}</Text>
+                  <Text style={stylesProfileScreen.text}>{t("Change password")}</Text>
                 </View>
               </Link>
             </View>
@@ -137,7 +139,7 @@ const ProfileScreen = () => {
                     style={{ marginRight: 15 }}
                     strokeWidth={1.5}
                   ></Palette>
-                  <Text>{t("Change color pallete")}</Text>
+                  <Text style={stylesProfileScreen.text}>{t("Change color pallete")}</Text>
                 </View>
               </Link>
             </View>
@@ -149,7 +151,7 @@ const ProfileScreen = () => {
                     style={{ marginRight: 15 }}
                     strokeWidth={1.5}
                   ></Languages>
-                  <Text>{t("Change language")}</Text>
+                  <Text style={stylesProfileScreen.text}>{t("Change language")}</Text>
                 </View>
               </Link>
             </View>

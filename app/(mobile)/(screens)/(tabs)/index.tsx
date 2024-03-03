@@ -20,7 +20,7 @@ import {
   Settings,
 } from "lucide-react-native";
 import { LinearGradient } from "expo-linear-gradient";
-import { Link, Stack } from "expo-router";
+import { Link, Stack, router } from "expo-router";
 import { useTheme } from "../../context/ThemeContext";
 import { useTranslation } from "react-i18next";
 
@@ -60,14 +60,16 @@ const HomeScreen = () => {
               <Text style={styles.headerText}>{t("Greet")}, Hoa La</Text>
               <Text style={styles.normalText}>{t("SubGreet")}</Text>
             </View>
-            <Link href="/(mobile)/(screens)/userAvatarScreen">
+            <Pressable onPress={()=>{
+              router.push("/(mobile)/(screens)/userAvatarScreen")
+            }} >
               <Image
                 style={stylesHomeScreen.avatar}
                 source={{
                   uri: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSiGAdWpsJQwrcEtjaAxG-aci3VxO7n2qYey0tI9Syx4Ai9ziAUea6-dAjlaGmRUNQW-Lo&usqp=CAU",
                 }}
               />
-            </Link>
+            </Pressable>
           </View>
           <Pressable style={stylesHomeScreen.room}>
             <Link href={"/(mobile)/(screens)/roomScreen"}>

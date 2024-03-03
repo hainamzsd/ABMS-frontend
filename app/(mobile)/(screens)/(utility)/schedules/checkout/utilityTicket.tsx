@@ -81,7 +81,7 @@ export default function UtilityTicket() {
             },
             styles.button
           ]}>
-          <Text style={{ fontWeight: 'bold', fontSize: 20 }}>Tiếp tục</Text>
+          <Text style={{ fontWeight: 'bold', fontSize: 20 }}>{t("Continue")}</Text>
         </Pressable></View>
     </SafeAreaView>
   </>

@@ -2,16 +2,18 @@ import { createContext, useContext, useEffect, useState } from "react";
 import axios from "axios";
 import SecureStore from "expo-secure-store";
 import { useStorageState } from "./useStorageState";
-import { useRouter } from "expo-router";
+import { router, useRouter } from "expo-router";
 import { Slot } from "expo-router";
 import { SafeAreaView } from "react-native";
+import { jwtDecode } from "jwt-decode";
+import  JWT from 'expo-jwt'; 
 interface AuthProps {
   authState?: { token: string | null; authenticated: boolean | null };
   onLogin?: (phone: string, password: string) => Promise<any>;
   onLogout?: () => Promise<any>;
 }
 
-const TOKEN_KEY = "";
+const TOKEN_KEY = "JWT";
 export const API_URL = "https://api.developbetterapps.com";
 
 const AuthContext = createContext<{
@@ -20,13 +22,16 @@ const AuthContext = createContext<{
   authState: { token: string | null; authenticated: boolean | null };
   session?: string | null;
   isLoading: boolean;
+  user: any;
 }>({
   signIn: () => Promise.resolve({}),
   signOut: () => Promise.resolve({}),
   authState: { token: null, authenticated: null },
   session: null,
   isLoading: false,
+  user:null
 });
+
 
 export function useSession() {
   const value = useContext(AuthContext);
@@ -42,50 +47,44 @@ export const AuthProvider = ({ children }: any) => {
     authenticated: null,
   });
   const [[isLoading, session], setSession] = useStorageState("session");
+  const [user, setUser] = useState<any>(null);
   // useEffect(() => {
   //   const loadToken = async () => {
   //     const token = await SecureStore.getItemAsync(TOKEN_KEY);
   //     console.log("stored:", token);
   //     if (token) {
-  //       axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-
   //       setAuthState({
   //         token: token,
   //         authenticated: true,
   //       });
+  //       setUser(jwtDecode(token));
   //     }
   //   };
   //   loadToken();
-  //   return () => {};
   // }, []);
 
   const login = async (phone: string, password: string) => {
-    // try {
-    //   const result = await axios.post(`${API_URL}/auth`, { phone, password });
-    //   console.log("lmao");
-    //   console.log(result);
-    //   setAuthState({
-    //     authenticated: true,
-    //     token: result.data.token,
-    //   });
+    try {
+      const result = await axios.post(`http://localhost:5108/api/v1/login-account/loginByPhone`, { 
+        phoneNumber: phone,
+        password:password
+       });
+      setAuthState({
+        authenticated: true,
+        token: result.data.data,
+      });
+        setSession(result.data.data);
+    } catch (e) {
+      console.log("login error"+e);
+      return {
+        error: true,
+        msg: e,
 
-    //   axios.defaults.headers.common["Authorization"] =
-    //     `Bearer ${result.data.token}`;
-
-    //   await SecureStore.setItemAsync(TOKEN_KEY, result.data.token);
-    //   setSession(result.data.token);
-    //   return result;
-    // } catch (e) {
-    //   return {
-    //     error: true,
-    //     msg: (e as any).response.data.msg,
-    //   };
-    // }
-    setSession("aa");
+      };
+    }
   };
 
   const logout = async () => {
-    // await SecureStore.deleteItemAsync(TOKEN_KEY);
     // setSession(null);
 
     // axios.defaults.headers.common["Authorization"] = "";
@@ -104,6 +103,7 @@ export const AuthProvider = ({ children }: any) => {
         authState: authState,
         session: session,
         isLoading: isLoading,
+        user:user
       }}
     >
       {children}

@@ -4,7 +4,7 @@ import Button from "../../../../components/ui/button";
 import { Cell, TableComponent, TableRow } from "../../../../components/ui/table";
 import Input from "../../../../components/ui/input";
 
-export default function AccountManagement() {
+export default function Page() {
     const headers = ['Header 1', 'Header 2', 'Header 3', 'edaed', ''];
 
     return (

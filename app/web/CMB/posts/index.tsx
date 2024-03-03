@@ -37,7 +37,7 @@ const Page: React.FC = () => {
                             content={item.content}
                             date={item.date}
                             imageUrl={item.imageUrl}
-                            href="/web/CMB/posts/posts/1"
+                            href="/web/CMB/posts/1"
                         />
                     )}
                     keyExtractor={item => item.id} />

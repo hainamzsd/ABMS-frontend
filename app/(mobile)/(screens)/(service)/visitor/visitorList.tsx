@@ -1,41 +1,30 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, SafeAreaView, StyleSheet, Pressable, FlatList, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, SafeAreaView, ActivityIndicator } from 'react-native'
+import React, { useEffect, useState } from 'react'
 import Header from '../../../../../components/resident/header';
-import { useTheme } from '../../../context/ThemeContext';
 import { useTranslation } from 'react-i18next';
+import { useTheme } from '../../../context/ThemeContext';
+import { Pressable } from 'react-native';
 import SHADOW from '../../../../../constants/shadow';
-import usePagination from '../../../../../utils/pagination';
+import { FlatList } from 'react-native';
+import { CircleUser } from 'lucide-react-native';
 import { router } from 'expo-router';
+export const MOCK_DATA = [
+  { id: 1, name: 'Item 1', description: 'Description for item 1' },
+  { id: 2, name: 'Item 2', description: 'Description for item 2' },
+  { id: 3, name: 'Item 3', description: 'Description for item 3' },
+  { id: 4, name: 'Item 3', description: 'Description for item 3' },
+  { id: 5, name: 'Item 3', description: 'Description for item 3' },
+  { id: 6, name: 'Item 3', description: 'Description for item 3' },
+  { id: 7, name: 'Item 3', description: 'Description for item 3' },
+  { id: 8, name: 'Item 3', description: 'Description for item 3' },
+];
 
-interface ItemProps {
-    id: number;
-    name: string;
-    description: string;
-  }
-  export const MOCK_DATA = [
-    { id: 1, name: 'Item 1', description: 'Description for item 1' },
-    { id: 2, name: 'Item 2', description: 'Description for item 2' },
-    { id: 3, name: 'Item 3', description: 'Description for item 3' },
-    { id: 4, name: 'Item 3', description: 'Description for item 3' },
-    { id: 5, name: 'Item 3', description: 'Description for item 3' },
-    { id: 6, name: 'Item 3', description: 'Description for item 3' },
-    { id: 7, name: 'Item 3', description: 'Description for item 3' },
-    { id: 8, name: 'Item 3', description: 'Description for item 3' },
-  ];
-
-  const PER_PAGE = 3;
-  const fetchItems = async (page: number) => {
-    const response = await fetch(`https://your-api.com/items?page=${page}&per_page=${PER_PAGE}`);
-    const data = await response.json();
-    return data;
-  };
-  
-const ReservationUtilityList = () => {
-    const { theme } = useTheme();
-    const { t } = useTranslation();
+const VisitorList = () => {
  
+    const { t } = useTranslation();
+    const { theme } = useTheme();
     const [currentPage, setCurrentPage] = useState(1);
-    const [dataToDisplay, setDataToDisplay] = useState<ItemProps[]>([]);
+    const [dataToDisplay, setDataToDisplay] = useState<any[]>([]);
     const [isLoadingMore, setIsLoadingMore] = useState(false); // Track loading state
   
     useEffect(() => {
@@ -72,32 +61,36 @@ const ReservationUtilityList = () => {
   };
     const render = ({ item }: any) => (
         <Pressable style={[SHADOW, { backgroundColor: 'white', borderRadius: 10, marginTop: 20 }]}
-        onPress={() =>
-            router.push({
-              pathname: `/(mobile)/(screens)/(utility)/(reservation)/${item.id}`,
-              params: item,
-            })}>
+        onPress={() => {
+          router.push({
+            pathname: `/(mobile)/(screens)/(service)/visitor/${item.id}`,
+            params: item,
+          })
+        }}
+        >
         <View style={{ borderBottomWidth: 1,borderColor:'#9c9c9c' }}>
-            <View style={{ padding: 10, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                    <View style={[styles.circle, { backgroundColor: theme.sub }]}></View>
-                    <View>
-                        <Text style={{ fontWeight: 'bold', fontSize: 16 }}>Bong da</Text>
-                        <View style={{ flexDirection: 'row' }}>
-                            <Text style={{ color: '#9C9C9C' }}>{t("Code")}: </Text>
-                            <Text>aaa</Text>
-                        </View>
+            <View style={{ padding: 10, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',flex:1 }}>
+                <View style={{ flexDirection: 'row', alignItems: 'center',flex:0.6 }}>
+                    <View style={[styles.circle, { backgroundColor: theme.primary }]}>
+                    <CircleUser
+                  strokeWidth={1.5}
+                  size={40}
+                  color={"white"}
+                ></CircleUser>
+                    </View>
+                    <View >
+                        <Text style={{ fontWeight: 'bold', fontSize: 16 }}>Hoa La</Text>
                     </View>
                 </View>
                 <View style={{
                     padding: 10, borderRadius: 20, backgroundColor: theme.primary,
                     justifyContent: 'center', height: 40
                 }}>
-                    <Text style={{ fontWeight: '600', color:'white' }}>{t("Unsucessful")}</Text>
+                    <Text style={{ fontWeight: '600',color:'white' }}>{t("Unsucessful")}</Text>
                 </View>
             </View>
         </View>
-        <View style={{ borderBottomWidth: 1,borderColor:'#9c9c9c' }}>
+        <View style={{ borderBottomWidth: 1 ,borderColor:'#9c9c9c'}}>
             <View style={{ paddingHorizontal: 10,paddingVertical:20 }}>
                 <View style={{ flexDirection: 'row' }}>
                     <Text style={{color:"#9C9C9C"}}>{t("Date")}: </Text>
@@ -121,12 +114,17 @@ const ReservationUtilityList = () => {
         </View>
     </Pressable>
     )
-
     return (
-        <>
-            <Header headerTitle={t("Booking history")} />
-            <SafeAreaView style={{ backgroundColor: theme.background, flex: 1 }}>
-                <View style={{ flex:1,  }}>
+      <>
+        <Header headerTitle={t("Manage visitor")} />
+        <SafeAreaView style={{ backgroundColor: theme.background, flex: 1 }}>
+          <View style={{ marginHorizontal: 26 }}>
+            <View style={{ marginTop: 20 }}>
+              <Text style={{ marginBottom: 5, fontSize: 20, fontWeight: 'bold' }}>{t("Registered visitor")}</Text>
+              <Text>{t("Visitor requests")}</Text>
+            </View>
+          </View>
+          <View style={{ flex:1,  }}>
                    <FlatList
                    style={{paddingHorizontal:26}}
                     data={dataToDisplay}
@@ -137,14 +135,17 @@ const ReservationUtilityList = () => {
                     ListFooterComponent={renderFooter}
                    />
                 </View>
-            </SafeAreaView>
-        </>
-    );
-};
-
-export default ReservationUtilityList;
-
-const styles = StyleSheet.create({
+        </SafeAreaView>
+      </>
+    )
+  }
+  
+  const styles = StyleSheet.create({
+    card:{
+      marginTop:20,
+      borderRadius:20,
+      padding:20,
+    },
     circle: {
         width: 60,
         height: 60,
@@ -153,5 +154,6 @@ const styles = StyleSheet.create({
         alignItems: "center",
         marginRight: 10,
     },
-});
-
+  })
+  
+export default VisitorList

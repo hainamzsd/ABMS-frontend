@@ -19,6 +19,7 @@ import { useTranslation } from "react-i18next";
 import i18n from "../../utils/i18next";
 import { Pressable } from "react-native";
 import { Image } from "react-native";
+import LoadingComponent from "../../components/resident/loading";
 
 const LoginScreen = () => {
   const [currentLanguage, setCurrentLanguage] = useState(i18n.language);
@@ -37,9 +38,27 @@ const LoginScreen = () => {
   //     console.log(result.msg + "aa");
   //   }
   // };
-  const { signIn } = useSession();
+  const { signIn,session } = useSession();
+  const [isLoading, setIsLoading] = useState(false);
+  const onPress = async () => {
+    setIsLoading(true); // Set loading state to true before making request
+    // setError(null); // Clear any previous errors
+  
+    try {
+      const token = await signIn(phone, password); // Call your login function
+      // await SecureStore.setItemAsync('token', token); // Store token securely
+      // ... navigate to other screen or perform further actions based on login success
+      router.push('/')
+    } catch (error) {
+      console.error('Login error:', error);
+      // setError(error.message || 'An error occurred during login.'); // Provide user-friendly error message
+    } finally {
+      setIsLoading(false); // Set loading state to false after request completes, regardless of success or failure
+    }
+  };
   return (
     <View style={{ backgroundColor: theme.background, flex: 1 }}>
+      <LoadingComponent loading={isLoading}></LoadingComponent>
       <StatusBar barStyle="dark-content" backgroundColor={"red"} />
       <View style={[styles.container]}>
         {/* <Stack.Screen options={{ headerShown: false }}></Stack.Screen> */}
@@ -69,10 +88,7 @@ const LoginScreen = () => {
           </View>
           <TouchableOpacity
             style={[styles.button, { backgroundColor: theme.primary }]}
-            onPress={() => {
-              signIn("dwa", "daw");
-              router.replace("/");
-            }}
+            onPress={onPress}
           >
             <Text style={{ fontSize: 16, fontWeight: "bold" }}>
               {t("Login")}
