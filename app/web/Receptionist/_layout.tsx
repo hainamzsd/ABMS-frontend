@@ -1,6 +1,5 @@
 import { Link, Stack, useNavigation, usePathname } from "expo-router";
 import { Menu as PaperMenu } from "react-native-paper";
-import styles from "./styles"
 import {
     Dimensions,
     Image,
@@ -13,6 +12,7 @@ import {
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import Navbar from "../../../components/layout/web/navbar";
+import { StyleSheet } from "react-native";
 
 const _layout = () => {
     const [windowWidth, setWindowWidth] = useState(
@@ -46,5 +46,25 @@ const _layout = () => {
         </>
     )
 }
+
+const styles = StyleSheet.create({
+    container:{
+        flex:1,
+    },
+    modalContainer: {
+        flex: 1,
+        backgroundColor: '#fff',
+        paddingTop: 50
+      },
+      menu: {
+        paddingHorizontal: 16,
+        paddingBottom: 20
+      },
+      menuItem: {
+        paddingVertical: 12,
+        borderBottomWidth: 1,
+        borderBottomColor: '#ddd'
+      }
+});
 
 export default _layout
