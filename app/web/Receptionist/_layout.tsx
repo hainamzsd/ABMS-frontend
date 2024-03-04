@@ -1,6 +1,5 @@
 import { Link, Stack, useNavigation, usePathname } from "expo-router";
 import { Menu as PaperMenu } from "react-native-paper";
-import { StyleSheet } from "react-native";
 import {
     Dimensions,
     Image,
@@ -13,6 +12,7 @@ import {
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import Navbar from "../../../components/layout/web/navbar";
+import { StyleSheet } from "react-native";
 
 const _layout = () => {
     const [windowWidth, setWindowWidth] = useState(
@@ -39,8 +39,8 @@ const _layout = () => {
             )}
             <View style={styles.container}>
                 <Stack screenOptions={{ headerShown: false }}>
-                    <Stack.Screen name="/web/Receptionist"></Stack.Screen>
-                    <Stack.Screen name="/web/Receptionist/accountManagement/accountMangement"></Stack.Screen>
+                    <Stack.Screen name="/web/Admin"></Stack.Screen>
+                    <Stack.Screen name="/web/Adnmin/accounts"></Stack.Screen>
                 </Stack>
             </View>
         </>

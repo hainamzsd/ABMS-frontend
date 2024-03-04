@@ -39,8 +39,8 @@ const _layout = () => {
             )}
             <View style={styles.container}>
                 <Stack screenOptions={{ headerShown: false }}>
-                    <Stack.Screen name="/screens/CMB"></Stack.Screen>
-                    <Stack.Screen name="/screens/CMB/accountManagement/accountMangement"></Stack.Screen>
+                    <Stack.Screen name="/web/Admin"></Stack.Screen>
+                    <Stack.Screen name="/web/Adnmin/accounts"></Stack.Screen>
                 </Stack>
             </View>
         </>
