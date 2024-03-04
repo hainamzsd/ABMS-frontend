@@ -23,10 +23,22 @@ import { LinearGradient } from "expo-linear-gradient";
 import { Link, Stack, router } from "expo-router";
 import { useTheme } from "../../context/ThemeContext";
 import { useTranslation } from "react-i18next";
+import { useSession } from "../../context/AuthContext";
+import { jwtDecode } from "jwt-decode";
+
+interface user{
+  FullName:string;
+  PhoneNumber:string;
+  RoomId:string;
+  Avatar:string;
+}
 
 const HomeScreen = () => {
   const { theme } = useTheme();
   const { t } = useTranslation();
+  const{session } = useSession();
+const user:user = jwtDecode(session as string);
+console.log(user);
   return (
     <>
       <SafeAreaView style={{ backgroundColor: theme.background, flex: 1 }}>
@@ -57,7 +69,7 @@ const HomeScreen = () => {
             }}
           >
             <View style={{ flex: 1 }}>
-              <Text style={styles.headerText}>{t("Greet")}, Hoa La</Text>
+              <Text style={styles.headerText}>{t("Greet")}, {user.FullName}</Text>
               <Text style={styles.normalText}>{t("SubGreet")}</Text>
             </View>
             <Pressable onPress={()=>{

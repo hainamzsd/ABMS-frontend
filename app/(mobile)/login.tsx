@@ -20,6 +20,7 @@ import i18n from "../../utils/i18next";
 import { Pressable } from "react-native";
 import { Image } from "react-native";
 import LoadingComponent from "../../components/resident/loading";
+import AlertWithButton from "../../components/resident/AlertWithButton";
 
 const LoginScreen = () => {
   const [currentLanguage, setCurrentLanguage] = useState(i18n.language);
@@ -30,34 +31,41 @@ const LoginScreen = () => {
 
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState(false);
+  const [errorText, setErrorText] = useState<string|null>(null);
   const { theme } = useTheme();
   const { t } = useTranslation();
-  // const HandleLogin = async () => {
-  //   const result = await onLogin!(phone, password);
-  //   if (result && result.error) {
-  //     console.log(result.msg + "aa");
-  //   }
-  // };
   const { signIn,session } = useSession();
   const [isLoading, setIsLoading] = useState(false);
   const onPress = async () => {
     setIsLoading(true); // Set loading state to true before making request
-    // setError(null); // Clear any previous errors
-  
+      setErrorText(null);
     try {
-      const token = await signIn(phone, password); // Call your login function
-      // await SecureStore.setItemAsync('token', token); // Store token securely
-      // ... navigate to other screen or perform further actions based on login success
-      router.push('/')
-    } catch (error) {
-      console.error('Login error:', error);
-      // setError(error.message || 'An error occurred during login.'); // Provide user-friendly error message
+      const timeoutId = setTimeout(() => {
+        setError(true);
+        throw new Error('Request timed out.');
+      }, 5000); 
+      const token = await Promise.race([
+        signIn(phone, password),
+        new Promise((resolve, reject) => {
+          return clearTimeout(timeoutId);
+        }),
+      ]);
+      if(token.error) {
+        setErrorText(t("There is no account in the system, please check your phone number and password"));
+      }
+      else{
+        router.replace('/')
+      }
+    } catch (e:any) {
+      setError(e.message || 'An error occurred. Check your connection and try again.');
     } finally {
-      setIsLoading(false); // Set loading state to false after request completes, regardless of success or failure
+      setIsLoading(false); 
     }
   };
   return (
     <View style={{ backgroundColor: theme.background, flex: 1 }}>
+      <AlertWithButton title={t("Error")} content={t("System error please try again later")} visible={error} onClose={() => setError(false)}></AlertWithButton>
       <LoadingComponent loading={isLoading}></LoadingComponent>
       <StatusBar barStyle="dark-content" backgroundColor={"red"} />
       <View style={[styles.container]}>
@@ -94,6 +102,10 @@ const LoginScreen = () => {
               {t("Login")}
             </Text>
           </TouchableOpacity>
+          {errorText&&
+          <View style={{alignItems:'center'}}>
+          <Text style={{color:'red', fontWeight:'600'}}>{errorText}</Text></View>}
+
           <View
             style={{
               justifyContent: "center",

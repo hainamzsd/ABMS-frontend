@@ -65,7 +65,7 @@ export const AuthProvider = ({ children }: any) => {
 
   const login = async (phone: string, password: string) => {
     try {
-      const result = await axios.post(`http://localhost:5108/api/v1/login-account/loginByPhone`, { 
+      const result = await axios.post(`http://localhost:5108/api/v1/account/loginByPhone`, { 
         phoneNumber: phone,
         password:password
        });
@@ -74,8 +74,9 @@ export const AuthProvider = ({ children }: any) => {
         token: result.data.data,
       });
         setSession(result.data.data);
+        console.log("mao"+result );
+        return result;
     } catch (e) {
-      console.log("login error"+e);
       return {
         error: true,
         msg: e,

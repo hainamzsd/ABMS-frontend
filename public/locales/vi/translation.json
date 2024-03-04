@@ -139,6 +139,17 @@
     "Construction information":"Thông tin thi công",
     "Success" : "Thành công",
     "Manage elevator request":"Quản lý yêu cầu thang máy",
-    "Elevator request information":"Thông tin yêu cầu thang máy"
+    "Elevator request information":"Thông tin yêu cầu thang máy", 
+    "Close":"Đóng",
+    "Error":"Lỗi",
+    "There is no account in the system, please check your phone number and password":"Không có tài khoản trong hệ thống, vui lòng kiểm tra số điện thoại và mật khẩu", 
+    "System error please try again later":"Lỗi hệ thống, vui lòng thử lại sau",
+    "Confirm logout":"Xác nhận đăng xuất",
+    "Do you want to logout":"Bạn có muốn đăng xuất không",
+    "Total money":"Tổng tiền",
+    "Create reservation":"Tạo phiếu đặt chỗ",
+    "Failed to create reservation":"Tạo phiếu đặt chỗ thất bại",
+    "Booking unsuccessful":"Đặt chỗ không thành công"
+
   }
 }

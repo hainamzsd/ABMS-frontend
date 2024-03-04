@@ -9,10 +9,9 @@ interface CustomAlertProps {
   title: string;
   content: string;
   onClose: () => void; 
-  onConfirm: () => void;
 }
 
-const CustomAlert: React.FC<CustomAlertProps> = ({ visible, title, content, onClose, onConfirm }) => {
+const AlertWithButton: React.FC<CustomAlertProps> = ({ visible, title, content, onClose }) => {
     const {theme} = useTheme();
     const {t}= useTranslation();
 
@@ -33,12 +32,8 @@ const CustomAlert: React.FC<CustomAlertProps> = ({ visible, title, content, onCl
           </View>
           <View style={styles.buttonContainer}>
           <Pressable onPress={onClose} style={[styles.button, {backgroundColor:'black'}]}>
-              <Text style={[styles.buttonText,{color:'white'}]}>{t("No")}</Text>
+              <Text style={[styles.buttonText,{color:'white'}]}>{t("Close")}</Text>
             </Pressable>
-            <Pressable onPress={onConfirm} style={[styles.button, {backgroundColor:theme.primary}]}>
-              <Text style={styles.buttonText}>{t("Yes")}</Text>
-            </Pressable>
-            
           </View>
         </View>
       </View>
@@ -91,7 +86,7 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'center',
     padding:10
   },
   button: {
@@ -110,4 +105,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default CustomAlert;
+export default AlertWithButton;

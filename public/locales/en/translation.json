@@ -139,6 +139,17 @@
     "Registered construction":"Registered construction",
     "Construction information":"Construction information",
     "Manage elevator request":"Manage elevator request",
-    "Elevator request information":"Elevator request information"
+    "Elevator request information":"Elevator request information",
+    "Close":"Close",
+    "Error":"Error",
+    "There is no account in the system, please check your phone number and password":"There is no account in the system, please check your phone number and password",
+    "System error please try again later":"System error please try again later",
+    "Confirm logout":"Confirm logout",
+    "Do you want to logout":"Do you want to logout",
+    "Total money":"Total money",
+    "Create reservation":"Create reservation",
+    "Failed to create reservation":"Failed to create reservation",
+    "Booking unsuccessful":"Booking unsuccessful",
+    "Sân bóng rổ":"Basketball court"
   }
 }

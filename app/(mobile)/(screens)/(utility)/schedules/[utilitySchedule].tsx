@@ -15,43 +15,60 @@ import SHADOW from "../../../../../constants/shadow";
 import { Calendar, LocaleConfig } from "react-native-calendars";
 import { setCalendarLocale } from "../../../../../utils/calendarLanguage";
 import { useLanguage } from "../../../context/LanguageContext";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { calculateSlots } from "../../../../../utils/convertSlot";
+
+interface schedule{
+  openTime: string;
+  closeTime: string;
+  numberOfSlot: number;
+}
 
 export default function Schedule() {
   const item = useLocalSearchParams();
   const { theme } = useTheme();
   const { t } = useTranslation();
   const { currentLanguage } = useLanguage();
+  const [slots, setSlots] = useState<Array<{ index: number; slot: string }>>([]);
+  const [selectedSlotString, setSelectedSlotString] = useState<any>();
+  useEffect(() => {
+    if (item) {
+      const numSlots = Number(item.numberOfSlot);
+      if (isNaN(numSlots)) {
+        // Optional: Set an error state or handle invalid data
+        console.error('Invalid number of slots.');
+      } else {
+        const calculatedSlots = calculateSlots(
+          item.openTime as string,
+          item.closeTime as string,
+          numSlots
+        );
+        const slotsWithIndex = calculatedSlots.map((slot, index) => ({
+          index: index + 1, // Start index from 1
+          slot,
+        }));
+        setSlots(slotsWithIndex);
+      }
+    }
+  }, [item]);
   const currentDate = new Date();
   const formattedCurrentDate = currentDate.toISOString().split("T")[0];
   setCalendarLocale(currentLanguage);
 
   const [selectedDate, setSelectedDate] = useState<any | undefined>(undefined);
-
   const handleDayPress = (day: any) => {
     const selectedDateString = day.dateString;
     setSelectedDate(selectedDateString);
   };
-
-  const data = [
-    {
-      id: 1,
-      name: "06:00 - 08:00",
-    },
-    {
-      id: 2,
-      name: "06:00 - 08:00",
-    },
-  ];
   const [selectedSlot, setSelectedSlot] = useState<number>(0);
-  const toggleSelection = (itemId: number) => {
+  const toggleSelection = (itemId: number,slot:string ) => {
     if (selectedSlot === itemId) {
       setSelectedSlot(0);
     } else {
       setSelectedSlot(itemId);
+      setSelectedSlotString(slot);
     }
   };
-  console.log(selectedSlot);
   const isButtonDisabled = selectedSlot === 0 || !selectedDate;
   return (
     <>
@@ -63,6 +80,7 @@ export default function Schedule() {
           justifyContent: "space-between",
         }}
       >
+        <ScrollView style={{flex:1}}>
         <View style={{ flex: 1 }}>
           <View style={{ marginTop: 30, marginHorizontal: 26 }}>
             <View style={styles.schedule}>
@@ -88,29 +106,29 @@ export default function Schedule() {
               {t("Choose hour")}
             </Text>
             <FlatList
-              data={data}
+              data={slots}
               renderItem={({ item }) => (
                 <Pressable
-                  onPress={() => toggleSelection(item.id)}
+                  onPress={() => toggleSelection(item.index,item.slot)}
                   style={[
                     styles.slot,
                     {
                       backgroundColor:
-                        selectedSlot === item.id
+                        selectedSlot === item.index
                           ? theme.primary
                           : "transparent",
-                      borderWidth: selectedSlot !== item.id ? 2 : 0,
+                      borderWidth: selectedSlot !== item.index ? 2 : 0,
                       borderColor: theme.primary,
                     },
                   ]}
                 >
                   <Text style={{ fontWeight: "bold", fontSize: 16 }}>
-                    {item.name}
+                    {item.slot}
                   </Text>
                 </Pressable>
               )}
               numColumns={2}
-              keyExtractor={(item) => item.id.toString()}
+              keyExtractor={(item) => item.index.toString()}
             />
           </View>
         </View>
@@ -127,7 +145,14 @@ export default function Schedule() {
             onPress={() =>
               router.push({
                 pathname: `/(mobile)/(screens)/(utility)/schedules/checkout/utilityTicket`,
-                params: item,
+                params: {
+                  date: selectedDate,
+                  slot: selectedSlot,
+                  slotString: selectedSlotString,
+                  utilityId: item.id,
+                  price:item.price,
+                  utilityName:item.utilityName
+                },
               })
             }
             style={[
@@ -141,6 +166,7 @@ export default function Schedule() {
             <Text style={{ fontWeight: "bold", fontSize: 20 }}>{t("Continue")}</Text>
           </Pressable>
         </View>
+        </ScrollView>
       </SafeAreaView>
     </>
   );

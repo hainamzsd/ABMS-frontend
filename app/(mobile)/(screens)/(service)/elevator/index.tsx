@@ -26,7 +26,7 @@ import {
     const { t } = useTranslation();
     const data = [
       {
-        serviceName: t("Register elevator"),
+        serviceName: t("Register use elevator"),
         path: "/(mobile)/(screens)/(service)/elevator/elevatorRegisterScreen",
         icon: <GanttChart color={"black"} strokeWidth={1.5}></GanttChart>,
       },
