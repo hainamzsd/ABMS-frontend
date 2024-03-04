@@ -25,6 +25,7 @@
     "expo-constants": "~15.4.5",
     "expo-image": "~1.10.6",
     "expo-image-picker": "~14.7.1",
+    "expo-jwt": "^1.7.0",
     "expo-linear-gradient": "~12.7.1",
     "expo-linking": "~6.2.2",
     "expo-localization": "^14.8.3",
@@ -35,6 +36,7 @@
     "i18next": "^23.10.0",
     "i18next-browser-languagedetector": "^7.2.0",
     "i18next-http-backend": "^2.5.0",
+    "jwt-decode": "^4.0.0",
     "lucide-react-native": "^0.330.0",
     "native-base": "^3.4.28",
     "nativewind": "^4.0.23",
@@ -44,6 +46,7 @@
     "react-native": "0.73.4",
     "react-native-calendar-picker": "^8.0.1",
     "react-native-calendars": "^1.1286.0",
+    "react-native-chart-kit": "^6.12.0",
     "react-native-date-picker": "^4.3.7",
     "react-native-datepicker": "^1.7.2",
     "react-native-element-dropdown": "^2.10.1",
@@ -55,7 +58,9 @@
     "react-native-safe-area-context": "^3.3.2",
     "react-native-screens": "~3.29.0",
     "react-native-select-dropdown": "^3.4.0",
-    "react-native-svg": "^12.1.1",
+
+    "react-native-svg": "^14.1.0",
+
     "react-native-web": "~0.19.6",
     "tailwind-merge": "^2.2.1",
     "tailwindcss-animate": "^1.0.7"

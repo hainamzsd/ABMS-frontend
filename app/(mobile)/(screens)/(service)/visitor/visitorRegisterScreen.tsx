@@ -1,17 +1,17 @@
 import { View, Text, SafeAreaView, Pressable, Button, TextInput, StyleSheet, ScrollView, FlatList, Image, SectionList } from 'react-native'
 import React, { useState } from 'react'
-import Header from '../../../../components/resident/header'
+import Header from '../../../../../components/resident/header'
 import { useTranslation } from 'react-i18next'
-import { useTheme } from '../../context/ThemeContext'
+import { useTheme } from '../../../context/ThemeContext'
 import RNDateTimePicker from '@react-native-community/datetimepicker'
 import { Calendar, Camera, X } from 'lucide-react-native'
-import SHADOW from '../../../../constants/shadow'
+import SHADOW from '../../../../../constants/shadow'
 import { Picker } from '@react-native-picker/picker';
 import { Dropdown } from 'react-native-element-dropdown';
-import Label from '../../../../components/resident/lable'
+import Label from '../../../../../components/resident/lable'
 import * as ImagePicker from 'expo-image-picker';
-import LoadingComponent from '../../../../components/resident/loading'
-import { useLanguage } from '../../context/LanguageContext'
+import LoadingComponent from '../../../../../components/resident/loading'
+import { useLanguage } from '../../../context/LanguageContext'
 
 interface ImageInfo {
     uri: string;
@@ -236,7 +236,7 @@ const visitorRegisterScreen = () => {
                                         styles.button,
                                     ]}
                                 >
-                                    <Text style={{ fontWeight: "bold", fontSize: 20 }}>Tiếp tục</Text>
+                                    <Text style={{ fontWeight: "bold", fontSize: 20 }}>{t("Send")}</Text>
                                 </Pressable>
                             </View>
 

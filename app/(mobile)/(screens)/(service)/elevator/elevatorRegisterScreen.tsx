@@ -8,15 +8,15 @@ import {
   TextInput,
 } from "react-native";
 import React, { useState } from "react";
-import LoadingComponent from "../../../../components/resident/loading";
-import Header from "../../../../components/resident/header";
-import { useTheme } from "../../context/ThemeContext";
+import LoadingComponent from "../../../../../components/resident/loading";
+import Header from "../../../../../components/resident/header";
+import { useTheme } from "../../../context/ThemeContext";
 import { useTranslation } from "react-i18next";
 import { Calendar, Info } from "lucide-react-native";
-import Label from "../../../../components/resident/lable";
+import Label from "../../../../../components/resident/lable";
 import RNDateTimePicker from "@react-native-community/datetimepicker";
-import SHADOW from "../../../../constants/shadow";
-import { useLanguage } from "../../context/LanguageContext";
+import SHADOW from "../../../../../constants/shadow";
+import { useLanguage } from "../../../context/LanguageContext";
 const ElevatorRegisterScreen = () => {
   const [loading, setLoading] = useState(false);
   const { theme } = useTheme();

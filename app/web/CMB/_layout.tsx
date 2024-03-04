@@ -23,15 +23,23 @@ const _layout = () => {
   const { logout} = useAuth();
   const openMenu = () => setVisible(true);
   const closeMenu = () => setVisible(false);
+
+  const [more, setMore] = React.useState(false);
+  const openMore = () => setMore(true);
+  const closeMore = () => setMore(false);
   const navigation:any[] = [
     { name: "Trang chính", href: "/web/CMB" },
     {
       name: "Quản lý tài khoản",
-      href: "/web/CMB/accounts/",
+      href: "/web/CMB/accounts",
     },
     {
       name: "Quản lý tòa nhà",
       href: "/web/CMB/buildings",
+    },
+    {
+      name: "Quản lý bài viết",
+      href: "/web/CMB/posts",
     },
   ];
   const user = {
@@ -121,7 +129,37 @@ const _layout = () => {
                     </TouchableOpacity>
                   </Link>
                 ))}
+                <PaperMenu
+              style={{ padding: 8, marginTop: 50 }}
+              visible={more}
+              onDismiss={closeMore}
+              anchor={
+                <TouchableOpacity
+                  style={{
+                    marginRight: 30,
+                    paddingVertical: 28,
+                    
+                  }}
+                  onPress={openMore}
+                >
+                  <Text
+                    style={{
+                      fontSize: 16,
+                      fontWeight: "600",
+                    }}
+                  >Xem thêm
+                  </Text>
+                </TouchableOpacity>
+              }
+            >
+              <PaperMenu.Item onPress={() => {
+                logout();
+                // router.push("/");
+                }} title="Quản lý thu"/>
+            
+            </PaperMenu>
               </View>
+              
             </View>
             <PaperMenu
               style={{ padding: 8, marginTop: 50 }}

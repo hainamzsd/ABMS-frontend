@@ -41,5 +41,8 @@ const stylesProfileScreen = StyleSheet.create({
     alignItems: "center",
     borderRadius: 20,
   },
+  text:{
+    fontSize:16
+  }
 });
 export default stylesProfileScreen;

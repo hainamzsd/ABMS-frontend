@@ -24,23 +24,23 @@ export default function ServiceList() {
   const { t } = useTranslation();
   const data = [
     {
-      serviceName: "Register parking card",
-      path: "/(mobile)/(screens)/(service)/parkingCardRegisterScreen",
+      serviceName: "Manage parking card",
+      path: "/(mobile)/(screens)/(service)/parking",
       icon: <CarFront color={"black"} strokeWidth={1.5}></CarFront>,
     },
     {
-      serviceName: t("Register construction"),
-      path: "/(mobile)/(screens)/(service)/constructionRegisterScreen",
+      serviceName: t("Manage construction request"),
+      path: "/(mobile)/(screens)/(service)/construction",
       icon: <Hammer color={"black"} strokeWidth={1.5}></Hammer>,
     },
     {
       serviceName: t("Elevator request"),
-      path: "/(mobile)/(screens)/(service)/elevatorRegisterScreen",
+      path: "/(mobile)/(screens)/(service)/elevator",
       icon: <GanttChart color={"black"} strokeWidth={1.5}></GanttChart>,
     },
     {
-      serviceName: t("Register visitor"),
-      path: "/(mobile)/(screens)/(service)/visitorRegisterScreen",
+      serviceName: t("Manage visitor"),
+      path: "/(mobile)/(screens)/(service)/visitor",
       icon: <Contact color={"black"} strokeWidth={1.5}></Contact>,
     },
   ];
@@ -89,7 +89,6 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     width: "45%",
     justifyContent: "center",
-    height: 130,
     marginBottom: 10,
     padding: 10,
     marginHorizontal: 5,

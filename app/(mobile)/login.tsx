@@ -19,6 +19,8 @@ import { useTranslation } from "react-i18next";
 import i18n from "../../utils/i18next";
 import { Pressable } from "react-native";
 import { Image } from "react-native";
+import LoadingComponent from "../../components/resident/loading";
+import AlertWithButton from "../../components/resident/AlertWithButton";
 
 const LoginScreen = () => {
   const [currentLanguage, setCurrentLanguage] = useState(i18n.language);
@@ -29,17 +31,42 @@ const LoginScreen = () => {
 
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState(false);
+  const [errorText, setErrorText] = useState<string|null>(null);
   const { theme } = useTheme();
   const { t } = useTranslation();
-  // const HandleLogin = async () => {
-  //   const result = await onLogin!(phone, password);
-  //   if (result && result.error) {
-  //     console.log(result.msg + "aa");
-  //   }
-  // };
-  const { signIn } = useSession();
+  const { signIn,session } = useSession();
+  const [isLoading, setIsLoading] = useState(false);
+  const onPress = async () => {
+    setIsLoading(true); // Set loading state to true before making request
+      setErrorText(null);
+    try {
+      const timeoutId = setTimeout(() => {
+        setError(true);
+        throw new Error('Request timed out.');
+      }, 5000); 
+      const token = await Promise.race([
+        signIn(phone, password),
+        new Promise((resolve, reject) => {
+          return clearTimeout(timeoutId);
+        }),
+      ]);
+      if(token.error) {
+        setErrorText(t("There is no account in the system, please check your phone number and password"));
+      }
+      else{
+        router.replace('/')
+      }
+    } catch (e:any) {
+      setError(e.message || 'An error occurred. Check your connection and try again.');
+    } finally {
+      setIsLoading(false); 
+    }
+  };
   return (
     <View style={{ backgroundColor: theme.background, flex: 1 }}>
+      <AlertWithButton title={t("Error")} content={t("System error please try again later")} visible={error} onClose={() => setError(false)}></AlertWithButton>
+      <LoadingComponent loading={isLoading}></LoadingComponent>
       <StatusBar barStyle="dark-content" backgroundColor={"red"} />
       <View style={[styles.container]}>
         {/* <Stack.Screen options={{ headerShown: false }}></Stack.Screen> */}
@@ -69,15 +96,16 @@ const LoginScreen = () => {
           </View>
           <TouchableOpacity
             style={[styles.button, { backgroundColor: theme.primary }]}
-            onPress={() => {
-              signIn("dwa", "daw");
-              router.replace("/");
-            }}
+            onPress={onPress}
           >
             <Text style={{ fontSize: 16, fontWeight: "bold" }}>
               {t("Login")}
             </Text>
           </TouchableOpacity>
+          {errorText&&
+          <View style={{alignItems:'center'}}>
+          <Text style={{color:'red', fontWeight:'600'}}>{errorText}</Text></View>}
+
           <View
             style={{
               justifyContent: "center",

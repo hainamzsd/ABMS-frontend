@@ -7,16 +7,16 @@ import {
   Pressable,
   StyleSheet,
 } from "react-native";
-import Header from "../../../../components/resident/header";
-import LoadingComponent from "../../../../components/resident/loading";
-import { useTheme } from "../../context/ThemeContext";
+import Header from "../../../../../components/resident/header";
+import LoadingComponent from "../../../../../components/resident/loading";
+import { useTheme } from "../../../context/ThemeContext";
 import { useTranslation } from "react-i18next";
 import { useState } from "react";
 import { Info, Calendar } from "lucide-react-native";
-import Label from "../../../../components/resident/lable";
-import { useLanguage } from "../../context/LanguageContext";
+import Label from "../../../../../components/resident/lable";
+import { useLanguage } from "../../../context/LanguageContext";
 import RNDateTimePicker from "@react-native-community/datetimepicker";
-import SHADOW from "../../../../constants/shadow";
+import SHADOW from "../../../../../constants/shadow";
 export default function ConstructionRegisterScreen() {
   const { theme } = useTheme();
   const { t } = useTranslation();
