@@ -5,7 +5,7 @@ import { Redirect } from "expo-router";
 import { LineChart, BarChart, PieChart } from 'react-native-chart-kit';
 import { ScrollView } from "react-native";
 export default function Dashboard() {
-  const { user, isLoading, session } = useAuth();
+  const { isLoading, session } = useAuth();
   const screenWidth = Dimensions.get('window').width;
   if (!session) {
     return <Redirect href="/web/login" />;

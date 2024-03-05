@@ -4,7 +4,7 @@ import Header from '../../../../../components/resident/header';
 import { useTheme } from '../../../context/ThemeContext';
 import { useTranslation } from 'react-i18next';
 import SHADOW from '../../../../../constants/shadow';
-import ICON_MAP from '../../../../../constants/icons';
+import ICON_MAP from '../../../../../constants/iconUtility';
 import statusUtility from '../../../../../constants/status';
 import usePagination from '../../../../../utils/pagination';
 import { router } from 'expo-router';
@@ -78,6 +78,7 @@ const ReservationUtilityList = () => {
   };
     const render = ({ item }: {item:Reservation}) => {
         const icon = ICON_MAP["Sân bóng rổ"];
+        console.log(icon);
         const statusText = statusUtility?.[item.status];
         return(
         <Pressable style={[SHADOW, { backgroundColor: 'white', borderRadius: 10, marginTop: 20 }]}

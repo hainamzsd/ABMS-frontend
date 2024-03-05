@@ -6,7 +6,7 @@ import { useTheme } from "../../context/ThemeContext";
 import SHADOW from "../../../../constants/shadow";
 import { CircleDotDashedIcon, Settings } from "lucide-react-native";
 import { router } from "expo-router";
-import ICON_MAP from "../../../../constants/icons";
+import ICON_MAP from "../../../../constants/iconUtility";
 import { useEffect, useState } from "react";
 import axios from 'axios';
 import LoadingComponent from "../../../../components/resident/loading";

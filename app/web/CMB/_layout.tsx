@@ -20,7 +20,7 @@ import { useAuth } from "../context/AuthContext";
 const _layout = () => {
   const theme = useTheme();
   const [visible, setVisible] = React.useState(false);
-  const { logout} = useAuth();
+  const { signOut} = useAuth();
   const openMenu = () => setVisible(true);
   const closeMenu = () => setVisible(false);
 
@@ -153,7 +153,7 @@ const _layout = () => {
               }
             >
               <PaperMenu.Item onPress={() => {
-                logout();
+                signOut();
                 // router.push("/");
                 }} title="Quản lý thu"/>
             
@@ -177,7 +177,7 @@ const _layout = () => {
               }
             >
               <PaperMenu.Item onPress={() => {
-                logout();
+                signOut();
                 router.replace("/web/login");
                 }} title="Logout" />
             </PaperMenu>
