@@ -1,4 +1,4 @@
-import { Link, Stack, useNavigation, usePathname } from "expo-router";
+import { Link, Redirect, Stack, useNavigation, usePathname } from "expo-router";
 import { Menu as PaperMenu } from "react-native-paper";
 import {
     Dimensions,
@@ -13,8 +13,23 @@ import {
 import React, { useEffect, useState } from "react";
 import Navbar from "../../../components/layout/web/navbar";
 import { StyleSheet } from "react-native";
+import Toast from "react-native-toast-message";
+import { useAuth } from "../context/AuthContext";
+import { jwtDecode } from "jwt-decode";
 
 const _layout = () => {
+    const {session, signOut}  = useAuth();
+    const navigation:any[] = [
+      { name: "Trang chính", href: "/web/Receptionist" },
+      {
+        name: "Quản lý tài khoản",
+        href: "/web/Receptionist/accounts",
+      },
+      {
+        name: "Quản lý bài viết",
+        href: "/web/CMB/posts",
+      },
+    ];
     const [windowWidth, setWindowWidth] = useState(
         Dimensions.get("window").width,
     );
@@ -30,12 +45,22 @@ const _layout = () => {
         return () => {};
       }, []);
     const [isMobile, setIsMobile] = useState(windowWidth < 768);
-
+    if (!session) {
+        return <Redirect href="/web/login" />;
+      }
+      const userData:any = jwtDecode(session);
+      if(userData.Role!=2){
+        Toast.show({
+            type: 'error',
+            text1: 'Bạn không có quyền truy cập trang này',
+        })
+        signOut();
+      }
     return (
         <>
             {/* <Stack.Screen options={{ headerShown: false }}></Stack.Screen> */}
             {!isMobile && (
-                <Navbar />
+                <Navbar navigation={navigation} />
             )}
             <View style={styles.container}>
                 <Stack screenOptions={{ headerShown: false }}>

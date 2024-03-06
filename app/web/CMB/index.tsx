@@ -7,10 +7,8 @@ import { ScrollView } from "react-native";
 export default function Dashboard() {
   const { isLoading, session } = useAuth();
   const screenWidth = Dimensions.get('window').width;
-  if (!session) {
-    return <Redirect href="/web/login" />;
-  }
 
+console.log(session);
   return (
     <>
       <View

@@ -66,10 +66,10 @@ export default function AccountManagement() {
                 <ScrollView style={{ paddingHorizontal: 30, paddingVertical: 30,flex:1 }}>
                     <View style={{ marginBottom: 20 }}>
                         <Text style={{ fontWeight: 'bold', fontSize: 20, marginBottom: 5 }}>Danh sách tài khoản</Text>
-                        <Text>Thông tin tài khoản của quản lý chung cư</Text>
+                        <Text>Thông tin tài khoản của cư dân</Text>
                     </View>
-                    <Link href={"/web/Admin/create"}>
-                    <Button text="Tạo tài khoản ban quản lý" style={{width:200}}></Button>
+                    <Link href={"/web/Receptionist/accounts/create"}>
+                    <Button text="Tạo tài khoản cư dân" style={{width:200}}></Button>
                     </Link>
                     <View style={styles.searchContainer}>
                         <View style={styles.searchWrapper}>
@@ -97,7 +97,7 @@ export default function AccountManagement() {
                                 <Cell>{item.phoneNumber}</Cell>
                                 <Cell>{item.email}</Cell>
                                 <Cell>
-                                    <Link href={`/web/Admin/${item.id}`}
+                                    <Link href={`/web/Receptionist/accounts/${item.id}`}
                                     >
                                         <Button text="Chi tiết" />
                                     </Link>

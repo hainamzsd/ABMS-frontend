@@ -9,7 +9,7 @@ import {
   View,
   Pressable,
 } from "react-native";
-import { Link, Stack, router, usePathname } from "expo-router";
+import { Link, Redirect, Stack, router, usePathname } from "expo-router";
 import styles from "./styles";
 import SHADOW from "../../../constants/shadow";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -17,9 +17,13 @@ import { useTheme } from "react-native-paper";
 import { Menu as PaperMenu } from "react-native-paper";
 import { Menu } from "lucide-react-native";
 import { useAuth } from "../context/AuthContext";
+import { jwtDecode } from "jwt-decode";
+import Toast from "react-native-toast-message";
 const _layout = () => {
   const theme = useTheme();
   const [visible, setVisible] = React.useState(false);
+  const {session} = useAuth();
+ 
   const { signOut} = useAuth();
   const openMenu = () => setVisible(true);
   const closeMenu = () => setVisible(false);
@@ -49,7 +53,7 @@ const _layout = () => {
   };
 
   const pathName = usePathname();
-  console.log(pathName);
+  console.log(session);
   const [windowWidth, setWindowWidth] = useState(
     Dimensions.get("window").width,
   );
@@ -70,6 +74,18 @@ const _layout = () => {
   const toggleMenu = () => {
     setMenuVisible(!menuVisible);
   };
+
+  if (!session) {
+    return <Redirect href="/web/login" />;
+  }
+  const userData:any = jwtDecode(session);
+  if(userData.Role!=1){
+    Toast.show({
+        type: 'error',
+        text1: 'Bạn không có quyền truy cập trang này',
+    })
+    signOut();
+  }
   return (
     <>
       <Stack.Screen options={{ headerShown: false }}></Stack.Screen>
@@ -275,7 +291,7 @@ const _layout = () => {
       <View style={styles.container}>
         <Stack screenOptions={{ headerShown: false }}>
           <Stack.Screen name="/screens/CMB"></Stack.Screen>
-          <Stack.Screen name="/screens/CMB/accountManagement/accountMangement"></Stack.Screen>
+          <Stack.Screen name="accounts"></Stack.Screen>
         </Stack>
       </View>
     </>

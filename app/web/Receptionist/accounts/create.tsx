@@ -87,7 +87,7 @@ const page = () => {
                     text1: 'Tạo tài khoản thành công',
                     position:'bottom'
                 })
-                router.replace('/web/Admin/');
+                router.replace('/web/Receptionist/accounts/');
             }
             else {
                 Toast.show({
@@ -142,9 +142,9 @@ const page = () => {
                     ></Button>
                     <View style={{ marginBottom: 20 }}>
                         <Text style={{ fontWeight: "bold", fontSize: 20, marginBottom: 5 }}>
-                            Thông tin tài khoản
+                            Tạo thông tin tài khoản
                         </Text>
-                        <Text>Thông tin chi tiết tài khoản của CMB</Text>
+                        <Text>Thông tin tài khoản của cư dân</Text>
                     </View>
                     <View>
                         <Text style={{ marginBottom: 10, fontWeight: "600", fontSize: 16 }}>

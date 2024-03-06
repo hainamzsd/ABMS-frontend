@@ -117,7 +117,7 @@ const page = () => {
         phone:phoneNumber,
         full_name:fullName,
         user_name:username,
-        role:1,
+        role:3,
         email:email,
         avatar:""
     }
@@ -138,7 +138,7 @@ const page = () => {
                 text1: 'Cập nhật tài khoản thành công',
                 position:'bottom'
             })
-            router.replace('/web/Admin/');
+            router.replace('/web/Receptionist/accounts/');
         }
         else {
             Toast.show({
@@ -174,17 +174,6 @@ const page = () => {
         setIsLoading(false);
     }
 };
-const handleDeleteConfirm = async () => {
-  Alert.alert(
-    'Xác nhận xóa',
-    'Bạn có muốn xóa tài khoản này không?',
-    [
-      { text: 'Hủy', onPress: () => console.log('Cancel Pressed'), style: 'cancel' },
-      { text: 'Xóa', onPress: () => handleDeleteAccount(), style: 'destructive' },
-    ],
-    { cancelable: true },
-  );
-};
 
 const handleDeleteAccount = async () => {
   if (!accountId.accountDetail) {
@@ -199,31 +188,37 @@ const handleDeleteAccount = async () => {
   setError(null); 
 
   try {
-    const response = await fetch(`http://localhost:5108/api/v1/account/delete/${accountId}`, {
-      method: 'DELETE',
-      headers: {
-        // Set authorization headers if your API requires them
-        // 'Authorization': 'Bearer <your_token>',
-      },
-    });
+  
+    const response = await axios.delete(`http://localhost:5108/api/v1/account/delete/${accountId.accountDetail}`, {
+      timeout: 10000,
+      withCredentials:true,
+      // headers:{
+      //   'Authorization': `Bearer ${session}`
+      // }
+  });
     console.log(response);
-    if (response.ok) {
+    if (response.data.statusCode == 200) {
       Toast.show({
         type:'success',
         text1:'Xóa tài khoản thành công',
         position:'bottom'
       })
-      // router.replace('/web/Admin/');
+      router.replace('/web/Receptionist/accounts/');
     } else {
-      const errorMessage = await response.text();
       Toast.show({
         type:'error',
-        text1:'Xóa tài khoản không thành công' + errorMessage,
+        text1:'Xóa tài khoản không thành công' ,
         position:'bottom'
       })
-      setError(`Error deleting account: ${errorMessage}`);
     }
   } catch (error) {
+    if (axios.isCancel(error)) {
+      Toast.show({
+          type: 'error',
+          text1: 'Lỗi hệ thống! vui lòng thử lại sau',
+          position:'bottom'
+      })
+  }
     console.error('Error deleting account:', error);
     setError('An error occurred. Please try again.');
   } finally {

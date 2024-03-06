@@ -42,6 +42,7 @@ export default function UtilityList() {
           'http://localhost:5108/api/v1/utility/get-all',
         );
         setUtilities(response?.data?.data);
+        console.log(response?.data?.data);
       } catch (error) {
         console.error('Error fetching data:', error);
         setError(t("System error please try again later"));
@@ -64,7 +65,7 @@ export default function UtilityList() {
       }}
       onPress={() =>
         router.push({
-          pathname: `/(mobile)/(screens)/(utility)/schedules/${item.name}`,
+          pathname: `/(mobile)/(screens)/(utility)/schedules/utilitySchedule`,
           params: {
             id: item.id,
             openTime:item.openTime,

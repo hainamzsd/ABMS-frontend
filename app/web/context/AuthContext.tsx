@@ -44,7 +44,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         timeout:10000
        });
         setSession(result.data.data);
-        console.log("mao"+result );
         return result;
     } catch (e) {
       if(axios.isCancel(e)){

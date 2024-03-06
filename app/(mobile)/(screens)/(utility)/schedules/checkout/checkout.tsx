@@ -43,20 +43,25 @@ const Checkout = () => {
         setIsLoading(true);
         try {
           const body = {
-            roomId: "1",
+            room_id: "1",
             utilityId: item.utilityId,
+            utility_detail_id:"149e2c59-be75-490c-a6c1-887caea5b662",
             slot: item.slot,
-            bookingDate: item.date,
-            numberOfPerson: item.ticket,
-            totalPrice: item.total,
+            booking_date: item.date,
+            number_of_person: item.ticket,
+            total_price: item.total,
             description:item.note
           };
       
           console.log('Body:', body);
       
           const response = await axios.post('http://localhost:5108/api/v1/reservation/create', body, {
-            timeout: 5000, 
-          });
+            timeout: 10000, 
+            headers:{
+                'Authorization': `Bearer ${session}`
+            }
+          },
+          );
       
           console.log('Reservation created successfully:', response);
           if(response.data.statusCode==200){
@@ -72,7 +77,6 @@ const Checkout = () => {
           }
         } catch (error) {
           if (axios.isCancel(error)) {
-            // Handle timeout error
             console.error('Request timed out:', error);
             setError(true);
             setErrorText(t("System error please try again later"));

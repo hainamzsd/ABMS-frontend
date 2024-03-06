@@ -29,7 +29,7 @@ interface Account {
 
 export default function AccountManagement() {
     const headers = ['Họ và tên', 'Số điện thoại', 'Email', ''];
-    const [accountData, setAccountData] = useState<Account[]>();
+    const [accountData, setAccountData] = useState<Account[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
    
@@ -60,16 +60,17 @@ export default function AccountManagement() {
 
         fetchData();
     }, []);
+    console.log(accountData);
     return (
         <View style={{ flex: 1, backgroundColor: '#F9FAFB' }}>
             <SafeAreaView style={{flex:1}}>
                 <ScrollView style={{ paddingHorizontal: 30, paddingVertical: 30,flex:1 }}>
                     <View style={{ marginBottom: 20 }}>
                         <Text style={{ fontWeight: 'bold', fontSize: 20, marginBottom: 5 }}>Danh sách tài khoản</Text>
-                        <Text>Thông tin tài khoản của quản lý chung cư</Text>
+                        <Text>Thông tin tài khoản của lễ tân</Text>
                     </View>
-                    <Link href={"/web/Admin/create"}>
-                    <Button text="Tạo tài khoản ban quản lý" style={{width:200}}></Button>
+                    <Link href={"/web/CMB/accounts/create"}>
+                    <Button text="Tạo tài khoản lễ tân" style={{width:200}}></Button>
                     </Link>
                     <View style={styles.searchContainer}>
                         <View style={styles.searchWrapper}>
@@ -89,7 +90,7 @@ export default function AccountManagement() {
                         </TouchableOpacity> */}
                     </View>
                     {isLoading && <ActivityIndicator size={'large'} color={'#171717'}></ActivityIndicator>}
-                    {!accountData ? <Text style={{marginBottom:10, fontSize:18,fontWeight:'600'}}>Chưa có dữ liệu</Text>:
+                    {accountData?.length==0 ? <Text style={{marginBottom:10, fontSize:18,fontWeight:'600'}}>Chưa có dữ liệu</Text>:
                           <TableComponent headers={headers}>
                             <FlatList data={accountData}
                             renderItem={({ item }) => <TableRow>
@@ -97,7 +98,7 @@ export default function AccountManagement() {
                                 <Cell>{item.phoneNumber}</Cell>
                                 <Cell>{item.email}</Cell>
                                 <Cell>
-                                    <Link href={`/web/Admin/${item.id}`}
+                                    <Link href={`/web/CMB/accounts/${item.id}`}
                                     >
                                         <Button text="Chi tiết" />
                                     </Link>

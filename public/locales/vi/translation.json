@@ -149,7 +149,8 @@
     "Total money":"Tổng tiền",
     "Create reservation":"Tạo phiếu đặt chỗ",
     "Failed to create reservation":"Tạo phiếu đặt chỗ thất bại",
-    "Booking unsuccessful":"Đặt chỗ không thành công"
+    "Booking unsuccessful":"Đặt chỗ không thành công",
+    "You don't have any bookings":"Bạn không có bất kỳ đặt chỗ nào"
 
   }
 }

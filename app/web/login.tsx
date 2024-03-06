@@ -45,6 +45,7 @@ const Login: React.FC = () => {
           position:'bottom'
         });
         const data:User =  jwtDecode(token.data.data);
+        console.log(data.Role);
         if(data.Role===3){
           Toast.show({
             type: "error",
@@ -53,10 +54,10 @@ const Login: React.FC = () => {
           });
           return;
         }
-        if(data.Role===1){
+        if(data.Role==1){
           router.replace('/web/CMB/')
         }
-        else if(data.Role===2){
+        else if(data.Role==2){
           router.replace('/web/Receptionist/')
         }
         else{

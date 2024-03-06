@@ -41,18 +41,16 @@ const LoginScreen = () => {
     setIsLoading(true); // Set loading state to true before making request
       setErrorText(null);
     try {
-      const timeoutId = setTimeout(() => {
-        setError(true);
-        throw new Error('Request timed out.');
-      }, 5000); 
-      const token = await Promise.race([
-        signIn(phone, password),
-        new Promise((resolve, reject) => {
-          return clearTimeout(timeoutId);
-        }),
-      ]);
-      if(token.error) {
+  
+      const result = await signIn(phone, password)
+       console.log(result.data)
+       if(result.data.errMsg=="User not found!"){
         setErrorText(t("There is no account in the system, please check your phone number and password"));
+        return;
+       }
+      if(result.error) {
+        setErrorText(t("There is no account in the system, please check your phone number and password"));
+        return;
       }
       else{
         router.replace('/')

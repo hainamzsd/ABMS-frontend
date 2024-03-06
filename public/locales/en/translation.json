@@ -150,6 +150,7 @@
     "Create reservation":"Create reservation",
     "Failed to create reservation":"Failed to create reservation",
     "Booking unsuccessful":"Booking unsuccessful",
-    "Sân bóng rổ":"Basketball court"
+    "Sân bóng rổ":"Basketball court",
+    "You don't have any bookings":"You don't have any bookings"
   }
 }

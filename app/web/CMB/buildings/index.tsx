@@ -9,8 +9,8 @@ const Page = () => {
   const headers = ['Name', 'Address', 'Number of floors', 'Room/floor', 'Status', ""];
   return (
     <View style={{ flex: 1,backgroundColor: '#F9FAFB' }}>
-    <SafeAreaView>
-        <ScrollView style={{ paddingHorizontal: 30, paddingVertical: 30 }}>
+    <SafeAreaView style={{flex:1}}>
+        <ScrollView style={{ paddingHorizontal: 30, paddingVertical: 30,flex:1 }}>
             <View style={{ marginBottom: 20 }}>
                 <Text style={{ fontWeight: 'bold', fontSize: 20, marginBottom: 5 }}>Danh sách tòa nhà đang quản lý</Text>
                 <Text>Thông tin các tòa nhà</Text>
