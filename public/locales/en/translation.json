@@ -151,6 +151,18 @@
     "Failed to create reservation":"Failed to create reservation",
     "Booking unsuccessful":"Booking unsuccessful",
     "Sân bóng rổ":"Basketball court",
-    "You don't have any bookings":"You don't have any bookings"
+    "You don't have any bookings":"You don't have any bookings",
+    "Utility location list":"Utility location list",
+    "Start time":"Start time",
+    "Choose time":"Choose time",
+    "End time":"End time",
+    "Do you confirm your request":"Do you confirm your request",
+    "Request unsuccessful" :"Request unsuccessful",
+    "Failed to create request":"Failed to create request",
+    "Create request":"Create request",
+    "Request successful":"Request successful",
+    "Your request has been created successfuly, please wait for the receptionist to confirm":"Your request has been created successfuly, please wait for the receptionist to confirm",
+    "There has been a request to use the elevator at this time, please choose another time":"There has been a request to use the elevator at this time, please choose another time",
+    "You dont have any elevator requests":"You dont have any elevator requests"
   }
 }

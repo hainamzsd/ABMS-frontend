@@ -55,7 +55,7 @@ const Checkout = () => {
       
           console.log('Body:', body);
       
-          const response = await axios.post('http://localhost:5108/api/v1/reservation/create', body, {
+          const response = await axios.post('https://abmscapstone2024.azurewebsites.net/api/v1/reservation/create', body, {
             timeout: 10000, 
             headers:{
                 'Authorization': `Bearer ${session}`

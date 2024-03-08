@@ -41,7 +41,7 @@ const ReservationUtilityList = () => {
             setIsLoading(true);
             setError(null);
             try {
-                const response = await axios.get('http://localhost:5108/api/v1/reservation/get',{
+                const response = await axios.get('https://abmscapstone2024.azurewebsites.net/api/v1/reservation/get',{
                     timeout:10000
                 });
                 setData(response.data.data); // Store all data
@@ -92,7 +92,7 @@ const ReservationUtilityList = () => {
             router.push({
               pathname: `/(mobile)/(screens)/(utility)/(reservation)/${item.room_id}`,
               params: {
-
+                
               },
             })}>
         <View style={{ borderBottomWidth: 1,borderColor:'#9c9c9c' }}>

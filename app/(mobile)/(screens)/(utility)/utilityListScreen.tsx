@@ -21,6 +21,7 @@ interface Utility {
   description: string;
   createUser: string;
   createTime: string;
+  location:string;
   modifyUser: string;
   modifyTime: string;
   status: number;
@@ -39,7 +40,7 @@ export default function UtilityList() {
 
       try {
         const response = await axios.get(
-          'http://localhost:5108/api/v1/utility/get-all',
+          'https://abmscapstone2024.azurewebsites.net/api/v1/utility/get-all',
         );
         setUtilities(response?.data?.data);
         console.log(response?.data?.data);
@@ -65,14 +66,12 @@ export default function UtilityList() {
       }}
       onPress={() =>
         router.push({
-          pathname: `/(mobile)/(screens)/(utility)/schedules/utilitySchedule`,
+          pathname: `/(mobile)/(screens)/(utility)/schedules/utilityPlace`,
           params: {
             id: item.id,
-            openTime:item.openTime,
-            closeTime:item.closeTime,
-            numberOfSlot:item.numberOfSlot,
-            price:item.pricePerSlot,
-            utilityName:item.name
+            location : item.location,
+            utilityName:item.name,
+            price:item.pricePerSlot
           },
         })
       }

@@ -21,7 +21,7 @@ import { Pressable } from "react-native";
 import { Image } from "react-native";
 import LoadingComponent from "../../components/resident/loading";
 import AlertWithButton from "../../components/resident/AlertWithButton";
-
+import "core-js/stable/atob";
 const LoginScreen = () => {
   const [currentLanguage, setCurrentLanguage] = useState(i18n.language);
   const changeLanguage = (languageCode: string) => {

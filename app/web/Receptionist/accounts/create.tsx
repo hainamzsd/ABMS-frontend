@@ -10,6 +10,7 @@ import Toast from 'react-native-toast-message';
 import { Avatar } from 'react-native-paper';
 import * as Yup from 'yup'
 import { validatePassword } from '../../../../utils/passwordValidate';
+import { useAuth } from '../../context/AuthContext';
 
 const validationSchema = Yup.object().shape({
     email: Yup.string().email('Email không hợp lệ').required('Email không được trống'),
@@ -36,6 +37,7 @@ const validationSchema = Yup.object().shape({
 
 const page = () => {
     const navigation = useNavigation();
+    const { session } = useAuth();
     const [password, setPassword] = useState("");
     const [reEnterPassword, setReEnterPassword] = useState("");
     const [phoneNumber, setPhoneNumber] = useState("");
@@ -78,8 +80,11 @@ const page = () => {
                 re_password:reEnterPassword,
                 email:email,
             }, { abortEarly: false });
-            const response = await axios.post('http://localhost:5108/api/v1/account/register', bodyData, {
-                timeout: 10000
+            const response = await axios.post('https://abmscapstone2024.azurewebsites.net/api/v1/account/register', bodyData, {
+                timeout: 10000,
+                headers:{
+                    'Authorization': `Bearer ${session}`
+                }
             });
             if (response.data.statusCode == 200) {
                 Toast.show({

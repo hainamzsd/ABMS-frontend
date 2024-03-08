@@ -40,7 +40,7 @@ export default function AccountManagement() {
             setError(null); // Clear any previous errors
 
             try {
-                const response = await axios.get(`http://localhost:5108/api/v1/account/get?role=1`, {
+                const response = await axios.get(`https://abmscapstone2024.azurewebsites.net/api/v1/account/get?role=1`, {
                     timeout:100000
                 });
                 setAccountData(response.data.data); // Set account data
@@ -93,7 +93,11 @@ export default function AccountManagement() {
                     {!accountData ? <Text style={{marginBottom:10, fontSize:18,fontWeight:'600'}}>Chưa có dữ liệu</Text>:
                           <TableComponent headers={headers}>
                             <FlatList data={accountData}
-                            renderItem={({ item }) => <TableRow>
+                            renderItem={({ item }) =>
+                            {
+                                console.log(item);
+                                return(
+                            <TableRow >
                                 <Cell>{item.fullName}</Cell>
                                 <Cell>{item.phoneNumber}</Cell>
                                 <Cell>{item.email}</Cell>
@@ -103,7 +107,7 @@ export default function AccountManagement() {
                                         <Button text="Chi tiết" />
                                     </Link>
                                 </Cell>
-                            </TableRow>
+                            </TableRow>)}
                             }
                             keyExtractor={(item: Account) => item.id}
                         /> 
