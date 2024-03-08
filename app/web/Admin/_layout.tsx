@@ -1,6 +1,4 @@
-import { Link, Stack, useNavigation, usePathname } from "expo-router";
-import { Menu as PaperMenu } from "react-native-paper";
-import styles from "./styles"
+import { Link, Redirect, Stack, useNavigation, usePathname } from "expo-router";
 import {
     Dimensions,
     Image,
@@ -13,8 +11,13 @@ import {
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import Navbar from "../../../components/layout/web/navbar";
+import { useAuth } from "../context/AuthContext";
+import { jwtDecode } from "jwt-decode";
+import Toast from "react-native-toast-message";
 
-const _layout = () => {
+const Layout = () => {
+    const {session,signOut} = useAuth();
+    
     const [windowWidth, setWindowWidth] = useState(
         Dimensions.get("window").width,
     );
@@ -30,21 +33,34 @@ const _layout = () => {
         return () => {};
       }, []);
     const [isMobile, setIsMobile] = useState(windowWidth < 768);
-
+    if (!session) {
+        return <Redirect href="/web/login" />;
+      }
+      const user:any = jwtDecode(session);
+      if(user.Role!=0){
+        Toast.show({
+            type: 'error',
+            text1: 'Bạn không có quyền truy cập trang này',
+        })
+        signOut();
+      }
     return (
         <>
             {/* <Stack.Screen options={{ headerShown: false }}></Stack.Screen> */}
             {!isMobile && (
-                <Navbar />
+                <Navbar navigation={[ {
+                    name: "Quản lý tài khoản",
+                    href: "/web/Admin"
+                }]} />
             )}
-            <View style={styles.container}>
-                <Stack screenOptions={{ headerShown: false }}>
-                    <Stack.Screen name="/web/Admin"></Stack.Screen>
-                    <Stack.Screen name="/web/Adnmin/accounts"></Stack.Screen>
+            <View style={{flex:1}}>
+                <Stack screenOptions={{ headerShown: false }} initialRouteName="index">
+                    <Stack.Screen name="index"></Stack.Screen>
+                    <Stack.Screen name="create"></Stack.Screen>
                 </Stack>
             </View>
         </>
     )
 }
 
-export default _layout
+export default Layout

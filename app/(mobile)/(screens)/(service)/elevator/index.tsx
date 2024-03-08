@@ -40,12 +40,12 @@ import {
     const renderItem = ({ item }: any) => (
       <Pressable style={styles.featureBox}>
         <Link href={item.path}>
-          <View style={{}}>
+          <View style={{flex:1}}>
           <View style={[styles.circle, { backgroundColor: theme.sub }]}>
             {item.icon}
           </View>
             <View style={styles.textContainer}>
-              <Text style={{ flexShrink: 1 }}>{t(item.serviceName)}</Text>
+              <Text style={{ }}>{t(item.serviceName)}</Text>
             </View>
           </View>
         </Link>
@@ -95,6 +95,7 @@ import {
       marginRight: 10,
     },
     textContainer: {
+      flex:0.7
     },
   });
   

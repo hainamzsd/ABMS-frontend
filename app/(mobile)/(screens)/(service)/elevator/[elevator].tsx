@@ -1,5 +1,5 @@
 import { useLocalSearchParams } from 'expo-router';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, ScrollView, StyleSheet, Pressable } from 'react-native';
 import Header from '../../../../../components/resident/header';
 import { SafeAreaView } from 'react-native';
@@ -8,12 +8,70 @@ import { useTheme } from '../../../context/ThemeContext';
 import { moneyFormat } from '../../../../../utils/moneyFormat';
 import { Ticket } from 'lucide-react-native';
 import SHADOW from '../../../../../constants/shadow';
+import axios from 'axios';
+import AlertWithButton from '../../../../../components/resident/AlertWithButton';
+import LoadingComponent from '../../../../../components/resident/loading';
+
+interface Elevator{
+    id: string
+    roomId: string,
+    startTime: Date,
+    endTime: Date,
+    description: string,
+    status: number,
+  }
+
 const Page = () => {
     const item = useLocalSearchParams();
     const { t } = useTranslation();
     const { theme } = useTheme();
+    const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState<string>("");
+    const [data, setData] = useState<Elevator>();
+  const [showError, setShowError] = useState(false);
+  const [startDate, setStartDate] = useState<Date>(new Date());
+  const [endDate, setEndDate] = useState<Date>(new Date());
+  const [status, setStatus] = useState("");
+    useEffect(() => {
+      const fetchItems = async () => {
+          setIsLoading(true);
+          setError("");
+          try {
+              const response = await axios.get(`http://10.0.2.2:5108/api/v1/elevator/get/${item.elevator}`,{
+                  timeout:10000
+              });
+              if(response.data.statusCode == 200){
+                setData(response.data.data);
+                if(data){
+                    setStartDate(new Date(data.startTime))
+                    setEndDate(new Date(data.endTime))
+                    if(data.status==2){
+                        setStatus(t("Pending"));
+                    }
+                }
+              }
+          } catch (error) {
+              if(axios.isAxiosError(error)){
+                setShowError(true);
+                  setError(t("System error please try again later")+".");
+                  return;
+              }
+              setShowError(true);
+              console.error('Error fetching reservations:', error);
+              setError(t('Failed to return requests')+".");
+          } finally {
+              setIsLoading(false);
+          }
+      };
+      fetchItems();
+  }, [data]); 
     return (
         <>
+           <AlertWithButton 
+      title={t("Error")}
+      visible={showError}
+      content={error} onClose={() =>setShowError(false)}></AlertWithButton>
+      <LoadingComponent loading={isLoading}></LoadingComponent>
             <Header headerTitle={t("Elevator request information")} />
             <SafeAreaView style={{ backgroundColor: theme.background, flex: 1, justifyContent: 'space-between' }}>
                 <View style={{ flex: 1 }}>
@@ -23,28 +81,40 @@ const Page = () => {
                                 <Text style={{ fontSize: 20, fontWeight: 'bold', marginBottom: 10 }}>{t("Status")}</Text>
                                 <View style={{
                                     padding: 10, borderRadius: 20, backgroundColor: theme.primary,
-                                    justifyContent: 'center', height: 40                               }}>
-                                    <Text style={{ fontWeight: 'bold' }}>Success</Text>
+                                    justifyContent: 'center', height: 40}}>
+                                    <Text style={{ fontWeight: 'bold' }}>{status}</Text>
                                 </View>
                             </View>
                             <View style={[styles.reservationBox, { paddingHorizontal: 20, paddingBottom: 20 }]}>
                                 <View style={styles.reservationinformation}>
                                     <Text>{t("Start date")}:</Text>
-                                    <Text style={styles.highlightText}>2/2/2022</Text>
+                                    <Text style={styles.highlightText}>{startDate.toLocaleDateString('vi')}</Text>
+                                </View>
+                                <View style={styles.reservationinformation}>
+                                    <Text>{t("Start time")}:</Text>
+                                    <Text style={styles.highlightText}>{
+                                        `${startDate.getUTCHours().toString().padStart(2, '0')}:${startDate.getUTCMinutes().toString().padStart(2, '0')}`
+                                    }</Text>
                                 </View>
                                 <View style={styles.reservationinformation}>
                                     <Text>{t("End date")}:</Text>
-                                    <Text style={styles.highlightText}>2/2/2022</Text>
+                                    <Text style={styles.highlightText}>{endDate.toLocaleDateString('vi')}</Text>
+                                </View>
+                                <View style={styles.reservationinformation}>
+                                    <Text>{t("End time")}:</Text>
+                                    <Text style={styles.highlightText}>{
+                                        `${endDate.getUTCHours().toString().padStart(2, '0')}:${endDate.getUTCMinutes().toString().padStart(2, '0')}`
+                                    }</Text>
                                 </View>
                                 <View style={styles.reservationinformation}>
                                     <Text>{t("Note")}:</Text>
-                                    <Text style={{fontSize:16}}>Hoa la canh cay</Text>
+                                    <Text style={{fontSize:16}}>{data?.description}</Text>
                                 </View>
                             </View>
                         </View>
                     </ScrollView>
                 </View>
-                <View style={{
+                {data?.status==2 &&  <View style={{
                     justifyContent: 'center',
                     alignItems: 'center',
                     flexDirection: 'row',
@@ -61,7 +131,8 @@ const Page = () => {
                     >
                         <Text style={{ fontWeight: "bold", fontSize: 20 }}>{t("Delete")}</Text>
                     </Pressable>
-                </View>
+                </View>}
+               
             </SafeAreaView>
         </>
     );

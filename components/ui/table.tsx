@@ -37,10 +37,11 @@ const Cell: React.FC<CellProps> = ({ children }) => {
 
 interface TableRowProps {
   children: React.ReactNode;
+  active?:boolean
 }
 
 const TableRow: React.FC<TableRowProps> = ({ children }) => {
-  return <View style={styles.row}>{children}</View>;
+  return <View style={[styles.row]}>{children}</View>;
 };
 
 

@@ -149,7 +149,20 @@
     "Total money":"Tổng tiền",
     "Create reservation":"Tạo phiếu đặt chỗ",
     "Failed to create reservation":"Tạo phiếu đặt chỗ thất bại",
-    "Booking unsuccessful":"Đặt chỗ không thành công"
-
+    "Booking unsuccessful":"Đặt chỗ không thành công",
+    "You don't have any bookings":"Bạn không có bất kỳ phiếu đặt chỗ nào",
+    "Utility location list":"Danh sách vị trí tiện ích",
+    "Start time":"Thời gian bắt đầu",
+    "Choose time":"Chọn thời gian",
+    "End time":"Thời gian kết thúc",
+    "Do you confirm your request":"Bạn có xác nhận yêu cầu của mình không",
+    "Request unsuccessful" :"Yêu cầu không thành công",
+    "Failed to create request, try again later":"Tạo yêu cầu thất bại",
+    "Create request":"Tạo yêu cầu",
+    "Request successful":"Yêu cầu thành công",
+    "Your request has been created successfuly, please wait for the receptionist to confirm":"Yêu cầu của bạn đã được tạo thành công, vui lòng chờ lễ tân xác nhận",
+    "There has been a request to use the elevator at this time, please choose another time":"Đã có yêu cầu sử dụng thang máy vào thời gian này, vui lòng chọn thời gian khác",
+    "You dont have any elevator requests":"Bạn không có bất kỳ yêu cầu sử dụng thang máy nào",
+    "Booking history":"Lịch sử đặt chỗ"
   }
 }

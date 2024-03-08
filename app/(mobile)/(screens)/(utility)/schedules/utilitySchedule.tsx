@@ -17,30 +17,75 @@ import { setCalendarLocale } from "../../../../../utils/calendarLanguage";
 import { useLanguage } from "../../../context/LanguageContext";
 import { useEffect, useState } from "react";
 import { calculateSlots } from "../../../../../utils/convertSlot";
+import axios from "axios";
+import LoadingComponent from "../../../../../components/resident/loading";
+import AlertWithButton from "../../../../../components/resident/AlertWithButton";
 
-interface schedule{
+interface Schedule{
   openTime: string;
   closeTime: string;
   numberOfSlot: number;
 }
 
+interface Utility{
+  id: string;
+  name: string;
+  openTime: string;
+  closeTime: string;
+  numberOfSlot: string;
+  pricePerSlot: string;
+  location:string;
+}
 export default function Schedule() {
-  const item = useLocalSearchParams();
+  const utility = useLocalSearchParams();
   const { theme } = useTheme();
   const { t } = useTranslation();
   const { currentLanguage } = useLanguage();
   const [slots, setSlots] = useState<Array<{ index: number; slot: string }>>([]);
+  const [error, setError] = useState<string>("");
+  const [showError, setShowError] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [ utilityData, setUtilityData] = useState<Utility>();
+  const [utilityPlace, setUtilityPlace] = useState();
   const [selectedSlotString, setSelectedSlotString] = useState<any>();
   useEffect(() => {
-    if (item) {
-      const numSlots = Number(item.numberOfSlot);
+    const fetchData = async () => {
+      setIsLoading(true);
+      setError("");
+      try {
+        const response = await axios.get(
+          `https://abmscapstone2024.azurewebsites.net/api/v1/utility/get/${utility.id}`,{
+            timeout:10000
+          }
+        );
+        console.log(response?.data?.data);
+        setUtilityData(response.data.data);
+      } catch (error) {
+        if(axios.isCancel(error)){
+          setShowError(true);
+          setError(t("System error please try again later"));
+          return;
+        }
+        console.error('Error fetching data:', error);
+        setShowError(true);
+        setError(t("System error please try again later"));
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+  useEffect(() => {
+    if (utilityData) {
+      const numSlots = Number(utilityData.numberOfSlot);
       if (isNaN(numSlots)) {
         // Optional: Set an error state or handle invalid data
         console.error('Invalid number of slots.');
       } else {
         const calculatedSlots = calculateSlots(
-          item.openTime as string,
-          item.closeTime as string,
+          utilityData.openTime as string,
+          utilityData.closeTime as string,
           numSlots
         );
         const slotsWithIndex = calculatedSlots.map((slot, index) => ({
@@ -50,7 +95,7 @@ export default function Schedule() {
         setSlots(slotsWithIndex);
       }
     }
-  }, [item]);
+  }, [utilityData]);
   const currentDate = new Date();
   const formattedCurrentDate = currentDate.toISOString().split("T")[0];
   setCalendarLocale(currentLanguage);
@@ -70,8 +115,14 @@ export default function Schedule() {
     }
   };
   const isButtonDisabled = selectedSlot === 0 || !selectedDate;
+    const maxDate = new Date(currentDate.getTime() + 14);
+    maxDate.setDate(maxDate.getDate() + 14);
+    const formattedMaxDate = maxDate.toISOString().split("T")[0];
   return (
     <>
+    <AlertWithButton title={t("Error")} content={error} visible={showError}
+    onClose={()=>setShowError(false)}></AlertWithButton>
+    <LoadingComponent loading={isLoading}></LoadingComponent>
       <Header headerTitle={t("Register utility")} />
       <SafeAreaView
         style={{
@@ -86,6 +137,7 @@ export default function Schedule() {
             <View style={styles.schedule}>
               <Calendar
                 minDate={formattedCurrentDate}
+                maxDate={formattedMaxDate}
                 onDayPress={(day) => handleDayPress(day)}
                 theme={{
                   textDayFontSize: 18,
@@ -106,6 +158,8 @@ export default function Schedule() {
               {t("Choose hour")}
             </Text>
             <FlatList
+            horizontal
+            style={{padding:10}}
               data={slots}
               renderItem={({ item }) => (
                 <Pressable
@@ -127,7 +181,6 @@ export default function Schedule() {
                   </Text>
                 </Pressable>
               )}
-              numColumns={2}
               keyExtractor={(item) => item.index.toString()}
             />
           </View>
@@ -149,9 +202,9 @@ export default function Schedule() {
                   date: selectedDate,
                   slot: selectedSlot,
                   slotString: selectedSlotString,
-                  utilityId: item.id,
-                  price:item.price,
-                  utilityName:item.utilityName
+                  // utilityId: item.id,
+                  price:utility.price,
+                  // utilityName:item.utilityName
                 },
               })
             }
@@ -184,9 +237,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     alignItems: "center",
     justifyContent: "center",
-    width: "45%",
-    marginTop: 10,
-    marginRight: 10,
+    marginRight:5
   },
   button: {
     padding: 20,
