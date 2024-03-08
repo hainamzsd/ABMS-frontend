@@ -2,27 +2,10 @@ import React, { useEffect } from 'react'
 import { View, SafeAreaView, Text, FlatList } from 'react-native'
 import Input from '../../../../components/ui/input';
 import PostItem from '../../../../components/ui/PostItem';
+import { posts } from "../../../../constants/fakeData"
 
-const PostManagement = () => {
-  const posts = [{
-    id: '1',
-    title: 'Post Title One',
-    content: 'This is the content of the first post...',
-    date: '2023-01-01',
-    imageUrl: 'https://images.pexels.com/photos/1254736/pexels-photo-1254736.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
-  },
-  {
-    id: '2',
-    title: 'Post Title Second',
-    content: 'This is the content of the first post...',
-    date: '2023-01-01',
-    imageUrl: 'https://images.pexels.com/photos/1254736/pexels-photo-1254736.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
-  }
-  ]
-
+const PostList = () => {
   useEffect(() => {
-
-
   }, [])
 
   return (
@@ -35,6 +18,7 @@ const PostManagement = () => {
           </View>
           <View style={{ marginBottom: 10 }}>
             <Input placeholder="Tìm tên tài khoản" style={{ width: '100%', paddingVertical: 10 }} />
+            {/* Filter */}
           </View>
         </View>
         <FlatList
@@ -46,13 +30,14 @@ const PostManagement = () => {
               content={item.content}
               date={item.date}
               imageUrl={item.imageUrl}
-              href="/web/Receptionist/posts/1"
+              href={`/web/Receptionist/posts/${item.id}`}
             />
           )}
           keyExtractor={item => item.id} />
       </SafeAreaView>
+      {/* Paging */}
     </View>
   )
 }
 
-export default PostManagement
+export default PostList
