@@ -4,8 +4,7 @@ import Button from "../../../../components/ui/button";
 import { Cell, TableComponent, TableRow } from "../../../../components/ui/table";
 import Input from "../../../../components/ui/input";
 import styles from "./styles";
-import { icons } from "../../../../constants"
-
+import { icon } from "../../../../constants"
 export default function AccountManagement() {
     const headers = ['Tên đăng nhập', 'Họ và tên', 'Vai trò', 'edaed', ''];
 
@@ -28,7 +27,7 @@ export default function AccountManagement() {
                         </View>
                         <TouchableOpacity style={styles.searchBtn} onPress={() => { }}>
                             <Image
-                                source={icons.search}
+                                source={icon.search}
                                 resizeMode="contain"
                                 style={styles.searchBtnIcon}
                             ></Image>
@@ -42,12 +41,14 @@ export default function AccountManagement() {
                             <Cell>Quản lý toà nhà</Cell>
                             <Cell>aaa</Cell>
                             <Cell>
-                                <Link href={'/web/Admin/accountManagement/accountDetail'}>
+                                <Link href={'/web/Admin/accounts/1'}>
                                     <Button text="Chi tiết" />
                                 </Link>
-                                <Link style={{ paddingLeft: '4px' }} href={''}>
+                                {/* <Link style={{ paddingLeft: '4px' }} href={''}>
                                     <Button style={{ backgroundColor: 'red' }} text="Xoá" />
-                                </Link>
+                                </Link> */}
+                                {/* Modal delete */}
+                                <Button style={{ backgroundColor: 'red' }} text="Xoá" />
                             </Cell>
                         </TableRow>
                     </TableComponent>
