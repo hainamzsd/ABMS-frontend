@@ -60,12 +60,12 @@ const PostDetail = () => {
                   onChangeText={text => setContent(text)} // for android and ios
                   w="100%" maxW="100%" />
               </FormControl>
-              {image ? <> <ButtonBase leftIcon={<Icon as={Ionicons} name="cloud-upload-outline" size="sm" />}>
+              {image ? <> <ButtonBase onPress={handleChoosePhoto} leftIcon={<Icon as={Ionicons} name="cloud-upload-outline" size="sm" />}>
                 Upload
               </ButtonBase>
                 <Image mt={2} source={{ uri: image }} size="md" /></> :
                 <FormControl mb="3">
-                  <ButtonBase leftIcon={<Icon as={Ionicons} name="cloud-upload-outline" size="sm" />}>
+                  <ButtonBase onPress={handleChoosePhoto} leftIcon={<Icon as={Ionicons} name="cloud-upload-outline" size="sm" />}>
                     Upload
                   </ButtonBase>
                 </FormControl>

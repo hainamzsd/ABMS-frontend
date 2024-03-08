@@ -56,7 +56,7 @@ const CreatePost = () => {
                                     w="100%" maxW="100%" />
                             </FormControl>
                             <FormControl mb="3">
-                                <ButtonBase leftIcon={<Icon as={Ionicons} name="cloud-upload-outline" size="sm" />}>
+                                <ButtonBase onPress={handleChoosePhoto} leftIcon={<Icon as={Ionicons} name="cloud-upload-outline" size="sm" />}>
                                     Upload
                                 </ButtonBase>
                             </FormControl>
