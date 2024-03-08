@@ -42,7 +42,7 @@ const Checkout = () => {
     const [error, setError] = useState(false);
     const [errorText, setErrorText] = useState("");
    
-    const [room, setRoom] = useState<Room>();
+    const [room, setRoom] = useState<Room[]>([]);
     useEffect(() => {
         const fetchData = async () => {
         setErrorText("");
@@ -52,7 +52,13 @@ const Checkout = () => {
                 timeout:10000
               }
             );
-            setRoom(response?.data?.data);
+            if(response.data.statusCode==200){
+                setRoom(response?.data?.data);
+            }
+            else{
+                setError(true);
+                setErrorText(t("System error please try again later"));
+            }
           } catch (error) {
             if(axios.isCancel(error)){
                 setError(true);
@@ -68,15 +74,16 @@ const Checkout = () => {
         fetchData();
       }, [session]);
       
-
+      const [disableBtn, setDisableBtn] = useState(false);
     const handleCreateReservation = async () => {
         setIsLoading(true);
+        setDisableBtn(true);
         try {
           const body = {
-            room_id: "1",
+            room_id: room[0].id,
             utilityId: item.utilityId,
             utility_detail_id:item.utitlityDetailId,
-            slot: item.slot,
+            slot: item.slotString,
             booking_date: item.date,
             number_of_person: item.ticket,
             total_price: item.total,
@@ -115,6 +122,7 @@ const Checkout = () => {
         } finally {
           setIsLoading(false);
           setAlertVisible(false);
+          setDisableBtn(false);
         }
       };
     return (
@@ -178,7 +186,7 @@ const Checkout = () => {
                                 </View>
                                 <View style={styles.reservationinformation}>
                                     <Text>{t("Room")}</Text>
-                                    <Text style={styles.highlightText}>{room?.roomNumber}</Text>
+                                    <Text style={styles.highlightText}>{room[0]?.roomNumber}</Text>
                                 </View>
                             </View>
                         </View>
@@ -207,6 +215,7 @@ const Checkout = () => {
                         content={t("Do you confirm your utility reservation?")}
                         onClose={handleClose}
                         onConfirm={handleCreateReservation}
+                        disable={disableBtn}
                     />
                     <Alert 
                     visible={alertConfirmVisible}

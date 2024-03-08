@@ -76,7 +76,6 @@ export const AuthProvider = ({ children }: any) => {
         token: result.data.data,
       });
         setSession(result.data.data);
-        console.log("mao"+result );
         return result;
     } catch (e) {
       if(axios.isCancel(e)){

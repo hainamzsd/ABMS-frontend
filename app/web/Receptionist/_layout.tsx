@@ -26,8 +26,12 @@ const _layout = () => {
         href: "/web/Receptionist/accounts",
       },
       {
+        name: "Quản lý dịch vụ",
+        href: "/web/Receptionist/services",
+      },
+      {
         name: "Quản lý bài viết",
-        href: "/web/CMB/posts",
+        href: "/web/Receptionist/posts",
       },
     ];
     const [windowWidth, setWindowWidth] = useState(

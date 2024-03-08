@@ -48,6 +48,10 @@ const LoginScreen = () => {
         setErrorText(t("There is no account in the system, please check your phone number and password"));
         return;
        }
+       if(result.data.errMsg=="Wrong password!"){
+        setErrorText(t("Wrong password"));
+        return;
+       }
       if(result.error) {
         setErrorText(t("There is no account in the system, please check your phone number and password"));
         return;

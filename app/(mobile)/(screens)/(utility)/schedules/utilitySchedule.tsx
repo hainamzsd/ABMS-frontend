@@ -20,7 +20,8 @@ import { calculateSlots } from "../../../../../utils/convertSlot";
 import axios from "axios";
 import LoadingComponent from "../../../../../components/resident/loading";
 import AlertWithButton from "../../../../../components/resident/AlertWithButton";
-
+import { parseISO, format, compareAsc } from 'date-fns';
+import moment from 'moment';
 interface Schedule{
   openTime: string;
   closeTime: string;
@@ -48,6 +49,11 @@ export default function Schedule() {
   const [ utilityData, setUtilityData] = useState<Utility>();
   const [utilityPlace, setUtilityPlace] = useState();
   const [selectedSlotString, setSelectedSlotString] = useState<any>();
+
+
+
+
+
   useEffect(() => {
     const fetchData = async () => {
       setIsLoading(true);
@@ -58,7 +64,6 @@ export default function Schedule() {
             timeout:10000
           }
         );
-        console.log(response?.data?.data);
         setUtilityData(response.data.data);
       } catch (error) {
         if(axios.isCancel(error)){
@@ -76,26 +81,27 @@ export default function Schedule() {
 
     fetchData();
   }, []);
-  useEffect(() => {
-    if (utilityData) {
-      const numSlots = Number(utilityData.numberOfSlot);
-      if (isNaN(numSlots)) {
-        // Optional: Set an error state or handle invalid data
-        console.error('Invalid number of slots.');
-      } else {
-        const calculatedSlots = calculateSlots(
-          utilityData.openTime as string,
-          utilityData.closeTime as string,
-          numSlots
-        );
-        const slotsWithIndex = calculatedSlots.map((slot, index) => ({
-          index: index + 1, // Start index from 1
-          slot,
-        }));
-        setSlots(slotsWithIndex);
-      }
-    }
-  }, [utilityData]);
+  // useEffect(() => {
+  //   if (utilityData) {
+  //     const numSlots = Number(utilityData.numberOfSlot);
+  //     if (isNaN(numSlots)) {
+  //       // Optional: Set an error state or handle invalid data
+  //       console.error('Invalid number of slots.');
+  //     } else {
+  //       const calculatedSlots = calculateSlots(
+  //         utilityData.openTime as string,
+  //         utilityData.closeTime as string,
+  //         numSlots
+  //       );
+  //       const slotsWithIndex = calculatedSlots.map((slot, index) => ({
+  //         index: index + 1, // Start index from 1
+  //         slot,
+  //       }));
+  //       setSlots(slotsWithIndex);
+  //     }
+  //   }
+  // }, [utilityData]);
+
   const currentDate = new Date();
   const formattedCurrentDate = currentDate.toISOString().split("T")[0];
   setCalendarLocale(currentLanguage);
@@ -118,6 +124,102 @@ export default function Schedule() {
     const maxDate = new Date(currentDate.getTime() + 14);
     maxDate.setDate(maxDate.getDate() + 14);
     const formattedMaxDate = maxDate.toISOString().split("T")[0];
+
+
+
+    //Filter conflict slots
+  useEffect(() => {
+    const fetchReservations = async () => {
+      setIsLoading(true);
+      setError("");
+      try {
+        const reservationsResponse = await axios.get(
+          `https://abmscapstone2024.azurewebsites.net/api/v1/reservation/get?utilityDetailId=${utility.utitlityDetailId}`, {
+            timeout: 10000,
+          }
+        );
+        if(reservationsResponse.data.statusCode==200){
+        const reservations = reservationsResponse.data.data;
+        if (utilityData) {
+          const numSlots = Number(utilityData.numberOfSlot);
+          if (!isNaN(numSlots)) {
+            let calculatedSlots = calculateSlots(
+              utilityData.openTime,
+              utilityData.closeTime,
+              numSlots
+            );
+  
+            // Filter out slots that conflict with reservations
+            // calculatedSlots = calculatedSlots.filter((slot) => {
+            //   const [slotStart, slotEnd] = slot.split(" - ").map(time => selectedDate + "T" + time + ":00");
+            //   const slotStartTime = new Date(slotStart);
+            //   const slotEndTime = new Date(slotEnd);
+            //   return !reservations.some((reservation: any) => {
+            //     const [reservationStart, reservationEnd] = reservation.slot.split(" - ");
+            //     const reservationDate = new Date(reservation.booking_date);
+            //     const reservationStartTime = new Date(reservationDate.setHours(parseInt(reservationStart.split(":")[0]), parseInt(reservationStart.split(":")[1])));
+            //     const reservationEndTime = new Date(reservationDate.setHours(parseInt(reservationEnd.split(":")[0]), parseInt(reservationEnd.split(":")[1])));
+            //     return (
+            //       (slotStartTime < reservationEndTime && slotStartTime >= reservationStartTime) ||
+            //       (slotEndTime > reservationStartTime && slotEndTime <= reservationEndTime) ||
+            //       (slotStartTime <= reservationStartTime && slotEndTime >= reservationEndTime)
+            //     );
+            //   });
+            // });
+            calculatedSlots = calculatedSlots.filter((slot) => {
+              const [slotStart, slotEnd] = slot.split(" - ");
+
+              // Parse the times as UTC to prevent automatic conversion to the local time zone
+              const slotStartTime = moment.utc(`${selectedDate}T${slotStart}:00`).toDate();
+              const slotEndTime = moment.utc(`${selectedDate}T${slotEnd}:00`).toDate();
+              return !reservations.some((reservation:any) => {
+                const [reservationStart, reservationEnd] = reservation.slot.split(" - ");
+                // Parsing reservation times
+                console.log(moment.utc(`3/10/2024T08:00:00`,'M/D/YYYYTHH:mm:ss').toDate())
+                const reservationStartTime = moment.utc(`${reservation.booking_date}T${reservationStart}:00`,'M/D/YYYYTHH:mm:ss').toDate();
+                const reservationEndTime = moment.utc(`${reservation.booking_date}T${reservationEnd}:00`,'M/D/YYYYTHH:mm:ss').toDate();
+                // console.log(slotStartTime, reservationEndTime)
+                // Check if the slot overlaps with the reservation
+                // Using moment's isBefore, isSame, and isAfter for comparison
+                return (
+                  (slotStartTime < reservationEndTime && slotStartTime >= reservationStartTime) ||
+                  (slotEndTime > reservationStartTime && slotEndTime <= reservationEndTime) ||
+                  (slotStartTime <= reservationStartTime && slotEndTime >= reservationEndTime)
+                );
+              });
+            });
+  
+            // Map slots to include an index
+            const slotsWithIndex = calculatedSlots.map((slot, index) => ({
+              index: index + 1, // Start index from 1
+              slot,
+            }));
+            setSlots(slotsWithIndex);
+          }
+        }
+      }else{
+        setShowError(true);
+        setError(t("System error please try again later"));
+      }
+      } catch (error) {
+        if(axios.isCancel(error)){
+          setShowError(true);
+          setError(t("System error please try again later"));
+          return;
+        }
+        console.error('Error fetching reservations:', error);
+        setShowError(true);
+        setError(t("System error please try again later"));
+      } finally {
+        setIsLoading(false);
+      }
+    };
+  
+    if (utilityData && selectedDate) {
+      fetchReservations();
+    }
+  }, [utilityData, selectedDate]);
+
   return (
     <>
     <AlertWithButton title={t("Error")} content={error} visible={showError}
@@ -202,7 +304,7 @@ export default function Schedule() {
                   date: selectedDate,
                   slot: selectedSlot,
                   slotString: selectedSlotString,
-                  // utilityId: item.id,
+                  utilityId: utility.id,
                   price:utility.price,
                   utilityName:utility.utilityName,
                   location:utility.location,
