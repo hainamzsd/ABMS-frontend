@@ -4,7 +4,6 @@ import Button from "../../../components/ui/button";
 import { Cell, TableComponent, TableRow } from "../../../components/ui/table";
 import Input from "../../../components/ui/input";
 import styles from "./styles";
-import { icons } from "../../../constants"
 import { useEffect, useState } from "react";
 import axios from "axios";
 import Toast from "react-native-toast-message";
