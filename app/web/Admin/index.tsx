@@ -7,12 +7,14 @@ const Dashboard = () => {
   const { user, isLoading } = useAuth();
 
   if (!user) {
-    return <Redirect href="/web/Admin/accountManagement/accountManagement" />;
+    return <Redirect href="/web/Admin/accounts" />;
   }
 
   return (
+    // Liet ke so tai khoan CMB, so building dang quan ly
+    // So account role resident dang su dung
     <View>
-      <Text>Hello world</Text>
+      <Text>Welcome back, Admin</Text>
     </View>
   )
 }
