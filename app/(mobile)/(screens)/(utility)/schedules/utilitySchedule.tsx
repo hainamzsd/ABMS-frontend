@@ -204,7 +204,9 @@ export default function Schedule() {
                   slotString: selectedSlotString,
                   // utilityId: item.id,
                   price:utility.price,
-                  // utilityName:item.utilityName
+                  utilityName:utility.utilityName,
+                  location:utility.location,
+                  utitlityDetailId: utility.utitlityDetailId
                 },
               })
             }

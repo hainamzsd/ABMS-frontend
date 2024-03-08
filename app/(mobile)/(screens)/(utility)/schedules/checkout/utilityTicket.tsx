@@ -94,7 +94,9 @@ export default function UtilityTicket() {
                 utilityName:item.utilityName,
                 slotString:item.slotString,
                 slot:item.slot,
-                utilityId:item.utilityId
+                utilityId:item.utilityId,
+                location:item.location,
+                utitlityDetailId:item.utitlityDetailId
               }
             })}
           style={[

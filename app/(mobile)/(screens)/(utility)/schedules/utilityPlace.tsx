@@ -65,7 +65,9 @@ export default function UtilityPlace() {
             // closeTime:utility.closeTime,
             numberOfSlot:utility.numberOfSlot,
             price:utility.price,
-            // utilityName:utility.utilityName,
+            utilityName:utility.utilityName,
+            location:utility.location,
+            utitlityDetailId:item.id
             // utilityDetailId:item.id
           },
         })

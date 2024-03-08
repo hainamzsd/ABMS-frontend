@@ -163,6 +163,7 @@
     "Request successful":"Request successful",
     "Your request has been created successfuly, please wait for the receptionist to confirm":"Your request has been created successfuly, please wait for the receptionist to confirm",
     "There has been a request to use the elevator at this time, please choose another time":"There has been a request to use the elevator at this time, please choose another time",
-    "You dont have any elevator requests":"You dont have any elevator requests"
+    "You dont have any elevator requests":"You dont have any elevator requests",
+    "Location":"Location"
   }
 }

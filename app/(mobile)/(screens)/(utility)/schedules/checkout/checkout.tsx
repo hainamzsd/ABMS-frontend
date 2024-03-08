@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, SafeAreaView, StyleSheet, ScrollView, Pressable } from 'react-native';
 import Header from '../../../../../../components/resident/header';
 import { Redirect, useLocalSearchParams, useNavigation, Navigator } from 'expo-router';
@@ -18,11 +18,14 @@ import AlertWithButton from '../../../../../../components/resident/AlertWithButt
 interface user{
     FullName:string;
     PhoneNumber:string;
-    RoomId:string;
+    Id:string;
     Avatar:string;
   }
   
-
+interface Room{
+    roomNumber:string;
+    id:string;
+}
 const Checkout = () => {
     const item: any = useLocalSearchParams();
     const { t } = useTranslation();
@@ -35,17 +38,44 @@ const Checkout = () => {
     const handleClose = () => {
         setAlertVisible(false);
     };
-    console.log(item);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState(false);
-    const [errorText, setErrorText] = useState("System error please try again later");
+    const [errorText, setErrorText] = useState("");
+   
+    const [room, setRoom] = useState<Room>();
+    useEffect(() => {
+        const fetchData = async () => {
+        setErrorText("");
+          try {
+            const response = await axios.get(
+              `https://abmscapstone2024.azurewebsites.net/api/v1/resident-room/get?accountId=${user.Id}`,{
+                timeout:10000
+              }
+            );
+            setRoom(response?.data?.data);
+          } catch (error) {
+            if(axios.isCancel(error)){
+                setError(true);
+                setErrorText(t("System error please try again later"));
+            }
+            console.error('Error fetching data:', error);
+            setError(true);
+            setErrorText(t("System error please try again later"));
+          } finally {
+          }
+        };
+    
+        fetchData();
+      }, [session]);
+      
+
     const handleCreateReservation = async () => {
         setIsLoading(true);
         try {
           const body = {
             room_id: "1",
             utilityId: item.utilityId,
-            utility_detail_id:"149e2c59-be75-490c-a6c1-887caea5b662",
+            utility_detail_id:item.utitlityDetailId,
             slot: item.slot,
             booking_date: item.date,
             number_of_person: item.ticket,
@@ -54,7 +84,7 @@ const Checkout = () => {
           };
       
           console.log('Body:', body);
-      
+          
           const response = await axios.post('https://abmscapstone2024.azurewebsites.net/api/v1/reservation/create', body, {
             timeout: 10000, 
             headers:{
@@ -63,7 +93,6 @@ const Checkout = () => {
           },
           );
       
-          console.log('Reservation created successfully:', response);
           if(response.data.statusCode==200){
             setAlertConfirmVisible(true);
             setTimeout(() => {
@@ -77,12 +106,9 @@ const Checkout = () => {
           }
         } catch (error) {
           if (axios.isCancel(error)) {
-            console.error('Request timed out:', error);
             setError(true);
             setErrorText(t("System error please try again later"));
           } else {
-            // Handle other errors
-            console.error('Error creating reservation:', error);
             setError(true);
             setErrorText(t("Failed to create reservation"));
           }
@@ -91,9 +117,10 @@ const Checkout = () => {
           setAlertVisible(false);
         }
       };
-
     return (
         <>
+        <LoadingComponent loading={isLoading}></LoadingComponent>
+
             <Header headerTitle={t("Register confirmation")} />
             <SafeAreaView style={{ backgroundColor: 'white', flex: 1, justifyContent: 'space-between' }}>
                 <View style={{ flex: 1, backgroundColor: theme.background }}>
@@ -119,6 +146,10 @@ const Checkout = () => {
                                             <View style={styles.reservationinformation}>
                                                 <Text>{t("Number of tickets")}:</Text>
                                                 <Text style={styles.highlightText}>{item.ticket}</Text>
+                                            </View>
+                                            <View style={styles.reservationinformation}>
+                                                <Text>{t("Location")}:</Text>
+                                                <Text style={styles.highlightText}>{item.location}</Text>
                                             </View>
                                          
                                         </View>
@@ -146,8 +177,8 @@ const Checkout = () => {
                                     <Text style={styles.highlightText}>{user.PhoneNumber}</Text>
                                 </View>
                                 <View style={styles.reservationinformation}>
-                                    <Text>{t("Email")}</Text>
-                                    <Text style={styles.highlightText}>mail</Text>
+                                    <Text>{t("Room")}</Text>
+                                    <Text style={styles.highlightText}>{room?.roomNumber}</Text>
                                 </View>
                             </View>
                         </View>
