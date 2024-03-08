@@ -11,7 +11,17 @@ import ConfirmAlert from '../../../../../../components/resident/confirmAlert';
 import CustomAlert from '../../../../../../components/resident/confirmAlert';
 import LoadingComponent from '../../../../../../components/resident/loading';
 import Alert from '../../../../../../components/resident/Alert';
-
+import { useSession } from '../../../../context/AuthContext';
+import { jwtDecode } from 'jwt-decode';
+import axios from 'axios';
+import AlertWithButton from '../../../../../../components/resident/AlertWithButton';
+interface user{
+    FullName:string;
+    PhoneNumber:string;
+    RoomId:string;
+    Avatar:string;
+  }
+  
 
 const Checkout = () => {
     const item: any = useLocalSearchParams();
@@ -20,28 +30,63 @@ const Checkout = () => {
     const navigation = useNavigation<any>();
     const [alertVisible, setAlertVisible] = useState(false);
     const [alertConfirmVisible, setAlertConfirmVisible] = useState(false);
-
-    const handleConfirm = () => {
-        setAlertVisible(false);
-        fetchData();
-        console.log('Confirmed');
-    };
-
+    const{session } = useSession();
+    const user:user = jwtDecode(session as string);
     const handleClose = () => {
         setAlertVisible(false);
     };
-
+    console.log(item);
     const [isLoading, setIsLoading] = useState(false);
-  const fetchData = async () => {
-    setIsLoading(true);
-    setTimeout(() => {
-      setIsLoading(false);
-      setAlertConfirmVisible(true);
-      setTimeout(() => {
-        navigation.navigate("(tabs)");
-      }, 2000);
-    }, 3000); 
-  };
+    const [error, setError] = useState(false);
+    const [errorText, setErrorText] = useState("System error please try again later");
+    const handleCreateReservation = async () => {
+        setIsLoading(true);
+        try {
+          const body = {
+            roomId: "1",
+            utilityId: item.utilityId,
+            slot: item.slot,
+            bookingDate: item.date,
+            numberOfPerson: item.ticket,
+            totalPrice: item.total,
+            description:item.note
+          };
+      
+          console.log('Body:', body);
+      
+          const response = await axios.post('http://localhost:5108/api/v1/reservation/create', body, {
+            timeout: 5000, 
+          });
+      
+          console.log('Reservation created successfully:', response);
+          if(response.data.statusCode==200){
+            setAlertConfirmVisible(true);
+            setTimeout(() => {
+              setAlertConfirmVisible(false);
+              navigation.navigate('(tabs)');
+            }, 3000);
+          }
+          else{
+            setError(true);
+            setErrorText(t("Failed to create reservation"));
+          }
+        } catch (error) {
+          if (axios.isCancel(error)) {
+            // Handle timeout error
+            console.error('Request timed out:', error);
+            setError(true);
+            setErrorText(t("System error please try again later"));
+          } else {
+            // Handle other errors
+            console.error('Error creating reservation:', error);
+            setError(true);
+            setErrorText(t("Failed to create reservation"));
+          }
+        } finally {
+          setIsLoading(false);
+          setAlertVisible(false);
+        }
+      };
 
     return (
         <>
@@ -56,21 +101,22 @@ const Checkout = () => {
                                     <View style={styles.reservationBoxContent}>
                                         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                                             <Ticket color={'black'}></Ticket>
-                                            <Text style={{ fontSize: 16, fontWeight: 'bold', marginLeft: 5 }}>San bong</Text>
+                                            <Text style={{ fontSize: 16, fontWeight: 'bold', marginLeft: 5 }}>{item.utilityName}</Text>
                                         </View>
                                         <View>
                                             <View style={styles.reservationinformation}>
-                                                <Text>{t("Date")}</Text>
-                                                <Text style={styles.highlightText}>22/2/222</Text>
+                                                <Text>{t("Date")}:</Text>
+                                                <Text style={styles.highlightText}>{item.date}</Text>
                                             </View>
                                             <View style={styles.reservationinformation}>
-                                                <Text>{t("Time")}</Text>
-                                                <Text style={styles.highlightText}>22-22</Text>
+                                                <Text>{t("Time")}:</Text>
+                                                <Text style={styles.highlightText}>{item.slotString}</Text>
                                             </View>
                                             <View style={styles.reservationinformation}>
-                                                <Text>{t("Number of tickets")}</Text>
-                                                <Text style={styles.highlightText}>11</Text>
+                                                <Text>{t("Number of tickets")}:</Text>
+                                                <Text style={styles.highlightText}>{item.ticket}</Text>
                                             </View>
+                                         
                                         </View>
                                     </View>
                                 </View>
@@ -79,22 +125,25 @@ const Checkout = () => {
                                     <Text style={styles.highlightText}>{item.total && moneyFormat(item.total)} VND</Text>
                                 </View>
                             </View>
-
+                            <View style={{marginTop:20, flexDirection:'row'}}>
+                                                <Text>{t("Note")}: </Text>
+                                                <Text >{item.note}</Text>
+                                            </View>
                             <Text style={{ marginVertical: 20, fontWeight: 'bold', fontSize: 20 }}>
                                 {t("Booker information")}
                             </Text>
                             <View style={[styles.reservationBox, { paddingHorizontal: 20, paddingBottom: 20 }]}>
                                 <View style={styles.reservationinformation}>
                                     <Text>{t("Fullname")}</Text>
-                                    <Text style={styles.highlightText}>Nguyen Van A</Text>
+                                    <Text style={styles.highlightText}>{user.FullName}</Text>
                                 </View>
                                 <View style={styles.reservationinformation}>
                                     <Text>{t("Phone")}</Text>
-                                    <Text style={styles.highlightText}>0123456789</Text>
+                                    <Text style={styles.highlightText}>{user.PhoneNumber}</Text>
                                 </View>
                                 <View style={styles.reservationinformation}>
                                     <Text>{t("Email")}</Text>
-                                    <Text style={styles.highlightText}>231231</Text>
+                                    <Text style={styles.highlightText}>mail</Text>
                                 </View>
                             </View>
                         </View>
@@ -109,26 +158,32 @@ const Checkout = () => {
                     paddingVertical: 20
                 }}>
                     <View>
-                        <Text>Tổng tiền</Text>
-                        <Text style={{ fontWeight: 'bold', fontSize: 20, marginTop: 5 }}>20.000 VND</Text>
+                        <Text>{t("Total money")}</Text>
+                        <Text style={{ fontWeight: 'bold', fontSize: 20, marginTop: 5 }}>{item.total && moneyFormat(item.total)} VND</Text>
                     </View>
                     <Pressable
                         onPress={() => setAlertVisible(true)}
                         style={[styles.button, { backgroundColor: theme.primary }]}>
-                        <Text style={styles.highlightText}>Checkout</Text>
+                        <Text style={styles.highlightText}>{t("Create reservation")}</Text>
                     </Pressable>
                     <CustomAlert
                         visible={alertVisible}
                         title={t("Confirm")}
                         content={t("Do you confirm your utility reservation?")}
                         onClose={handleClose}
-                        onConfirm={handleConfirm}
+                        onConfirm={handleCreateReservation}
                     />
                     <Alert 
                     visible={alertConfirmVisible}
                     title={t("Booking successful")}
                     content={t("You will be redirected to home page") +"."}
                     ></Alert>
+                    <AlertWithButton 
+                    visible={error}
+                    title={t("Booking unsuccessful")}
+                    content={t(errorText) +"."}
+                    onClose={() => setError(false)}
+                    ></AlertWithButton>
  <LoadingComponent loading={isLoading} />
                 </View>
             </SafeAreaView>

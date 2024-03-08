@@ -11,7 +11,6 @@ export default function AppLayout() {
   const { session, isLoading } = useSession();
   const { theme } = useTheme();
   const { t } = useTranslation();
-
   if (isLoading) {
     return <Text>Loading...</Text>;
   }

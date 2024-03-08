@@ -20,10 +20,12 @@ const PostItem: React.FC<PostItemProps> = ({ title, content, date, imageUrl,href
     <View style={styles.container}>
       <Image source={{ uri: imageUrl }} style={styles.image} />
       <View style={styles.textContainer}>
+        <View style={{}}>
         <Text numberOfLines={1} style={styles.title}>{title}</Text>
         <Text numberOfLines={2} style={styles.content}>{content}</Text>
         <Text style={styles.date}>{date}</Text>
-        <Link href={href}>
+        </View>
+        <Link href={href} style={{marginTop:10}}>
             <Button text='Chi tiết' style={{width:100}}></Button>
         </Link>
       </View>
@@ -35,7 +37,6 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     padding: 10,
-    borderBottomWidth: 1,
     borderBottomColor: '#cccccc',
     ...SHADOW,
     backgroundColor:'white',
@@ -50,22 +51,25 @@ const styles = StyleSheet.create({
   },
   textContainer: {
     flex: 1,
+    flexDirection:'row',
+    justifyContent:'space-between',
+    alignItems:'center'
   },
   title: {
     fontWeight: 'bold',
     fontSize: 16,
     marginBottom: 5,
-    color: '#333333', // Adjust title color
+    color: '#333333',
     overflow: 'hidden',
   },
   content: {
     fontSize: 14,
-    color: '#666666', // Adjust content color
+    color: '#666666',
     marginBottom: 5,
   },
   date: {
     fontSize: 12,
-    color: '#999999', // Adjust date color
+    color: '#999999', 
   },
 });
 

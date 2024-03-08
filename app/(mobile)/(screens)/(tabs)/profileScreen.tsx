@@ -16,17 +16,30 @@ import {
   Palette,
   Pencil,
 } from "lucide-react-native";
-import { Link, useNavigation } from "expo-router";
+import { Link, router, useNavigation } from "expo-router";
 import { LinearGradient } from "expo-linear-gradient";
 import { useSession } from "../../context/AuthContext";
 import { useTheme } from "../../context/ThemeContext";
 import { useTranslation } from "react-i18next";
+import { jwtDecode } from "jwt-decode";
+import Alert from "../../../../components/resident/Alert";
+import CustomAlert from "../../../../components/resident/confirmAlert";
+import { useState } from "react";
+
+interface user{
+  FullName:string;
+  PhoneNumber:string;
+  RoomId:string;
+  Avatar:string;
+}
 
 const ProfileScreen = () => {
   const { signOut } = useSession();
   const { theme } = useTheme();
   const { t } = useTranslation();
-
+  const [confirm, setConfirm] = useState(false);
+  const{session } = useSession();
+  const user:user = jwtDecode(session as string);
   return (
     <>
       <SafeAreaView style={{ backgroundColor: theme.background, flex: 1 }}>
@@ -59,7 +72,9 @@ const ProfileScreen = () => {
               <Text style={styles.headerText}>{t("Account")}</Text>
               <Text style={styles.normalText}>{t("ManageAccount")}</Text>
             </View>
-            <TouchableOpacity>
+            <TouchableOpacity onPress={()=>{
+              router.push("/(mobile)/(screens)/userAvatarScreen")
+            }}>
               <Image
                 style={stylesProfileScreen.avatar}
                 source={{
@@ -75,12 +90,12 @@ const ProfileScreen = () => {
               <Text
                 style={{ marginLeft: 5, fontWeight: "bold", marginBottom: 5 }}
               >
-                Hoa la canh
+                {user.FullName}
               </Text>
             </View>
             <View style={{ flexDirection: "row" }}>
               <Text>{t("Phone")}:</Text>
-              <Text style={{ marginLeft: 5 }}>0123 232 2312</Text>
+              <Text style={{ marginLeft: 5 }}>{user.PhoneNumber}</Text>
             </View>
           </View>
 
@@ -113,7 +128,7 @@ const ProfileScreen = () => {
                     style={{ marginRight: 15 }}
                     strokeWidth={1.5}
                   ></Pencil>
-                  <Text>{t("Update Information")}</Text>
+                  <Text style={stylesProfileScreen.text}>{t("Update Information")}</Text>
                 </View>
               </Link>
             </View>
@@ -125,7 +140,7 @@ const ProfileScreen = () => {
                     style={{ marginRight: 15 }}
                     strokeWidth={1.5}
                   ></KeyRound>
-                  <Text>{t("Change password")}</Text>
+                  <Text style={stylesProfileScreen.text}>{t("Change password")}</Text>
                 </View>
               </Link>
             </View>
@@ -137,7 +152,7 @@ const ProfileScreen = () => {
                     style={{ marginRight: 15 }}
                     strokeWidth={1.5}
                   ></Palette>
-                  <Text>{t("Change color pallete")}</Text>
+                  <Text style={stylesProfileScreen.text}>{t("Change color pallete")}</Text>
                 </View>
               </Link>
             </View>
@@ -149,7 +164,7 @@ const ProfileScreen = () => {
                     style={{ marginRight: 15 }}
                     strokeWidth={1.5}
                   ></Languages>
-                  <Text>{t("Change language")}</Text>
+                  <Text style={stylesProfileScreen.text}>{t("Change language")}</Text>
                 </View>
               </Link>
             </View>
@@ -160,13 +175,17 @@ const ProfileScreen = () => {
               { backgroundColor: theme.primary },
             ]}
             onPress={() => {
-              signOut();
+              setConfirm(true);
             }}
           >
             <Text style={{ fontSize: 16, fontWeight: "bold" }}>
               {t("Logout")}
             </Text>
           </TouchableOpacity>
+          <CustomAlert title={t("Confirm logout")} content={t("Do you want to logout")+"?"} 
+          onClose={() => setConfirm(false)} 
+          onConfirm={signOut}
+          visible={confirm}></CustomAlert>
         </ScrollView>
       </SafeAreaView>
     </>
