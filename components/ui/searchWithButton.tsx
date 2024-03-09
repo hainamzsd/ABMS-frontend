@@ -1,6 +1,6 @@
 import React from 'react'
 import { View, TextInput, TouchableOpacity, Image, StyleSheet } from 'react-native'
-import { COLORS, SIZES, icon } from '../../constants'
+import { COLORS, SIZES, icons } from '../../constants'
 
 const SearchWithButton = (props: any) => {
     const { placeholder, value, setValue } = props;
@@ -17,7 +17,7 @@ const SearchWithButton = (props: any) => {
             </View>
             <TouchableOpacity style={styles.searchBtn} onPress={() => { }}>
                 <Image
-                    source={icon.search}
+                    source={icons.search}
                     resizeMode="contain"
                     style={styles.searchBtnIcon}
                 ></Image>

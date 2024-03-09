@@ -4,7 +4,7 @@ import Button from "../../../../components/ui/button";
 import { Cell, TableComponent, TableRow } from "../../../../components/ui/table";
 import Input from "../../../../components/ui/input";
 import styles from "./styles";
-import { icon } from "../../../../constants"
+import { icons } from "../../../../constants"
 
 export default function AccountManagement() {
     const headers = ['Tên đăng nhập', 'Họ và tên', 'Vai trò', 'edaed', ''];
@@ -28,7 +28,7 @@ export default function AccountManagement() {
                         </View>
                         <TouchableOpacity style={styles.searchBtn} onPress={() => { }}>
                             <Image
-                                source={icon.search}
+                                source={icons.search}
                                 resizeMode="contain"
                                 style={styles.searchBtnIcon}
                             ></Image>
