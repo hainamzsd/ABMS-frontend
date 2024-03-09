@@ -1,4 +1,4 @@
-import { Pressable, SafeAreaView, StyleSheet, Text, TextInput, View } from "react-native"
+import { Keyboard, Pressable, SafeAreaView, StyleSheet, Text, TextInput, View, KeyboardEventListener, ScrollView } from "react-native"
 import Header from "../../../../../../components/resident/header"
 import { useTheme } from "../../../../context/ThemeContext";
 import { useTranslation } from "react-i18next";
@@ -35,7 +35,7 @@ export default function UtilityTicket() {
     return  <>
     <Header headerTitle={t("Register utility")} />
     <SafeAreaView style={{ backgroundColor: theme.background, flex: 1, justifyContent: 'space-between' }}>
-      <View style={{ flex: 1 }}>
+      <ScrollView style={{ flex: 1 }} automaticallyAdjustKeyboardInsets>
         <View style={{ marginTop: 30, marginHorizontal: 26 }}>
           <Text style={{fontSize:20,fontWeight:'bold',marginBottom:10}}>{item.name}</Text>
           <View style={styles.ticketBox}>
@@ -69,12 +69,13 @@ export default function UtilityTicket() {
                   placeholderTextColor={"#9C9C9C"}
                   style={[styles.textInput, { height: 100 }]}
                   numberOfLines={4}
+                  onSubmitEditing={()=>Keyboard.dismiss()}
                 />
               </View>
             </View>
         </View>
         
-      </View>
+      </ScrollView>
       <View style={{
         marginHorizontal: 26, marginVertical: 30,
         justifyContent: 'center',

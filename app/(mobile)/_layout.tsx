@@ -20,8 +20,8 @@ const Layout = () => {
         <AuthProvider>
           <View
             style={{
-              marginBottom: -insets.bottom,
-              marginTop: -insets.top,
+              // marginBottom: -insets.bottom,
+              // marginTop: -insets.top,
               flex: 1,
             }}
           >

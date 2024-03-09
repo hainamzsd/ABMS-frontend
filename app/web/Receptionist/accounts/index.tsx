@@ -4,7 +4,6 @@ import Button from "../../../../components/ui/button";
 import { Cell, TableComponent, TableRow } from "../../../../components/ui/table";
 import Input from "../../../../components/ui/input";
 import styles from "./styles";
-import { icons } from "../../../../constants"
 import { useEffect, useState } from "react";
 import axios from "axios";
 import Toast from "react-native-toast-message";
@@ -29,7 +28,7 @@ interface Account {
 
 export default function AccountManagement() {
     const headers = ['Họ và tên', 'Số điện thoại', 'Email', ''];
-    const [accountData, setAccountData] = useState<Account[]>([]);
+    const [accountData, setAccountData] = useState<Account[]>();
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
    
@@ -39,7 +38,7 @@ export default function AccountManagement() {
             setError(null); // Clear any previous errors
 
             try {
-                const response = await axios.get(`https://abmscapstone2024.azurewebsites.net/api/v1/account/get?role=2`, {
+                const response = await axios.get(`https://abmscapstone2024.azurewebsites.net/api/v1/account/get?role=3`, {
                     timeout:100000
                 });
                 setAccountData(response.data.data); // Set account data
@@ -60,17 +59,16 @@ export default function AccountManagement() {
 
         fetchData();
     }, []);
-    console.log(accountData);
     return (
         <View style={{ flex: 1, backgroundColor: '#F9FAFB' }}>
             <SafeAreaView style={{flex:1}}>
                 <ScrollView style={{ paddingHorizontal: 30, paddingVertical: 30,flex:1 }}>
                     <View style={{ marginBottom: 20 }}>
                         <Text style={{ fontWeight: 'bold', fontSize: 20, marginBottom: 5 }}>Danh sách tài khoản</Text>
-                        <Text>Thông tin tài khoản của lễ tân</Text>
+                        <Text>Thông tin tài khoản của cư dân</Text>
                     </View>
-                    <Link href={"/web/CMB/accounts/create"}>
-                    <Button text="Tạo tài khoản lễ tân" style={{width:200}}></Button>
+                    <Link href={"/web/Receptionist/accounts/create"}>
+                    <Button text="Tạo tài khoản cư dân" style={{width:200}}></Button>
                     </Link>
                     <View style={styles.searchContainer}>
                         <View style={styles.searchWrapper}>
@@ -90,7 +88,7 @@ export default function AccountManagement() {
                         </TouchableOpacity> */}
                     </View>
                     {isLoading && <ActivityIndicator size={'large'} color={'#171717'}></ActivityIndicator>}
-                    {accountData?.length==0 ? <Text style={{marginBottom:10, fontSize:18,fontWeight:'600'}}>Chưa có dữ liệu</Text>:
+                    {!accountData ? <Text style={{marginBottom:10, fontSize:18,fontWeight:'600'}}>Chưa có dữ liệu</Text>:
                           <TableComponent headers={headers}>
                             <FlatList data={accountData}
                             renderItem={({ item }) => <TableRow>
@@ -98,7 +96,7 @@ export default function AccountManagement() {
                                 <Cell>{item.phoneNumber}</Cell>
                                 <Cell>{item.email}</Cell>
                                 <Cell>
-                                    <Link href={`/web/CMB/accounts/${item.id}`}
+                                    <Link href={`/web/Receptionist/accounts/${item.id}`}
                                     >
                                         <Button text="Chi tiết" />
                                     </Link>

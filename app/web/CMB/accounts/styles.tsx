@@ -31,9 +31,10 @@ const styles = StyleSheet.create({
         width: "100%",
         height: "100%",
         paddingHorizontal: SIZES.medium,
-        border: '0.5px solid gray',
+        borderWidth: 1,
         borderRadius: 10,
         color: COLORS.gray2,
+        borderColor:'#9c9c9c'
     },
     searchBtn: {
         width: 50,

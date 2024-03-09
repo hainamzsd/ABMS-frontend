@@ -4,7 +4,7 @@ import Header from '../../../../../components/resident/header';
 import { useTheme } from '../../../context/ThemeContext';
 import { useTranslation } from 'react-i18next';
 import SHADOW from '../../../../../constants/shadow';
-import ICON_MAP from '../../../../../constants/icons';
+import ICON_MAP from '../../../../../constants/iconUtility';
 import statusUtility from '../../../../../constants/status';
 import usePagination from '../../../../../utils/pagination';
 import { router } from 'expo-router';
@@ -30,48 +30,55 @@ const ReservationUtilityList = () => {
     const { theme } = useTheme();
     const { t } = useTranslation();
     const [isLoading, setIsLoading] = useState(false);
-    const [error, setError] = useState<string | null>(null);
-    const [data, setData] = useState<Reservation[]>([]);
-    const fetchItems = async (page: number) => {
-        setIsLoading(true);
-        setError(null);
-        try{
-        const response = await axios.get(`http://localhost:5108/api/v1/reservation/get?page=${page}&per_page=${PER_PAGE}`);
-        return response.data.data;
-        } catch (error) {
-            console.error('Error fetching reservations:', error);
-            setError('Failed to fetch reservations.');
-          } finally {
-            setIsLoading(false);
-          }
-      };
-   
+    const [data, setData] = useState<Reservation[]>([]); // Holds all fetched data
+    const [displayData, setDisplayData] = useState<Reservation[]>([]); // Data to display
     const [currentPage, setCurrentPage] = useState(1);
-    const [dataToDisplay, setDataToDisplay] = useState<Reservation[]>([]);
-    const [isLoadingMore, setIsLoadingMore] = useState(false); // Track loading state
-    useEffect(() => {
-        const fetchData = async () => {
-          const newData = await fetchItems(currentPage);
-          setData([...data, ...newData]); 
-          setDataToDisplay((prevData) => [...prevData, ...newData]); 
-        };
-      
-        fetchData();
-      }, [currentPage]);
+    const [error, setError] = useState<string | null>(null);
 
-      const handleNextPage = async () => {
-        const visibleDataCount = currentPage * 3;
-      
-        if (visibleDataCount >= data.length && !isLoadingMore) {
-          setIsLoadingMore(true);
-          await new Promise((resolve) => setTimeout(resolve, 1000));
-          
-          setCurrentPage(currentPage + 1);
-          setIsLoadingMore(false);
+    // Fetch all items only once, on component mount
+    useEffect(() => {
+        const fetchItems = async () => {
+            setIsLoading(true);
+            setError(null);
+            try {
+                const response = await axios.get('https://abmscapstone2024.azurewebsites.net/api/v1/reservation/get',{
+                    timeout:10000
+                });
+                setData(response.data.data); // Store all data
+                setDisplayData(response.data.data);
+                console.log(displayData)
+            } catch (error) {
+                if(axios.isAxiosError(error)){
+                    setError("");
+                }
+                console.error('Error fetching reservations:', error);
+                setError('Failed to fetch reservations.');
+            } finally {
+                setIsLoading(false);
+            }
+        };
+        fetchItems();
+    }, []); // Empty dependency array ensures this runs once on mount
+
+    // Update displayData when currentPage changes
+    useEffect(() => {
+        const startIndex = (currentPage - 1) * PER_PAGE;
+        const endIndex = startIndex + PER_PAGE;
+        setDisplayData(data.slice(startIndex, endIndex));
+    }, [currentPage, data]);
+
+    // Function to handle the 'load more' action
+    const handleNextPage = () => {
+        setCurrentPage(prevPage => prevPage + 1);
+    };
+    const loadMoreItems = () => {
+        // Only attempt to load more items if there are more items to load
+        if (!isLoading && displayData.length < data.length) {
+            setCurrentPage(currentPage => currentPage + 1);
         }
-      };
+    };
     const renderFooter = () => {
-    if (isLoadingMore) {
+    if (isLoading) {
       return <ActivityIndicator size="small"  color={theme.primary}/>;
     }
     return null;
@@ -85,7 +92,7 @@ const ReservationUtilityList = () => {
             router.push({
               pathname: `/(mobile)/(screens)/(utility)/(reservation)/${item.room_id}`,
               params: {
-
+                
               },
             })}>
         <View style={{ borderBottomWidth: 1,borderColor:'#9c9c9c' }}>
@@ -141,15 +148,25 @@ const ReservationUtilityList = () => {
             <Header headerTitle={t("Booking history")} />
             <SafeAreaView style={{ backgroundColor: theme.background, flex: 1 }}>
                 <View style={{ flex:1,  }}>
-                   <FlatList
-                   style={{paddingHorizontal:26}}
-                    data={dataToDisplay}
-                    renderItem={render}
-                    keyExtractor={(item) => item.room_id}
-                    onEndReached={handleNextPage} 
-                    onEndReachedThreshold={0.5}
-                    ListFooterComponent={renderFooter}
-                   />
+                    {displayData.length>0 ?
+                       <FlatList
+                       style={{paddingHorizontal:26}}
+                        data={displayData}
+                        renderItem={render}
+                        keyExtractor={(item) => item.room_id}
+                        onEndReached={loadMoreItems}
+            onEndReachedThreshold={0.5} // How far from the end (0-1) the bottom edge of the list must be from the end of the content before onEndReached is called
+                        ListFooterComponent={renderFooter}
+                       />
+                    :
+                    <View style={{flex:1, justifyContent:'center', alignItems:'center'}}>
+                        <Image source={require('../../../../../assets/images/human.png')}
+                        style={{width:200,height:300, opacity:0.7}}
+                        />
+                        <Text style={{color:'#9c9c9c', marginTop:5}}>{t("You don't have any bookings")}</Text>
+                    </View>
+                    }
+                
                 </View>
             </SafeAreaView>
         </>

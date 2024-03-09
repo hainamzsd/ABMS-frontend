@@ -17,39 +17,37 @@ function convertTime(timeString: string): number {
 
     return hours; // Return converted hour in 24-hour format
   }
-
-export function calculateSlots(openTime: string, closeTime: string, numberOfSlots: number): string[] {
+  export function calculateSlots(openTime: string, closeTime: string, numberOfSlots: number): string[] {
     const openingHour = convertTime(openTime);
     const closingHour = convertTime(closeTime);
-    // Convert open and close times to Date objects for better handling
-    const openTimeDate = new Date(`2024-03-04 ${openingHour}:00`); // Adjust year/month/day if needed
-    const closeTimeDate = new Date(`2024-03-04 ${closingHour}:00`); // Adjust year/month/day if needed
+    const openTimeDate = new Date(`2024-03-04 ${openingHour}:00`);
+    const closeTimeDate = new Date(`2024-03-04 ${closingHour}:00`);
   
-    // Ensure open time is before close time
     if (openTimeDate >= closeTimeDate) {
       throw new Error('Open time must be before close time.');
     }
   
-    // Calculate slot duration in hours (rounded down to avoid fractions)
-    const slotDuration = Math.floor((closeTimeDate.getTime() - openTimeDate.getTime()) / (1000 * 60 * 60));
-  
-    // Ensure enough slots can be created within the time frame
-    if (numberOfSlots > slotDuration) {
+    const totalTime = (closeTimeDate.getTime() - openTimeDate.getTime()) / (1000 * 60 * 60);
+    if (numberOfSlots > totalTime) {
       throw new Error('Number of slots cannot exceed available hours.');
     }
   
-    // Create slots as time ranges without minutes (e.g., "08:00 - 09:00")
     const slots: string[] = [];
-    const increment = slotDuration / (numberOfSlots - 1); // Adjust increment for non-integer durations
-    let currentHour = openTimeDate.getHours();
+    const increment = totalTime / numberOfSlots;
+    let currentTime = openTimeDate;
+  
     for (let i = 0; i < numberOfSlots; i++) {
-      const endHour = currentHour + Math.floor(increment); // Avoid exceeding closing time
-      const nextHour = endHour < 24 ? endHour : endHour - 24; // Adjust for hour wrapping
-      const slotString = `${currentHour}:00 - ${nextHour}:00`;
+      const endDateTime = new Date(currentTime.getTime() + increment * 60 * 60 * 1000);
+      // Check if the end time exceeds the closing time
+      if (endDateTime > closeTimeDate) {
+        break; // Do not add the slot if it exceeds the closing time
+      }
+      const startHour = currentTime.getHours();
+      const endHour = endDateTime.getHours();
+      const slotString = `${startHour < 10 ? '0' + startHour : startHour}:00 - ${endHour < 10 ? '0' + endHour : endHour}:00`;
       slots.push(slotString);
-      currentHour = nextHour;
+      currentTime = endDateTime;
     }
   
     return slots;
-  }
-  
+}

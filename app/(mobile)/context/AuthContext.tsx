@@ -65,9 +65,11 @@ export const AuthProvider = ({ children }: any) => {
 
   const login = async (phone: string, password: string) => {
     try {
-      const result = await axios.post(`http://localhost:5108/api/v1/account/loginByPhone`, { 
+      const result = await axios.post(`https://abmscapstone2024.azurewebsites.net/api/v1/account/loginByPhone`, { 
         phoneNumber: phone,
         password:password
+       },{
+        timeout:10000
        });
       setAuthState({
         authenticated: true,
@@ -77,6 +79,12 @@ export const AuthProvider = ({ children }: any) => {
         console.log("mao"+result );
         return result;
     } catch (e) {
+      if(axios.isCancel(e)){
+        return{
+          error:true,
+          msg:"Request timed out"
+        }
+      }
       return {
         error: true,
         msg: e,

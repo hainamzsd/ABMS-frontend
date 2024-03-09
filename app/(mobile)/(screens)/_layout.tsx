@@ -7,12 +7,13 @@ import { useTheme } from "../context/ThemeContext";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { StatusBar } from "react-native";
 import { useTranslation } from "react-i18next";
+import LoadingComponent from "../../../components/resident/loading";
 export default function AppLayout() {
   const { session, isLoading } = useSession();
   const { theme } = useTheme();
   const { t } = useTranslation();
   if (isLoading) {
-    return <Text>Loading...</Text>;
+    return <LoadingComponent loading={isLoading}></LoadingComponent>;
   }
   if (!session) {
     return <Redirect href="/login" />;

@@ -8,19 +8,18 @@ import {
 import { Link, Stack, useNavigation, usePathname } from "expo-router";
 import { Menu as PaperMenu } from "react-native-paper";
 import React, { useEffect, useState } from "react";
-
-const Navbar = () => {
+import { useAuth } from "../../../app/web/context/AuthContext";
+interface NavigationItem {
+    name: string;
+    href: any;
+  }
+  
+  type Navigation = NavigationItem[];
+  const Navbar: React.FC<{ navigation: Navigation }> = ({ navigation }) => {
     const [visible, setVisible] = React.useState(false);
     const openMenu = () => setVisible(true);
     const closeMenu = () => setVisible(false);
-    const navigation = [
-        { name: "Trang chính", href: "/web" },
-        {
-            name: "Quản lý tài khoản",
-            href: "/screens/CMB/accountManagement/accountManagement",
-        },
-        { name: "Contact", href: "/contact" },
-    ];
+    const {signOut} = useAuth();
 
     const pathName = usePathname();
     return (
@@ -95,7 +94,7 @@ const Navbar = () => {
                         </Pressable>
                     }
                 >
-                    <PaperMenu.Item onPress={() => { }} title="Item 1" />
+                    <PaperMenu.Item onPress={signOut} title="Đăng xuất" />
                 </PaperMenu>
             </View>
         </View>

@@ -117,7 +117,7 @@ const page = () => {
         phone:phoneNumber,
         full_name:fullName,
         user_name:username,
-        role:2,
+        role:3,
         email:email,
         avatar:""
     }
@@ -138,7 +138,7 @@ const page = () => {
                 text1: 'Cập nhật tài khoản thành công',
                 position:'bottom'
             })
-            router.replace('/web/CMB/accounts/');
+            router.replace('/web/Receptionist/accounts/');
         }
         else {
             Toast.show({
@@ -163,6 +163,7 @@ const page = () => {
             })
         }
         else{
+            console.error('Error creating account:', error);
             Toast.show({
                 type: 'error',
                 text1: 'Lỗi cập nhật tài khoản',
@@ -172,17 +173,6 @@ const page = () => {
     } finally {
         setIsLoading(false);
     }
-};
-const handleDeleteConfirm = async () => {
-  Alert.alert(
-    'Xác nhận xóa',
-    'Bạn có muốn xóa tài khoản này không?',
-    [
-      { text: 'Hủy', onPress: () => console.log('Cancel Pressed'), style: 'cancel' },
-      { text: 'Xóa', onPress: () => handleDeleteAccount(), style: 'destructive' },
-    ],
-    { cancelable: true },
-  );
 };
 
 const handleDeleteAccount = async () => {
@@ -213,7 +203,7 @@ const handleDeleteAccount = async () => {
         text1:'Xóa tài khoản thành công',
         position:'bottom'
       })
-      router.replace('/web/CMB/accounts/');
+      router.replace('/web/Receptionist/accounts/');
     } else {
       Toast.show({
         type:'error',
