@@ -1,5 +1,5 @@
 import { ColorPalettes, COLORS, SIZES } from "./colors";
-import { SHADOW } from "./shadow"
-import icon from "./icon"
+import { SHADOW, SHADOWS } from "./shadow"
+import icons from "./icons"
 
-export { ColorPalettes, COLORS, SIZES, SHADOW, icon };
+export { ColorPalettes, COLORS, SIZES, SHADOW, icons, SHADOWS };
