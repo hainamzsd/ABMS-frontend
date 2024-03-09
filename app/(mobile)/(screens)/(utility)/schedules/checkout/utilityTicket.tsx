@@ -48,11 +48,11 @@ export default function UtilityTicket() {
                 <Text style={{fontSize:16}}>{t("Number of tickets")}</Text>
                 <View style={{flexDirection:'row', alignItems:'center'}}>
                     <Pressable onPress={handleDecrease}>
-                      <Minus></Minus>
+                      <Minus color={'black'}></Minus>
                     </Pressable>
                     <Text style={{fontSize:16, marginHorizontal:15}}>{ticket}</Text>
                     <Pressable onPress={handleIncrease}>
-                    <Plus></Plus>
+                    <Plus color={'black'}></Plus>
                     </Pressable>
                 </View>
               </View>

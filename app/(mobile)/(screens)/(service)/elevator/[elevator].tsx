@@ -37,7 +37,7 @@ const Page = () => {
           setIsLoading(true);
           setError("");
           try {
-              const response = await axios.get(`http://10.0.2.2:5108/api/v1/elevator/get/${item.elevator}`,{
+              const response = await axios.get(`https://abmscapstone2024.azurewebsites.net/api/v1/elevator/get/${item.elevator}`,{
                   timeout:10000
               });
               if(response.data.statusCode == 200){

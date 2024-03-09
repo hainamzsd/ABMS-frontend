@@ -2,6 +2,7 @@ type StatusUtility = {
   [key: number]: { status: string; color: string };
 };
 
+
 const statusUtility: StatusUtility = {
   2: {
     status: "Pending",
@@ -16,4 +17,19 @@ const statusUtility: StatusUtility = {
     color: "#ED6666"
   },
 };
-export default statusUtility
+
+const statusForReceptionist: StatusUtility = {
+  2: {
+    status: "Đang chờ",
+    color: "#E7E49C"
+  },
+  3: {
+    status: "Chấp nhận",
+    color: "#AEBB81"
+  }, 
+  4: {
+    status: "Không chấp nhận",
+    color: "#ED6666"
+  },
+};
+export  {statusUtility, statusForReceptionist}

@@ -1,12 +1,35 @@
-import { View, Text, ScrollView, SafeAreaView, FlatList, StyleSheet, Image } from 'react-native'
+import { View, Text, ScrollView, SafeAreaView, FlatList, StyleSheet, Image, TouchableOpacity } from 'react-native'
 import React from 'react'
 import SHADOW from '../../../../constants/shadow'
+import { router } from 'expo-router';
 
+interface Services{
+  id: string,
+  title: string,
+  description: string,
+  footerText: string,
+  imageUrl: string
+
+}
 // Sample data for the cards
-const data = [
-  { id: '1', title: 'Card 1', description: 'Description for Card 1', footerText: 'Footer 1', imageUrl: 'https://via.placeholder.com/150' },
-  { id: '2', title: 'Card 2', description: 'Description for Card 2', footerText: 'Footer 2', imageUrl: 'https://via.placeholder.com/150' },
-  { id: '3', title: 'Card 3', description: 'Description for Card 3', footerText: 'Footer 3', imageUrl: 'https://via.placeholder.com/150' },
+const data:Services[] = [
+  { id: '1', title: 'Quản lý đăng kí thang máy', 
+  description: 'Tiếp nhận yêu cầu đăng ký sử dụng thang máy cho các trường hợp đặc biệt, Ghi chép lịch sử sử dụng thang máy.',
+  footerText: 'Truy cập', 
+  imageUrl: require('../../../../assets/images/elevator.png')},
+  { id: '2', title: 'Quản lý đăng kí thi công', 
+  description: 'Tiếp nhận yêu cầu đăng ký thi công, sửa chữa, ', 
+  footerText: 'Truy cập', 
+  imageUrl:
+   require('../../../../assets/images/support.png') },
+  { id: '3', title: 'Quản lý đăng kí vé xe',
+   description: 'Tiếp nhận các đơn đăng kí để xe tại chung cư',
+    footerText: 'Truy cập',
+   imageUrl: require('../../../../assets/images/garage-car.png') },
+   { id: '4', title: 'Quản lý đăng kí khách thăm', 
+   description: 'Tiếp nhận các đơn đăng kí khách thăm từ cư dân',
+    footerText: 'Truy cập',
+   imageUrl: require('../../../../assets/images/id-card.png') },
   // Add more items...
 ];
 interface CardData {
@@ -24,13 +47,16 @@ interface CardItemProps {
   imageUrl: string;
 }
 const CardItem: React.FC<CardItemProps> = ({ title, description, footerText, imageUrl }) => (
-  <View style={styles.card}>
-    <Image source={{ uri: imageUrl }} style={styles.cardImage} />
+  <TouchableOpacity style={styles.card} 
+  onPress={()=>{
+    router.push('/web/Receptionist/services/elevator/')
+  }}>
+    <Image source={imageUrl as any} style={styles.cardImage} />
     <Text style={styles.cardTitle}>{title}</Text>
     <Text style={styles.cardDescription}>{description}</Text>
     <View style={styles.separator} />
     <Text style={styles.footerText}>{footerText}</Text>
-  </View>
+  </TouchableOpacity>
 );
 
 const index = () => {
@@ -76,12 +102,14 @@ const styles = StyleSheet.create({
     marginHorizontal: 5,
     backgroundColor: '#FFFFFF',
     overflow: 'hidden',
+    padding:10
   },
   cardImage: {
-    width: 100,
-    height: 100, // Adjust the height as needed
+    width: 80,
+    height: 80, // Adjust the height as needed
   },
   cardTitle: {
+    marginBottom:5,
     fontWeight: 'bold',
     marginVertical: 5,
   },
