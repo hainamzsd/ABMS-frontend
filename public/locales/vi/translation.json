@@ -163,6 +163,12 @@
     "Your request has been created successfuly, please wait for the receptionist to confirm":"Yêu cầu của bạn đã được tạo thành công, vui lòng chờ lễ tân xác nhận",
     "There has been a request to use the elevator at this time, please choose another time":"Đã có yêu cầu sử dụng thang máy vào thời gian này, vui lòng chọn thời gian khác",
     "You dont have any elevator requests":"Bạn không có bất kỳ yêu cầu sử dụng thang máy nào",
-    "Booking history":"Lịch sử đặt chỗ"
+    "Booking history":"Lịch sử đặt chỗ",
+    "Place" : "Địa điểm",
+    "Location":"Vị trí",
+    "Wrong password":"Sai mật khẩu",
+    "Delete booking successfuly":"Xóa phiếu đặt chỗ thành công",
+    "Delete confirmation":"Xác nhận xóa",
+    "Do you want to delete this booking":"Bạn có muốn xóa phiếu đặt chỗ này không"
   }
 }

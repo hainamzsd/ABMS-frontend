@@ -79,7 +79,7 @@ export default function UtilityList() {
       <View style={[styles.circle, { backgroundColor: theme.sub }]}>
       {icon && <Image source={icon} style={{width:24,height:24}}/>}
       </View>
-      <Text>{item.name}</Text>
+      <Text style={{textAlign:'center'}}>{item.name}</Text>
     </Pressable>
   )};
   return (

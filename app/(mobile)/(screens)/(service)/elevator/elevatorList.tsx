@@ -11,11 +11,9 @@ import { router } from 'expo-router';
 import axios from 'axios';
 import LoadingComponent from '../../../../../components/resident/loading';
 import AlertWithButton from '../../../../../components/resident/AlertWithButton';
-export const MOCK_DATA = [
-  { id: 1, name: 'Xay nha', description: 'Description for item 1' },
-  { id: 2, name: 'Hoa', description: 'Description for item 2Description for item 2Description for item 2Description for item 2' },
-  { id: 3, name: 'Item 3', description: 'Description for item 3' },
-];
+import { useSession } from '../../../context/AuthContext';
+import { jwtDecode } from 'jwt-decode';
+
 
 interface Elevator{
   id: string
@@ -26,6 +24,17 @@ interface Elevator{
   status: number,
 }
 
+interface user{
+  FullName:string;
+  PhoneNumber:string;
+  Id:string;
+  Avatar:string;
+}
+  
+interface Room{
+  roomNumber:string;
+  id:string;
+}
 const ElevatorList = () => {
  
     const { t } = useTranslation();
@@ -36,18 +45,51 @@ const ElevatorList = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string>("");
   const [showError, setShowError] = useState(false);
+
+  const{session } = useSession();
+  const user:user = jwtDecode(session as string);
+  const [room, setRoom] = useState<Room[]>([]);
+useEffect(() => {
+    const fetchData = async () => {
+    setError("");
+      try {
+        const response = await axios.get(
+          `https://abmscapstone2024.azurewebsites.net/api/v1/resident-room/get?accountId=${user.Id}`,{
+            timeout:10000
+          }
+        );
+        if(response.data.statusCode==200){
+            setRoom(response?.data?.data);
+        }
+        else{
+            setShowError(true);
+            setError(t("System error please try again later"));
+        }
+      } catch (error) {
+        if(axios.isCancel(error)){
+            setShowError(true);
+            setError(t("System error please try again later"));
+        }
+        console.error('Error fetching data:', error);
+        setShowError(true);
+        setError(t("System error please try again later"));
+      } finally {
+      }
+    };
+
+    fetchData();
+  }, [session]);
   useEffect(() => {
     const fetchItems = async () => {
         setIsLoading(true);
         setError("");
         try {
-            const response = await axios.get('https://abmscapstone2024.azurewebsites.net/api/v1/elevator/get?room_id=1',{
+            const response = await axios.get(`https://abmscapstone2024.azurewebsites.net/api/v1/elevator/get?room_id=${room[0]?.id}`,{
                 timeout:10000
             });
             if(response.data.statusCode == 200){
               setData(response.data.data);
               setDisplayData(response.data.data);
-              console.log(response.data);
             }
            
         } catch (error) {
@@ -64,7 +106,7 @@ const ElevatorList = () => {
         }
     };
     fetchItems();
-}, []); 
+}, [room]); 
 useEffect(() => {
     const startIndex = (currentPage - 1) * 3;
     const endIndex = startIndex + 3;

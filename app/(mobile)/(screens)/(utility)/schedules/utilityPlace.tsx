@@ -30,7 +30,7 @@ export default function UtilityPlace() {
 
       try {
         const response = await axios.get(
-          'https://abmscapstone2024.azurewebsites.net/api/v1/utility/get-utility-detail',
+          `https://abmscapstone2024.azurewebsites.net/api/v1/utility/get-utility-detail?utilityId=${utility.id}`,
         );
         setUtilities(response?.data?.data);
         console.log(response?.data?.data);
@@ -65,7 +65,9 @@ export default function UtilityPlace() {
             // closeTime:utility.closeTime,
             numberOfSlot:utility.numberOfSlot,
             price:utility.price,
-            // utilityName:utility.utilityName,
+            utilityName:utility.utilityName,
+            location:utility.location,
+            utitlityDetailId:item.id
             // utilityDetailId:item.id
           },
         })

@@ -5,14 +5,13 @@ import { useTheme } from '../../../context/ThemeContext';
 import { useTranslation } from 'react-i18next';
 import SHADOW from '../../../../../constants/shadow';
 import ICON_MAP from '../../../../../constants/iconUtility';
-import statusUtility from '../../../../../constants/status';
-import usePagination from '../../../../../utils/pagination';
+import {statusUtility} from '../../../../../constants/status';
 import { router } from 'expo-router';
 import axios from 'axios';
 import LoadingComponent from '../../../../../components/resident/loading';
 
 interface Reservation {
-  
+        id:string,
         room_id:string,
         utility_id:string,
         slot:number,
@@ -20,7 +19,9 @@ interface Reservation {
         number_of_person:string,
         total_price:number,
         description:string,
-        status:number
+        status:number,
+        utility:string,
+        utility_detail_name:string
   }
 
   const PER_PAGE = 3;
@@ -67,10 +68,7 @@ const ReservationUtilityList = () => {
         setDisplayData(data.slice(startIndex, endIndex));
     }, [currentPage, data]);
 
-    // Function to handle the 'load more' action
-    const handleNextPage = () => {
-        setCurrentPage(prevPage => prevPage + 1);
-    };
+   
     const loadMoreItems = () => {
         // Only attempt to load more items if there are more items to load
         if (!isLoading && displayData.length < data.length) {
@@ -84,13 +82,13 @@ const ReservationUtilityList = () => {
     return null;
   };
     const render = ({ item }: {item:Reservation}) => {
-        const icon = ICON_MAP["Sân bóng rổ"];
-        const statusText = statusUtility?.[item.status];
+        const icon = ICON_MAP[item.utility];
+        const statusText = statusUtility?.[item.status].status;
         return(
         <Pressable style={[SHADOW, { backgroundColor: 'white', borderRadius: 10, marginTop: 20 }]}
         onPress={() =>
             router.push({
-              pathname: `/(mobile)/(screens)/(utility)/(reservation)/${item.room_id}`,
+              pathname: `/(mobile)/(screens)/(utility)/(reservation)/${item.id}`,
               params: {
                 
               },
@@ -102,11 +100,11 @@ const ReservationUtilityList = () => {
                         {icon && <Image source={icon} style={{width:24,height:24}}/>}
                     </View>
                     <View>
-                        <Text style={{ fontWeight: 'bold', fontSize: 16 }}>Tên tiện ích</Text>
-                        <View style={{ flexDirection: 'row' }}>
+                        <Text style={{ fontWeight: 'bold', fontSize: 16 }}>{item.utility}</Text>
+                        {/* <View style={{ flexDirection: 'row' }}>
                             <Text style={{ color: '#9C9C9C' }}>{t("Code")}: </Text>
-                            <Text>aaa</Text>
-                        </View>
+                            <Text>{item.id}</Text>
+                        </View> */}
                     </View>
                 </View>
                 <View style={{
@@ -135,8 +133,8 @@ const ReservationUtilityList = () => {
         </View>
         <View style={{paddingHorizontal: 10,paddingVertical:20 }}>
             <View style={{flexDirection:'row'}}>
-                    <Text style={{color:"#9C9C9C"}}>{t("Create date")}: </Text>
-                    <Text>25/2/32</Text>
+                    <Text style={{color:"#9C9C9C"}}>{t("Place")}: </Text>
+                    <Text>{item.utility_detail_name}</Text>
             </View>
         </View>
     </Pressable>
@@ -153,7 +151,7 @@ const ReservationUtilityList = () => {
                        style={{paddingHorizontal:26}}
                         data={displayData}
                         renderItem={render}
-                        keyExtractor={(item) => item.room_id}
+                        keyExtractor={(item) => item.id}
                         onEndReached={loadMoreItems}
             onEndReachedThreshold={0.5} // How far from the end (0-1) the bottom edge of the list must be from the end of the content before onEndReached is called
                         ListFooterComponent={renderFooter}

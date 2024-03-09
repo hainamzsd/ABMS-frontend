@@ -12,15 +12,16 @@ export default function AppLayout() {
   const { session, isLoading } = useSession();
   const { theme } = useTheme();
   const { t } = useTranslation();
-  if (isLoading) {
-    return <LoadingComponent loading={isLoading}></LoadingComponent>;
-  }
+  // if (isLoading) {
+  //   return <LoadingComponent loading={isLoading}></LoadingComponent>;
+  // }
   if (!session) {
     return <Redirect href="/login" />;
   }
   return (
     <Stack initialRouteName="(tabs)" >
       <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+      <Stack.Screen name="(utility)/utilityListScreen"  />
       <Stack.Screen
         name="themeModal"
         options={{

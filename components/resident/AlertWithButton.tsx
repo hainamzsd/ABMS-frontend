@@ -31,9 +31,9 @@ const AlertWithButton: React.FC<CustomAlertProps> = ({ visible, title, content, 
             <Text style={styles.contentText}>{content}</Text>
           </View>
           <View style={styles.buttonContainer}>
-          <Pressable onPress={onClose} style={[styles.button, {backgroundColor:'black'}]}>
+          <TouchableOpacity onPress={onClose} style={[styles.button, {backgroundColor:'black'}]}>
               <Text style={[styles.buttonText,{color:'white'}]}>{t("Close")}</Text>
-            </Pressable>
+            </TouchableOpacity>
           </View>
         </View>
       </View>
