@@ -63,7 +63,7 @@ const ElevatorRegisterScreen = () => {
   };
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(false);
-  const [errorText, setErrorText] = useState("System error please try again later");
+  const [errorText, setErrorText] = useState(t("System error please try again later"));
   const [alertVisible, setAlertVisible] = useState(false);
   const [alertConfirmVisible, setAlertConfirmVisible] = useState(false);
   const handleCreateRequest = async () => {

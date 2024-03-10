@@ -8,75 +8,153 @@ import SHADOW from '../../../../../constants/shadow';
 import { FlatList } from 'react-native';
 import { CircleUser } from 'lucide-react-native';
 import { router } from 'expo-router';
+import axios from 'axios';
+import { jwtDecode } from 'jwt-decode';
+import { useSession } from '../../../context/AuthContext';
+import moment from 'moment';
+import { statusUtility } from '../../../../../constants/status';
 export const MOCK_DATA = [
   { id: 1, name: 'Xay nha', description: 'Description for item 1' },
   { id: 2, name: 'Hoa', description: 'Description for item 2Description for item 2Description for item 2Description for item 2' },
   { id: 3, name: 'Item 3', description: 'Description for item 3' },
 ];
-
+interface Construction{
+  id:string;
+  roomId:string;
+  name:string;
+  constructionOrganization:string;
+  phoneContact:string;
+  startTime:string;
+  endTime:string;
+  description:string;
+  createTime:Date;
+  status:number;
+}
+interface user{
+  FullName:string;
+  PhoneNumber:string;
+  Id:string;
+  Avatar:string;
+}
+interface Room{
+  roomNumber:string;
+  id:string;
+}
 const ConstructionList = () => {
  
     const { t } = useTranslation();
     const { theme } = useTheme();
     const [currentPage, setCurrentPage] = useState(1);
-    const [dataToDisplay, setDataToDisplay] = useState<any[]>([]);
-    const [isLoadingMore, setIsLoadingMore] = useState(false); // Track loading state
-  
-    useEffect(() => {
-        const startIndex = (currentPage - 1) * 3;
-        const endIndex = startIndex + 3;
-        const newData = MOCK_DATA.slice(startIndex, endIndex);
-        // Append new data to existing data
-        setDataToDisplay([...dataToDisplay, ...newData]);
-      }, [currentPage]); // Update data when page changes
-    
-    //   useEffect(() => {
-    //     const fetchData = async () => {
-    //       const newData = await fetchItems(currentPage);
-    //       setData([...data, ...newData]); // Append new data
-    //     };
-    //     fetchData();
-    //   }, [currentPage]); 
+    const [data, setData] = useState<Construction[]>([]); // Holds all fetched data
+    const [displayData, setDisplayData] = useState<Construction[]>([]); // Data to display
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string>("");
+  const [showError, setShowError] = useState(false);
 
-
-      const handleNextPage = async () => {
-        if (currentPage * 3 < MOCK_DATA.length && !isLoadingMore) {
-          setIsLoadingMore(true);
-          // Simulate delayed loading for demonstration purposes
-          await new Promise((resolve) => setTimeout(resolve, 1000));
-          setCurrentPage(currentPage + 1);
-          setIsLoadingMore(false);
+  const{session } = useSession();
+  const user:user = jwtDecode(session as string);
+  const [room, setRoom] = useState<Room[]>([]);
+useEffect(() => {
+    const fetchData = async () => {
+    setError("");
+      try {
+        const response = await axios.get(
+          `https://abmscapstone2024.azurewebsites.net/api/v1/resident-room/get?accountId=${user.Id}`,{
+            timeout:10000
+          }
+        );
+        if(response.data.statusCode==200){
+            setRoom(response?.data?.data);
         }
-      };
+        else{
+            setShowError(true);
+            setError(t("System error please try again later"));
+        }
+      } catch (error) {
+        if(axios.isCancel(error)){
+            setShowError(true);
+            setError(t("System error please try again later"));
+        }
+        console.error('Error fetching data:', error);
+        setShowError(true);
+        setError(t("System error please try again later"));
+      } finally {
+      }
+    };
+
+    fetchData();
+  }, [session]);
+  useEffect(() => {
+    const fetchElevatorData = async () => {
+      if (!room.length) {
+        return;
+      }
+        setIsLoading(true);
+        setError("");
+        try {
+            const response = await axios.get(`https://abmscapstone2024.azurewebsites.net/api/v1/constuction/get?room_id=${room[0]?.id}`,{
+                timeout:10000
+            });
+            if(response.data.statusCode == 200){
+              setData(response.data.data);
+              setDisplayData(response.data.data);
+            }
+           
+        } catch (error) {
+            if(axios.isAxiosError(error)){
+                setShowError(true);
+                setError(t("System error please try again later")+".");
+                return;
+            }
+            console.error('Error fetching reservations:', error);
+            setShowError(true);
+            setError(t('Failed to return requests')+".");
+        } finally {
+            setIsLoading(false);
+        }
+    };
+    fetchElevatorData();
+}, [room]); 
+  useEffect(() => {
+    const startIndex = (currentPage - 1) * 3;
+    const endIndex = startIndex + 3;
+    setDisplayData(data.slice(startIndex, endIndex));
+}, [currentPage, data]);
+
+
+const loadMoreItems = () => {
+  if (!isLoading && displayData.length < data.length) {
+      setCurrentPage(currentPage => currentPage + 1);
+  }
+};
     const renderFooter = () => {
-    if (isLoadingMore) {
+    if (isLoading) {
       return <ActivityIndicator size="small"  color={theme.primary}/>;
     }
     return null;
   };
-    const render = ({ item }: any) => (
-        <Pressable style={[SHADOW, { backgroundColor: 'white',  }]}
+    const render = ({ item }:{item:Construction}) => (
+        <Pressable style={[SHADOW, { backgroundColor: 'white', borderRadius:10, marginTop:10 }]}
         onPress={() => {
           router.push({
             pathname: `/(mobile)/(screens)/(service)/construction/${item.id}`,
-            params: item,
           })
         }}
         >
-        <View style={{ borderBottomWidth: 1,borderColor:'#9c9c9c' }}>
+        <View style={{  }}>
            <View style={{padding:20, flexDirection:'row', justifyContent:'space-between'}}>
                 <View style={{justifyContent:'space-between',flex:1}}>
                     <View style={{flex:0.6}}>
                     <Text style={{fontWeight:'bold', fontSize:20}}>{item.name}</Text>
                     <Text>{item.description}</Text>
                     </View>
-                    <Text style={{color:"#9c9c9c"}}>{t("Create date")} 22/2/222</Text>
+                    <Text style={{color:"#9c9c9c"}}>{t("Create date")}: {moment.utc(item.createTime).format("DD-MM-YYYY")}</Text>
                 </View>
                 <View style={{
                     padding: 10, borderRadius: 20, backgroundColor: theme.primary,
                     justifyContent: 'center', height: 40
                 }}>
-                    <Text style={{ fontWeight: '600',color:'white' }}>{t("Unsucessful")}</Text>
+                    <Text style={{ fontWeight: '600',color:'white' }}>{t(statusUtility[item.status].status)}</Text>
                 </View>
            </View>
         </View>
@@ -94,11 +172,11 @@ const ConstructionList = () => {
           </View>
           <View style={{ flex:1,  }}>
                    <FlatList
-                    data={dataToDisplay}
-                    style={{marginTop:10}}
+                    data={displayData}
+                    style={{marginTop:10, paddingHorizontal:20}}
                     renderItem={render}
                     keyExtractor={(item) => item.id.toString()}
-                    onEndReached={handleNextPage} 
+                    onEndReached={loadMoreItems} 
                     onEndReachedThreshold={0.5}
                     ListFooterComponent={renderFooter}
                    />

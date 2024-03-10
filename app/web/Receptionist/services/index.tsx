@@ -90,11 +90,11 @@ const index = () => {
 const styles = StyleSheet.create({
   row: {
     flex: 1,
-    justifyContent: 'space-around',
     marginBottom: 10,
+    justifyContent:'flex-start'
   },
   card: {
-    flex: 1,
+    flex: 0.3,
     borderRadius: 10,
     borderWidth: 1,
     borderColor: '#ddd',
@@ -102,7 +102,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 5,
     backgroundColor: '#FFFFFF',
     overflow: 'hidden',
-    padding:10
+    padding:10,
   },
   cardImage: {
     width: 80,

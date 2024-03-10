@@ -13,6 +13,7 @@ import LoadingComponent from '../../../../../components/resident/loading';
 import AlertWithButton from '../../../../../components/resident/AlertWithButton';
 import { useSession } from '../../../context/AuthContext';
 import { jwtDecode } from 'jwt-decode';
+import { statusUtility } from '../../../../../constants/status';
 
 
 interface Elevator{
@@ -80,7 +81,10 @@ useEffect(() => {
     fetchData();
   }, [session]);
   useEffect(() => {
-    const fetchItems = async () => {
+    const fetchElevatorData = async () => {
+      if (!room.length) {
+        return;
+      }
         setIsLoading(true);
         setError("");
         try {
@@ -105,7 +109,7 @@ useEffect(() => {
             setIsLoading(false);
         }
     };
-    fetchItems();
+    fetchElevatorData();
 }, [room]); 
 useEffect(() => {
     const startIndex = (currentPage - 1) * 3;
@@ -160,7 +164,7 @@ const loadMoreItems = () => {
         <View style={{paddingHorizontal: 10,paddingVertical:10 }}>
             <View style={{flexDirection:'row'}}>
                     <Text style={{color:"#9C9C9C"}}>{t("Status")}: </Text>
-                    <Text style={{fontWeight:'600'}}>{status}</Text>
+                    <Text style={{fontWeight:'600'}}>{t(statusUtility[item.status].status)}</Text>
             </View>
         </View>
     </Pressable>

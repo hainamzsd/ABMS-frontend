@@ -11,15 +11,29 @@ import Header from "../../../../../components/resident/header";
 import LoadingComponent from "../../../../../components/resident/loading";
 import { useTheme } from "../../../context/ThemeContext";
 import { useTranslation } from "react-i18next";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Info, Calendar } from "lucide-react-native";
 import Label from "../../../../../components/resident/lable";
 import { useLanguage } from "../../../context/LanguageContext";
 import RNDateTimePicker from "@react-native-community/datetimepicker";
 import SHADOW from "../../../../../constants/shadow";
+import * as yup from 'yup'
+import axios from "axios";
+import { useSession } from "../../../context/AuthContext";
+import CustomAlert from "../../../../../components/resident/confirmAlert";
+import AlertWithButton from "../../../../../components/resident/AlertWithButton";
+import { jwtDecode } from "jwt-decode";
+  
+interface Room{
+  roomNumber:string;
+  id:string;
+}
+
+
 export default function ConstructionRegisterScreen() {
   const { theme } = useTheme();
   const { t } = useTranslation();
+  const {session} = useSession();
   const [loading, setLoading] = useState(false);
   const { currentLanguage } = useLanguage();
   const [startDate, setStartDate] = useState<Date>(new Date());
@@ -40,9 +54,145 @@ export default function ConstructionRegisterScreen() {
     setShowEndDate(false);
   };
 
-  const isButtonDisabled = !startDate || !endDate;
+  //get room information
+  const user:any = jwtDecode(session as string);
+const [room, setRoom] = useState<Room[]>([]);
+  useEffect(() => {
+    const fetchData = async () => {
+    setErrorText("");
+      try {
+        setLoading(true);
+        const response = await axios.get(
+          `https://abmscapstone2024.azurewebsites.net/api/v1/resident-room/get?accountId=${user.Id}`,{
+            timeout:10000
+          }
+        );
+        if(response.data.statusCode==200){
+            setRoom(response?.data?.data);
+        }
+        else{
+            setError(true);
+            setErrorText(t("System error please try again later"));
+        }
+      } catch (error) {
+        if(axios.isCancel(error)){
+            setError(true);
+            setErrorText(t("System error please try again later"));
+        }
+        console.error('Error fetching data:', error);
+        setError(true);
+        setErrorText(t("System error please try again later"));
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [session]);
+  
+  //handle create form
+  const [projectName, setProjectName] = useState('');
+const [constructionUnitName, setConstructionUnitName] = useState('');
+const [phoneContact, setPhoneContact] = useState('');
+const [note, setNote] = useState('');
+const [errors, setErrors] = useState<any>({}); 
+  const validationSchema = yup.object().shape({
+    projectName: yup.string().required(t('Project name is required')),
+    constructionUnitName: yup.string().required(t('Construction unit name is required')),
+    phoneContact: yup.string().required(t('Phone contact is required')).matches(/^[\s\d\)\(\-+\.]+$/, t('Invalid phone format')),  // Generic phone regex (adapt as needed)
+    startDate: yup.date().required(t('Start date is required')),
+    endDate: yup.date().required(t('End date is required')).when('startDate', {
+      is: (startDate:Date) => startDate, // Only apply when startDate exists
+      then: (schema) => schema.min(startDate, t('End date must be after start date')),
+    }),
+    note: yup.string().required(""), // Optional note field
+  });
+  const [error, setError] = useState(false);
+  const [errorText, setErrorText] = useState(t("System error please try again later"));
+  const [alertVisible, setAlertVisible] = useState(false);
+  const [alertConfirmVisible, setAlertConfirmVisible] = useState(false);
+  const handleSubmit = async () => {
+    try {
+      await validationSchema.validate({
+        projectName,
+        constructionUnitName,
+        phoneContact,
+        startDate,
+        endDate,
+        note, 
+      },{ abortEarly: false });
+      const body = {
+        roomId:room[0].id,
+        name: projectName,
+        constructionOrganization: constructionUnitName,
+        phone: phoneContact,
+        startTime: startDate,
+        endTime: endDate,
+        description: note,
+      };
+      console.log(body)
+      const response = await axios.post('https://abmscapstone2024.azurewebsites.net/api/v1/construction/create', body, {
+        timeout: 10000,
+        headers: {
+          'Authorization': `Bearer ${session}`
+        }
+      },
+      );
+
+      console.log(response);
+      if (response.data.statusCode == 200) {
+        setAlertConfirmVisible(true);
+        setStartDate(new Date());
+        setNote("");
+      }
+      else {
+        setError(true);
+        setErrorText(t("Failed to create request, try again later")+".");
+      }
+    } catch (error:any) {
+      const validationErrors:any = {};
+      error.inner.forEach((err:any) => {
+        validationErrors[err.path] = err.message;
+      });
+      setErrors(validationErrors);
+      if (axios.isCancel(error)) {
+        console.error('Request timed out:', error);
+        setError(true);
+        setErrorText(t("System error please try again later")+".");
+      } else {
+        // Handle other errors
+        setError(true);
+        setErrorText(t("Failed to create request, try again later")+".");
+      }
+    } finally {
+      setLoading(false);
+      setAlertVisible(false);
+    }
+  };
+  
+
+  const isButtonDisabled = !startDate || !endDate || !projectName || !constructionUnitName || !phoneContact ;
   return (
     <>
+      <CustomAlert
+        visible={alertVisible}
+        title={t("Confirm")}
+        content={t("Do you confirm your request") + "?"}
+        onClose={() => setAlertVisible(false)}
+        onConfirm={handleSubmit}
+      />
+      <AlertWithButton
+        visible={alertConfirmVisible}
+        title={t("Request successful")}
+        content={t("Your request has been created successfuly, please wait for the receptionist to confirm") + "."}
+        onClose={() => setAlertConfirmVisible(false)}
+      ></AlertWithButton>
+      <AlertWithButton
+        visible={error}
+        title={t("Request unsuccessful")}
+        content={t(errorText)}
+        onClose={() => setError(false)}
+      ></AlertWithButton>
       <LoadingComponent loading={loading}></LoadingComponent>
       <Header headerTitle={t("Register construction")}></Header>
       <SafeAreaView
@@ -69,8 +219,11 @@ export default function ConstructionRegisterScreen() {
                   placeholder={t("Type") + "..."}
                   placeholderTextColor={"#9C9C9C"}
                   style={[styles.textInput]}
+                  value={projectName}
+                  onChangeText={setProjectName}
                 />
               </View>
+              {errors.projectName && <Text style={styles.errorText}>{errors.projectName}</Text>}
             </View>
             <View style={{ marginTop: 20 }}>
               <Label required text={t("Name of construction unit")}></Label>
@@ -79,8 +232,11 @@ export default function ConstructionRegisterScreen() {
                   placeholder={t("Type") + "..."}
                   placeholderTextColor={"#9C9C9C"}
                   style={[styles.textInput]}
+                  value={constructionUnitName}
+                  onChangeText={setConstructionUnitName}
                 />
               </View>
+              {errors.constructionUnitName && <Text style={styles.errorText}>{errors.constructionUnitName}</Text>}
             </View>
             <View style={{ marginTop: 20 }}>
               <Label required text={t("Phone contact")}></Label>
@@ -89,8 +245,11 @@ export default function ConstructionRegisterScreen() {
                   placeholder={t("Type") + "..."}
                   placeholderTextColor={"#9C9C9C"}
                   style={[styles.textInput]}
+                  value={phoneContact}
+                  onChangeText={setPhoneContact}
                 />
               </View>
+              {errors.phoneContact && <Text style={styles.errorText}>{errors.phoneContact}</Text>}
             </View>
             <View style={{ marginTop: 20 }}>
               <Label text={t("Start date")} required></Label>
@@ -119,6 +278,7 @@ export default function ConstructionRegisterScreen() {
                   onChange={onChangeStartDate}
                 />
               )}
+              {errors.startDate && <Text style={styles.errorText}>{errors.startDate}</Text>}
             </View>
             <View style={{ marginTop: 20 }}>
               <Label text={t("End date")} required></Label>
@@ -147,9 +307,10 @@ export default function ConstructionRegisterScreen() {
                   onChange={onChangeEndDate}
                 />
               )}
+              {errors.endDate && <Text style={styles.errorText}>{errors.endDate}</Text>}
             </View>
             <View style={{ marginTop: 20 }}>
-              <Label required text={t("Note")}></Label>
+              <Label text={t("Note")}></Label>
               <View style={[styles.inputContainer]}>
                 <TextInput
                   multiline
@@ -157,12 +318,15 @@ export default function ConstructionRegisterScreen() {
                   placeholderTextColor={"#9C9C9C"}
                   style={[styles.textInput, { height: 100 }]}
                   numberOfLines={4}
+                  value={note}
+                  onChangeText={setNote}
                 />
               </View>
             </View>
             <View style={{ marginTop: 20 }}>
               <Pressable
                 disabled={isButtonDisabled}
+                onPress={() => setAlertVisible(true)}
                 style={[
                   {
                     backgroundColor: theme.primary,
@@ -192,6 +356,10 @@ const styles = StyleSheet.create({
     textAlign: "center",
     flexDirection: "row",
     flexWrap: "wrap",
+  },
+  errorText:{
+    color:'red',
+    marginTop:5
   },
   inputContainer: {
     flexDirection: "row",
