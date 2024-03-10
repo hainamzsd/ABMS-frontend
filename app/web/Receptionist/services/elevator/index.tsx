@@ -9,6 +9,7 @@ import Toast from 'react-native-toast-message'
 import moment from 'moment'
 import { paginate } from '../../../../../utils/pagination'
 import { statusForReceptionist, statusUtility } from '../../../../../constants/status'
+import { Dropdown } from 'react-native-element-dropdown'
 
 interface Elevator{
     id:string;
@@ -17,6 +18,11 @@ interface Elevator{
     endTime:Date;
     status:Number;
 }
+const StatusData = [
+  { label: "Yêu cầu chưa phê duyệt", value: 2 },
+  { label: "Yêu cầu đã phê duyệt", value: 3 },
+  { label: "Yêu cầu đã từ chối", value: 4 },
+]
 
 const index = () => {
     const headers = ['Căn hộ', 'Thời gian bắt đầu', 'Thời gian kết thúc', 'Trạng thái',''];
@@ -152,31 +158,48 @@ const index = () => {
                     ></Image>
                 </TouchableOpacity> */}
             </View>
-            {status === null && (
-            <Button text="Đổi sang yêu cầu chưa phê duyệt"
-            style={{width:300, marginBottom:10}}
-            onPress={handleShowPending} />
-          )}
-          {status === 2 && (
-            <Button text="Đổi sang yêu cầu đã phê duyệt"
-            style={{width:300, marginBottom:10}}
-            onPress={handleShowApproved} />
-          )}
+            <Dropdown
+              style={styles.comboBox}
+              placeholderStyle={{ fontSize: 14, }}
+              placeholder={"Chọn trạng thái"}
+              itemContainerStyle={{ borderRadius: 10 }}
+              data={StatusData}
+              value={status}
+              search={false}
+              labelField="label"
+              valueField="value"
+              onChange={(item: any) => {
+                setStatus(item.value);
+              }}
+            ></Dropdown>
             {isLoading && <ActivityIndicator size={'large'} color={'#171717'}></ActivityIndicator>}
             {!request ? <Text style={{marginBottom:10, fontSize:18,fontWeight:'600'}}>Chưa có dữ liệu</Text>:
                   <TableComponent headers={headers}>
                     <FlatList data={currentItems}
-                    renderItem={({ item }) => <TableRow>
+                    renderItem={({ item }) => 
+                    {
+                      return( 
+                        <TableRow>
                         <Cell>{item.roomId}</Cell>
                         <Cell>{moment(item.startTime).format('YYYY-MM-DD')}</Cell>
                         <Cell>{moment(item.endTime).format('YYYY-MM-DD')}</Cell>
-                        <Cell>{statusForReceptionist?.[item.status as number].status}</Cell>
+                        <Cell>
+                          {item.status && 
+                           <Button text={statusForReceptionist?.[item.status as number].status}
+                           style={{borderRadius:20, backgroundColor:statusForReceptionist?.[item.status as number].color}}
+                           > </Button>}
+                       
+                        </Cell>
                         <Cell>
                                 <Button text="Chi tiết"
                                  onPress={()=>router.push(`/web/Receptionist/services/elevator/${item.id}`)}/>
                         </Cell>
                     </TableRow>
-                    }
+  
+                      )
+                }
+                       
+                      }
                     keyExtractor={(item: Elevator) => item.id}
                 /> 
                 
@@ -186,7 +209,7 @@ const index = () => {
             style={{width:50}}
             onPress={() => setCurrentPage((prev) => Math.max(prev - 1, 1))} disabled={currentPage === 1} />
             <Text style={{marginHorizontal:10, fontWeight:"600"}}>
-              Page {currentPage} of {totalPages}
+              Trang {currentPage} trên {totalPages}
             </Text>
             <Button text="Sau" onPress={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))} disabled={currentPage === totalPages} />
 
@@ -245,5 +268,14 @@ const styles = StyleSheet.create({
         width: "50%",
         height: "50%",
         tintColor: COLORS.white,
-    }
+    },
+    comboBox: {
+      backgroundColor: 'white',
+      width:300,
+      marginBottom:10,
+      borderRadius: 10,
+      padding: 10,
+      borderWidth: 1,
+      marginTop: 5
+    },
 });

@@ -8,7 +8,8 @@ import axios from 'axios';
 import { useAuth } from '../../../context/AuthContext';
 import Toast from 'react-native-toast-message';
 import moment from 'moment';
-
+import Swal from 'sweetalert2'
+import { statusForReceptionist } from '../../../../../constants/status';
 const StatusData = [
   { label: "Phê duyệt", value: 3 },
   { label: "Từ chối", value: 4 },
@@ -119,6 +120,52 @@ const page = () => {
         setIsLoading(false);
     }
 };
+const handleDeleteElevator = async () => {
+  if (!item.id) {
+    Toast.show({
+      type:'error',
+      text1:'Không tìm thấy thang máy',
+      position:'bottom'
+    })
+    return;
+  }
+  try {
+    setIsLoading(true);
+    const response = await axios.delete(`https://abmscapstone2024.azurewebsites.net/api/v1/elevator/delete/${item.id}`, {
+      timeout: 10000,
+      withCredentials:true,
+      headers:{
+        'Authorization': `Bearer ${session}`
+      }
+  });
+    console.log(response);
+    if (response.data.statusCode == 200) {
+      Toast.show({
+        type:'success',
+        text1:'Xóa yêu cầu thành công',
+        position:'bottom'
+      })
+      router.replace('/web/Receptionist/services/elevator/');
+    } else {
+      Toast.show({
+        type:'error',
+        text1:'Xóa yêu cầu không thành công' ,
+        position:'bottom'
+      })
+    }
+  } catch (error) {
+    if (axios.isCancel(error)) {
+      Toast.show({
+          type: 'error',
+          text1: 'Lỗi hệ thống! vui lòng thử lại sau',
+          position:'bottom'
+      })
+  }
+    console.error('Error deleting elevator:', error);
+  } finally {
+    setIsLoading(false);
+  }
+};
   return (
     <View
       style={{
@@ -188,6 +235,17 @@ const page = () => {
             <Text style={{ marginBottom: 10, fontWeight: "600", fontSize: 16 }}>
               Trạng thái
             </Text>
+            <View style={{flexDirection:'row', alignItems:'center'}}>
+              <Text>Trạng thái hiện tại:</Text>
+              {elevator?.status &&
+                 <Button text={statusForReceptionist?.[elevator?.status as any].status}
+                 style={{borderRadius:20, 
+                  marginLeft:10,
+                  backgroundColor:statusForReceptionist?.[elevator?.status as any].color}}
+                 > </Button>
+              }
+           
+            </View>
             {/* <Text style={{color:'#9c9c9c', fontSize:12,marginBottom: 10,}}>Họ và tên không được trống.</Text>
                         <Text style={{color:'#9c9c9c', fontSize:12,marginBottom: 10,}}>Họ và tên tối thiểu 8 kí tự, tối đa 20 kí tự.</Text> */}
             <Dropdown
@@ -212,7 +270,20 @@ const page = () => {
             text="Phê duyệt" style={[{ width: 100, marginRight: 10,
             opacity:disableBtn?0.7:1}]}></Button>
             <Button 
-            onPress={()=>{}}
+            onPress={()=>{
+              Swal.fire({
+                title: 'Xác nhận',
+                text: 'Bạn có muốn xóa phiếu đăng ký này?',
+                icon: 'warning',
+                showCloseButton:true,
+                confirmButtonText: 'Xóa',
+                confirmButtonColor:'#9b2c2c',
+              }).then((result) => {
+                if(result.isConfirmed){
+                  handleDeleteElevator();
+                }
+              })
+            }}
             text="Xóa" style={{ width: 100, backgroundColor: '#9b2c2c' }}></Button>
           </View>
         </ScrollView>
