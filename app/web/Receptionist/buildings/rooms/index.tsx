@@ -23,7 +23,7 @@ const RoomList = () => {
         </View>
 
         <FlatList
-          data={[1, 2, 3, 4, 5]}
+          data={[1, 2]}
           renderItem={({ item }: { item: any }) => (
             <RoomItem
               floor={item}

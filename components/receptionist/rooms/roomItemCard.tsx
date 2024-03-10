@@ -3,11 +3,10 @@ import { View, TouchableOpacity, Image, Text, StyleSheet } from 'react-native'
 import { COLORS, SIZES, SHADOWS } from '../../../constants';
 
 const RoomItemCard = (props: any) => {
-    const { item, selectedRoom, handleCardPress } = props;
+    const { item } = props;
     return (
         <TouchableOpacity
             style={styles.container}
-            onPress={() => handleCardPress(item)}
         >
             <TouchableOpacity style={styles.logoContainer}>
                 <Image
@@ -28,12 +27,6 @@ const RoomItemCard = (props: any) => {
                 <Text style={styles.roomNumber} numberOfLines={1}>
                     Room 102
                 </Text>
-                {/* <View style={styles.infoWrapper}>
-                    <Text style={styles.publisher}>
-                        {item?.job_publisher} -
-                    </Text>
-                    <Text style={styles.location}> {item.job_country}</Text>
-                </View> */}
             </View>
         </TouchableOpacity>
     )

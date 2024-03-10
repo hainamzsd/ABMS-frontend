@@ -7,11 +7,8 @@ import { Link } from 'expo-router';
 
 const RoomItem = (props: any) => {
   const { floor, children } = props;
-  const handleCardPress = () => {
-
-  }
   return (
-    <View style={styles.container}>
+    <TouchableOpacity style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Floor {floor}</Text>
         <TouchableOpacity>
@@ -43,11 +40,9 @@ const RoomItem = (props: any) => {
       <FlatList
         data={posts}
         renderItem={({ item }: { item: any }) => (
-          <Link href="./rooms/1">
+          <Link href="./rooms/caf1b564-9cd7-43ff-a8ad-4d36c9ed26d9">
             <RoomItemCard
               item={item}
-              selectedJob={"selectedJob"}
-              handleCardPress={handleCardPress}
             />
           </Link>
         )}
@@ -55,7 +50,7 @@ const RoomItem = (props: any) => {
         contentContainerStyle={{ columnGap: SIZES.medium }}
         horizontal
       />
-    </View>
+    </TouchableOpacity>
   )
 }
 
