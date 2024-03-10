@@ -3,11 +3,12 @@ import { View, Text, StyleSheet, TouchableOpacity, FlatList } from 'react-native
 import { SIZES, COLORS } from '../../../constants';
 import { posts } from '../../../constants/fakeData';
 import RoomItemCard from './roomItemCard';
+import { Link } from 'expo-router';
 
 const RoomItem = (props: any) => {
   const { floor, children } = props;
   const handleCardPress = () => {
-    
+
   }
   return (
     <View style={styles.container}>
@@ -42,11 +43,13 @@ const RoomItem = (props: any) => {
       <FlatList
         data={posts}
         renderItem={({ item }: { item: any }) => (
-          <RoomItemCard
-            item={item}
-            selectedJob={"selectedJob"}
-            handleCardPress={handleCardPress}
-          />
+          <Link href="./rooms/1">
+            <RoomItemCard
+              item={item}
+              selectedJob={"selectedJob"}
+              handleCardPress={handleCardPress}
+            />
+          </Link>
         )}
         keyExtractor={(item) => item.id}
         contentContainerStyle={{ columnGap: SIZES.medium }}

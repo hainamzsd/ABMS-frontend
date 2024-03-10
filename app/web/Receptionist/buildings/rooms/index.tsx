@@ -4,8 +4,10 @@ import RoomItem from '../../../../../components/receptionist/rooms/roomItem';
 import RoomItemCard from '../../../../../components/receptionist/rooms/roomItemCard';
 import SearchWithButton from '../../../../../components/ui/searchWithButton';
 import { SIZES } from '../../../../../constants';
+import { Link, useLocalSearchParams } from 'expo-router';
 
 const RoomList = () => {
+  const item = useLocalSearchParams();
   useEffect(() => {
   }, [])
 
@@ -14,7 +16,7 @@ const RoomList = () => {
       <SafeAreaView style={{ height: '100%' }}>
         <View style={{}}>
           <View style={{ marginBottom: 10 }}>
-            <Text style={{ fontWeight: 'bold', fontSize: 20, marginBottom: 5 }}>Danh sách căn phòng ở Tòa 1</Text>
+            <Text style={{ fontWeight: 'bold', fontSize: 20, marginBottom: 5 }}>Danh sách căn phòng ở Tòa {item.bid}</Text>
             <Text>Thông tin các căn phòng</Text>
           </View>
           <SearchWithButton placeholder="Tìm kiếm số căn" />
@@ -25,9 +27,7 @@ const RoomList = () => {
           renderItem={({ item }: { item: any }) => (
             <RoomItem
               floor={item}
-            >
-              <RoomItemCard />
-            </RoomItem>
+            />
           )}
           keyExtractor={(item) => item.toString()} // Convert item to string
           contentContainerStyle={{ columnGap: SIZES.medium }}

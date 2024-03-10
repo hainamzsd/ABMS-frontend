@@ -4,7 +4,7 @@ import { View, Text, Button } from 'react-native'
 
 const BuildingList = () => {
   return (
-    <View><Link href={'./buildings/rooms'}>Phòng ở tòa 1</Link></View>
+    <View><Link href={'./buildings/rooms?bid=2'}>Phòng ở tòa 1</Link></View>
   )
 }
 

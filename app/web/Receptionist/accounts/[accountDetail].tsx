@@ -65,7 +65,6 @@ const page = () => {
   useEffect(() => {
     const fetchData = async () => {
       setIsLoading(true); // Set loading state to true
-
       try {
         const response = await axios.get(`https://abmscapstone2024.azurewebsites.net/api/v1/account/get/${accountId.accountDetail}`, {
           timeout: 10000,
@@ -105,6 +104,7 @@ const page = () => {
     };
 
     fetchData();
+    
   }, []);
 
   const {session} = useAuth();
