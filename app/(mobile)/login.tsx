@@ -22,6 +22,7 @@ import { Image } from "react-native";
 import LoadingComponent from "../../components/resident/loading";
 import AlertWithButton from "../../components/resident/AlertWithButton";
 import "core-js/stable/atob";
+import { set } from "date-fns";
 const LoginScreen = () => {
   const [currentLanguage, setCurrentLanguage] = useState(i18n.language);
   const changeLanguage = (languageCode: string) => {
@@ -105,8 +106,8 @@ const LoginScreen = () => {
             </Text>
           </TouchableOpacity>
           {errorText&&
-          <View style={{alignItems:'center'}}>
-          <Text style={{color:'red', fontWeight:'600'}}>{errorText}</Text></View>}
+          <View style={{alignItems:'center', marginTop:5}}>
+          <Text style={{color:'red', fontWeight:'600'}}>{t("Error")}: {errorText}</Text></View>}
 
           <View
             style={{

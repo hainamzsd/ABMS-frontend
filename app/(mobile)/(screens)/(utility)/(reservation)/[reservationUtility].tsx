@@ -13,7 +13,7 @@ import LoadingComponent from '../../../../../components/resident/loading';
 import AlertWithButton from '../../../../../components/resident/AlertWithButton';
 import { useSession } from '../../../context/AuthContext';
 import { jwtDecode } from 'jwt-decode';
-import statusUtility from '../../../../../constants/status';
+import {statusUtility} from '../../../../../constants/status';
 import Alert from '../../../../../components/resident/Alert';
 import CustomAlert from '../../../../../components/resident/confirmAlert';
 
@@ -169,7 +169,7 @@ const Page = () => {
             <AlertWithButton title={t("Error")} content={error} visible={showError}
                 onClose={() => setShowError(false)}
             ></AlertWithButton>
-            <Header headerTitle={t("Register confirmation")} />
+            <Header headerTitle={t("Booking detail")} />
             <SafeAreaView style={{ backgroundColor: theme.background, flex: 1, justifyContent: 'space-between' }}>
                 <View style={{ flex: 1 }}>
                     <ScrollView>

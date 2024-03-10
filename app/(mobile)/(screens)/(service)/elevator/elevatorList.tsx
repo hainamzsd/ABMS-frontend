@@ -152,10 +152,6 @@ const loadMoreItems = () => {
                     <Text style={{fontWeight:'600'}}> {`${startDate.getUTCHours().toString().padStart(2, '0')}:${startDate.getUTCMinutes().toString().padStart(2, '0')}`}</Text>
                 </View>
                 <View style={{ flexDirection: 'row' ,marginTop:10}}>
-                    <Text style={{color:"#9C9C9C"}}>{t("End date")}: </Text>
-                    <Text style={{fontWeight:'600'}}>{endDate.toLocaleDateString('vi')}</Text>
-                </View>
-                <View style={{ flexDirection: 'row' ,marginTop:10}}>
                     <Text style={{color:"#9C9C9C"}}>{t("End time")}: </Text>
                     <Text style={{fontWeight:'600'}}> {`${endDate.getUTCHours().toString().padStart(2, '0')}:${endDate.getUTCMinutes().toString().padStart(2, '0')}`}</Text>
                 </View>

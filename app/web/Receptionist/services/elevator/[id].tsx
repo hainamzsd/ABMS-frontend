@@ -21,6 +21,7 @@ interface Elevator{
   startTime:Date;
   endTime:Date;
   status:Number;
+  description:string
 }
 
 const page = () => {
@@ -207,7 +208,7 @@ const handleDeleteElevator = async () => {
           </View>
           <View>
             <Text style={{ marginBottom: 10, fontWeight: "600", fontSize: 16 }}>
-              Thời gian bắt đầu
+              Ngày bắt đầu
             </Text>
             {/* <Text style={{color:'#9c9c9c', fontSize:12,marginBottom: 10,}}>Họ và tên không được trống.</Text>
                         <Text style={{color:'#9c9c9c', fontSize:12,marginBottom: 10,}}>Họ và tên tối thiểu 8 kí tự, tối đa 20 kí tự.</Text> */}
@@ -215,23 +216,39 @@ const handleDeleteElevator = async () => {
               editable={false}
               selectTextOnFocus={false}
               placeholderTextColor={'black'}
-              placeholder={moment(elevator?.startTime).format('YYYY-MM-DD')} style={[{ width: "100%", backgroundColor: '#E0E0E0' }]}
+              placeholder={moment.utc(elevator?.startTime).format('YYYY-MM-DD')} style={[{ width: "100%", backgroundColor: '#E0E0E0' }]}
             ></Input>
           </View>
           <View>
             <Text style={{ marginBottom: 10, fontWeight: "600", fontSize: 16 }}>
-              Thời gian kết thúc
+              Giờ bắt đầu
             </Text>
-            {/* <Text style={{color:'#9c9c9c', fontSize:12,marginBottom: 10,}}>Họ và tên không được trống.</Text>
-                        <Text style={{color:'#9c9c9c', fontSize:12,marginBottom: 10,}}>Họ và tên tối thiểu 8 kí tự, tối đa 20 kí tự.</Text> */}
             <Input
               editable={false}
               selectTextOnFocus={false}
               placeholderTextColor={'black'}
-              placeholder={moment(elevator?.endTime).format('YYYY-MM-DD')} style={[{ width: "100%", backgroundColor: '#E0E0E0' }]}
+              placeholder={moment.utc(elevator?.startTime).format('HH:mm')} style={[{ width: "100%", backgroundColor: '#E0E0E0' }]}
             ></Input>
           </View>
           <View>
+            <Text style={{ marginBottom: 10, fontWeight: "600", fontSize: 16 }}>
+              Giờ kết thúc
+            </Text>
+            <Input
+              editable={false}
+              selectTextOnFocus={false}
+              placeholderTextColor={'black'}
+              placeholder={moment.utc(elevator?.endTime).format('HH:mm')} style={[{ width: "100%", backgroundColor: '#E0E0E0' }]}
+            ></Input>
+          </View>
+          <View style={{ marginBottom: 10,flexDirection:'row', alignItems:'center'}}>
+            <Text style={{ fontWeight: "600", fontSize: 16, marginRight:5 }}>
+              Ghi chú: 
+            </Text>
+            <Text>{elevator?.description}</Text>
+          </View>
+          <View>
+            
             <Text style={{ marginBottom: 10, fontWeight: "600", fontSize: 16 }}>
               Trạng thái
             </Text>

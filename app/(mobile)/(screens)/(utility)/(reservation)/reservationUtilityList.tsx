@@ -83,7 +83,7 @@ const ReservationUtilityList = () => {
   };
     const render = ({ item }: {item:Reservation}) => {
         const icon = ICON_MAP[item.utility];
-        const statusText = statusUtility?.[item.status].status;
+        const statusText = statusUtility?.[item?.status];
         return(
         <Pressable style={[SHADOW, { backgroundColor: 'white', borderRadius: 10, marginTop: 20 }]}
         onPress={() =>
@@ -108,10 +108,10 @@ const ReservationUtilityList = () => {
                     </View>
                 </View>
                 <View style={{
-                    padding: 10, borderRadius: 20, backgroundColor: theme.primary,
+                    padding: 10, borderRadius: 20, backgroundColor: statusText.color,
                     justifyContent: 'center', height: 40
                 }}>
-                    <Text style={{ fontWeight: '600', color:'white' }}>{t(statusText)}</Text>
+                    <Text style={{ fontWeight: '600', color:'black' }}>{t(statusText.status)}</Text>
                 </View>
             </View>
         </View>

@@ -22,6 +22,9 @@ import { combineDateTime } from "../../../../../utils/convertDateTime";
 import { useSession } from "../../../context/AuthContext";
 import CustomAlert from "../../../../../components/resident/confirmAlert";
 import AlertWithButton from "../../../../../components/resident/AlertWithButton";
+import * as yup from 'yup';
+
+
 const ElevatorRegisterScreen = () => {
   const [loading, setLoading] = useState(false);
   const { theme } = useTheme();
@@ -33,12 +36,11 @@ const ElevatorRegisterScreen = () => {
   const [showStartDate, setShowStartDate] = useState(false);
   const [startTime, setStartTime] = useState<Date>(new Date());
   const [showStartTime, setShowStartTime] = useState(false);
-  const [endDate, setEndDate] = useState<Date>(new Date());
-  const [showEndDate, setShowEndDate] = useState(false);
   const [endTime, setEndTime] = useState<Date>(new Date());
   const [minTime, setMinTime] = useState<Date>(new Date());
   const [maxTime, setMaxTime] = useState<Date>(new Date());
   const [showEndTime, setShowEndTime] = useState(false);
+  const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
   const currentDate = new Date();
   const maxDate = new Date(currentDate.getTime() + 14);
   maxDate.setDate(maxDate.getDate() + 14);
@@ -59,11 +61,6 @@ const ElevatorRegisterScreen = () => {
     setStartDate(currentDate);
     setShowStartDate(false);
   };
-  const onChangeEndDate = (event: any, selectedDate: Date | undefined) => {
-    const currentDate = selectedDate || endDate;
-    setEndDate(currentDate);
-    setShowEndDate(false);
-  };
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(false);
   const [errorText, setErrorText] = useState("System error please try again later");
@@ -71,13 +68,13 @@ const ElevatorRegisterScreen = () => {
   const [alertConfirmVisible, setAlertConfirmVisible] = useState(false);
   const handleCreateRequest = async () => {
     const sendStartDate = combineDateTime(startDate, startTime);
-    const sendEndDate = combineDateTime(endDate, endTime);
+   
     setIsLoading(true);
     try {
       const body = {
         room_id: "e128b1c8-8bfa-46d7-b88e-f4725749fea7",
         start_time: sendStartDate,
-        end_time: sendEndDate,
+        end_time: sendStartDate,
         description: note
       };
       const response = await axios.post('https://abmscapstone2024.azurewebsites.net/api/v1/elevator/create', body, {
@@ -96,7 +93,6 @@ const ElevatorRegisterScreen = () => {
       if (response.data.statusCode == 200) {
         setAlertConfirmVisible(true);
         setStartDate(new Date());
-        setEndDate(new Date());
         setStartTime(new Date());
         setEndTime(new Date());
         setNote("");
@@ -105,7 +101,8 @@ const ElevatorRegisterScreen = () => {
         setError(true);
         setErrorText(t("Failed to create request, try again later")+".");
       }
-    } catch (error) {
+    } catch (error:any) {
+     
       if (axios.isCancel(error)) {
         console.error('Request timed out:', error);
         setError(true);
@@ -121,7 +118,7 @@ const ElevatorRegisterScreen = () => {
     }
   };
 
-  const isButtonDisabled = !startDate || !endDate;
+  const isButtonDisabled = !startDate || !startTime || !endTime || !note;
   return (
     <>
       <CustomAlert
@@ -215,34 +212,6 @@ const ElevatorRegisterScreen = () => {
               )}
             </View>
             <View style={{ marginTop: 20 }}>
-              <Label text={t("End date")} required></Label>
-              <Pressable
-                style={styles.inputContainer}
-                onPress={() => setShowEndDate(!showEndDate)}
-              >
-                <TextInput
-                  placeholder={t("Choose date")}
-                  editable={false}
-                  value={endDate.toLocaleDateString()}
-                  style={styles.textInput}
-                />
-                <Calendar color={"black"}></Calendar>
-              </Pressable>
-              {showEndDate && (
-                <RNDateTimePicker
-                  mode="date"
-                  testID="datePicker"
-                  themeVariant="light"
-                  value={endDate}
-                  minimumDate={startDate}
-                  maximumDate={maxDate}
-                  locale={currentLanguage}
-                  display="default"
-                  onChange={onChangeEndDate}
-                />
-              )}
-            </View>
-            <View style={{ marginTop: 20 }}>
               <Label text={t("End time")} required></Label>
               <Pressable
                 style={styles.inputContainer}
@@ -270,6 +239,7 @@ const ElevatorRegisterScreen = () => {
                   is24Hour
                 />
               )}
+               
             </View>
             <View style={{ marginTop: 20 }}>
               <Label required text={t("Note")}></Label>
@@ -339,6 +309,10 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
+  errorText:{
+    fontSize:14,
+    color:'red'
+  }
 });
 
 export default ElevatorRegisterScreen;

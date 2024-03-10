@@ -25,14 +25,14 @@ const StatusData = [
 ]
 
 const index = () => {
-    const headers = ['Căn hộ', 'Thời gian bắt đầu', 'Thời gian kết thúc', 'Trạng thái',''];
+    const headers = ['Căn hộ', 'Ngày bắt đầu', 'Giờ bắt đầu', 'Giờ kết thúc', 'Trạng thái',''];
     const [request, setRequest] = useState<Elevator[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [currentPage, setCurrentPage] = useState(1)
     const itemsPerPage = 7
     const [status, setStatus] = useState<number | null>(2) // null for approved, 2 for pending
-
+  console.log(request);
     useEffect(() => {
       const fetchData = async () => {
         setIsLoading(true)
@@ -181,8 +181,9 @@ const index = () => {
                       return( 
                         <TableRow>
                         <Cell>{item.roomId}</Cell>
-                        <Cell>{moment(item.startTime).format('YYYY-MM-DD')}</Cell>
-                        <Cell>{moment(item.endTime).format('YYYY-MM-DD')}</Cell>
+                        <Cell>{moment.utc(item.startTime).format('YYYY-MM-DD')}</Cell>
+                        <Cell>{moment.utc(item.startTime).format('HH:mm')}</Cell>
+                        <Cell>{moment.utc(item.endTime).format('HH:mm')}</Cell>
                         <Cell>
                           {item.status && 
                            <Button text={statusForReceptionist?.[item.status as number].status}

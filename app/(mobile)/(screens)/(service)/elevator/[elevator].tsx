@@ -97,10 +97,6 @@ const Page = () => {
                                     }</Text>
                                 </View>
                                 <View style={styles.reservationinformation}>
-                                    <Text>{t("End date")}:</Text>
-                                    <Text style={styles.highlightText}>{endDate.toLocaleDateString('vi')}</Text>
-                                </View>
-                                <View style={styles.reservationinformation}>
                                     <Text>{t("End time")}:</Text>
                                     <Text style={styles.highlightText}>{
                                         `${endDate.getUTCHours().toString().padStart(2, '0')}:${endDate.getUTCMinutes().toString().padStart(2, '0')}`
