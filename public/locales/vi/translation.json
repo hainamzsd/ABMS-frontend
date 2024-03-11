@@ -91,7 +91,7 @@
     "Identity number": "Số CMND",
     "Image": "Ảnh",
     "Visitor face": "Ảnh mặt khách",
-    "Identity card iamge(Both sides)": "Ảnh CMND(2 mặt)",
+    "Identity card image(Both sides)": "Ảnh CMND(2 mặt)",
     "Register using elevator for personal purpose": "Đăng ký sử dụng thang máy cho mục đích cá nhân",
     "Start date": "Ngày bắt đầu",
     "End date": "Ngày kết thúc",
@@ -163,6 +163,22 @@
     "Your request has been created successfuly, please wait for the receptionist to confirm":"Yêu cầu của bạn đã được tạo thành công, vui lòng chờ lễ tân xác nhận",
     "There has been a request to use the elevator at this time, please choose another time":"Đã có yêu cầu sử dụng thang máy vào thời gian này, vui lòng chọn thời gian khác",
     "You dont have any elevator requests":"Bạn không có bất kỳ yêu cầu sử dụng thang máy nào",
-    "Booking history":"Lịch sử đặt chỗ"
+    "Booking history":"Lịch sử đặt chỗ",
+    "Place" : "Địa điểm",
+    "Location":"Vị trí",
+    "Wrong password":"Sai mật khẩu",
+    "Delete booking successfuly":"Xóa phiếu đặt chỗ thành công",
+    "Delete confirmation":"Xác nhận xóa",
+    "Do you want to delete this booking":"Bạn có muốn xóa phiếu đặt chỗ này không",
+    "Booking detail":"Chi tiết phiếu đặt chỗ",
+    "Project name is required":"Tên dự án không được để trống",
+    "Phone contact is required":"Số điện thoại liên hệ không được để trống",
+    "Name of construction unit is required":"Tên đơn vị thi công không được để trống",
+    "Start date is required":"Ngày bắt đầu không được để trống",
+    "End date is required":"Ngày kết thúc không được để trống",
+    "End date must be after start date":"Ngày kết thúc phải sau ngày bắt đầu",
+    "Invalid phone format":"Số điện thoại không hợp lệ",
+    "Do you want to delete this request":"Bạn có muốn xóa yêu cầu này không",
+    "Delete request successfuly":"Xóa yêu cầu thành công"
   }
 }

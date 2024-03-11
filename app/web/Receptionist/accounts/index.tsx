@@ -7,6 +7,7 @@ import styles from "./styles";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import Toast from "react-native-toast-message";
+import { paginate } from "../../../../utils/pagination";
 
 interface Account {
     id: string;
@@ -28,7 +29,7 @@ interface Account {
 
 export default function AccountManagement() {
     const headers = ['Họ và tên', 'Số điện thoại', 'Email', ''];
-    const [accountData, setAccountData] = useState<Account[]>();
+    const [accountData, setAccountData] = useState<Account[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
    
@@ -59,6 +60,9 @@ export default function AccountManagement() {
 
         fetchData();
     }, []);
+    const [currentPage, setCurrentPage] = useState(1)
+    const itemsPerPage = 7 
+    const { currentItems, totalPages } = paginate(accountData, currentPage, itemsPerPage)
     return (
         <View style={{ flex: 1, backgroundColor: '#F9FAFB' }}>
             <SafeAreaView style={{flex:1}}>
@@ -107,7 +111,16 @@ export default function AccountManagement() {
                         /> 
                         
                       </TableComponent>  }
-                 
+                      <View style={{flexDirection:'row', alignItems:"center", justifyContent:'center', marginTop:20}}>
+            <Button text="Trước"
+            style={{width:50}}
+            onPress={() => setCurrentPage((prev) => Math.max(prev - 1, 1))} disabled={currentPage === 1} />
+            <Text style={{marginHorizontal:10, fontWeight:"600"}}>
+              Page {currentPage} of {totalPages}
+            </Text>
+            <Button text="Sau" onPress={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))} disabled={currentPage === totalPages} />
+
+          </View>
                 </ScrollView>
             </SafeAreaView>
         </View>

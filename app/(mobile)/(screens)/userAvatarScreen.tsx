@@ -10,7 +10,7 @@ import * as ImagePicker from "expo-image-picker";
 import userAvatarStyles from "./styles/userAvatarScreen";
 import Header from "../../../components/resident/header";
 import { useTheme } from "../context/ThemeContext";
-import storage from '@react-native-firebase/storage';
+// import storage from '@react-native-firebase/storage';
 import { useSession } from "../context/AuthContext";
 import { jwtDecode } from "jwt-decode";
 import axios from "axios";
@@ -90,34 +90,34 @@ const UserAvatar = () => {
   
   const [uploading, setUploading] = useState(false);
   //upload image
-  const uploadImage = async () => {
-    if (!image) {
-      alert('Please select an image first.');
-      return;
-    }
+  // const uploadImage = async () => {
+  //   if (!image) {
+  //     alert('Please select an image first.');
+  //     return;
+  //   }
 
-    setUploading(true);
+  //   setUploading(true);
 
-    try {
-      // Create a unique file name with timestamp
-      const fileName = image.substring(image.lastIndexOf('/') + 1);
-      const reference = storage().ref(`/images/${fileName}`);
+  //   try {
+  //     // Create a unique file name with timestamp
+  //     const fileName = image.substring(image.lastIndexOf('/') + 1);
+  //     const reference = storage().ref(`/images/${fileName}`);
       
-      await reference.putFile(fileName);
+  //     await reference.putFile(fileName);
 
-      // Get the download URL for the uploaded image
-      const downloadURL = await reference.getDownloadURL();
+  //     // Get the download URL for the uploaded image
+  //     const downloadURL = await reference.getDownloadURL();
 
-      // Do something with the download URL, e.g., display it or use it elsewhere
-      console.log('Image uploaded successfully:', downloadURL);
-      setImage(downloadURL); // Update image state with the download URL
-    } catch (error) {
-      console.error('Error uploading image:', error);
-      alert('Error uploading image.');
-    } finally {
-      setUploading(false);
-    }
-  };
+  //     // Do something with the download URL, e.g., display it or use it elsewhere
+  //     console.log('Image uploaded successfully:', downloadURL);
+  //     setImage(downloadURL); // Update image state with the download URL
+  //   } catch (error) {
+  //     console.error('Error uploading image:', error);
+  //     alert('Error uploading image.');
+  //   } finally {
+  //     setUploading(false);
+  //   }
+  // };
 console.log(user);
 
   return (
@@ -132,7 +132,6 @@ console.log(user);
         <View style={{ marginHorizontal: 26 }}>
           <View style={{ marginTop: 30, alignItems: "center" }}>
             <TouchableOpacity onPress={pickImage}>
-              {user?.avatar && (
                 <Image source={{uri:"https://upload.wikimedia.org/wikipedia/commons/thumb/a/a7/Atlantic_near_Faroe_Islands.jpg/800px-Atlantic_near_Faroe_Islands.jpg"}}
                   style={{
                     width: 120,
@@ -140,7 +139,6 @@ console.log(user);
                     borderRadius: 65,
                   }}
                 />
-              )}
             </TouchableOpacity>
             <Text style={{ marginTop: 10 }}>Đổi ảnh đại diện</Text>
           </View>

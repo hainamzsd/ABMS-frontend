@@ -1,6 +1,6 @@
 // CustomAlert.tsx
 import React from 'react';
-import { Modal, View, Text, StyleSheet, TouchableOpacity, Pressable } from 'react-native';
+import { Modal, View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { useTheme } from '../../app/(mobile)/context/ThemeContext';
 import { useTranslation } from 'react-i18next';
 
@@ -10,9 +10,10 @@ interface CustomAlertProps {
   content: string;
   onClose: () => void; 
   onConfirm: () => void;
+  disable?: boolean;
 }
 
-const CustomAlert: React.FC<CustomAlertProps> = ({ visible, title, content, onClose, onConfirm }) => {
+const CustomAlert: React.FC<CustomAlertProps> = ({ visible, title, content, onClose, onConfirm, disable }) => {
     const {theme} = useTheme();
     const {t}= useTranslation();
 
@@ -32,12 +33,14 @@ const CustomAlert: React.FC<CustomAlertProps> = ({ visible, title, content, onCl
             <Text style={styles.contentText}>{content}</Text>
           </View>
           <View style={styles.buttonContainer}>
-          <Pressable onPress={onClose} style={[styles.button, {backgroundColor:'black'}]}>
+          <TouchableOpacity onPress={onClose} style={[styles.button, {backgroundColor:'black'}]}>
               <Text style={[styles.buttonText,{color:'white'}]}>{t("No")}</Text>
-            </Pressable>
-            <Pressable onPress={onConfirm} style={[styles.button, {backgroundColor:theme.primary}]}>
+            </TouchableOpacity>
+            <TouchableOpacity 
+            disabled={disable}
+            onPress={onConfirm} style={[styles.button, {backgroundColor:theme.primary, opacity: disable? 0.5:1}]}>
               <Text style={styles.buttonText}>{t("Yes")}</Text>
-            </Pressable>
+            </TouchableOpacity>
             
           </View>
         </View>

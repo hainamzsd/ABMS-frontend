@@ -11,11 +11,11 @@ import { router } from 'expo-router';
 import axios from 'axios';
 import LoadingComponent from '../../../../../components/resident/loading';
 import AlertWithButton from '../../../../../components/resident/AlertWithButton';
-export const MOCK_DATA = [
-  { id: 1, name: 'Xay nha', description: 'Description for item 1' },
-  { id: 2, name: 'Hoa', description: 'Description for item 2Description for item 2Description for item 2Description for item 2' },
-  { id: 3, name: 'Item 3', description: 'Description for item 3' },
-];
+import { useSession } from '../../../context/AuthContext';
+import { jwtDecode } from 'jwt-decode';
+import { statusUtility } from '../../../../../constants/status';
+import { useIsFocused } from '@react-navigation/native';
+
 
 interface Elevator{
   id: string
@@ -26,28 +26,77 @@ interface Elevator{
   status: number,
 }
 
+interface user{
+  FullName:string;
+  PhoneNumber:string;
+  Id:string;
+  Avatar:string;
+}
+  
+interface Room{
+  roomNumber:string;
+  id:string;
+}
 const ElevatorList = () => {
  
     const { t } = useTranslation();
     const { theme } = useTheme();
     const [currentPage, setCurrentPage] = useState(1);
+    const isFocused = useIsFocused();
     const [data, setData] = useState<Elevator[]>([]); // Holds all fetched data
     const [displayData, setDisplayData] = useState<Elevator[]>([]); // Data to display
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string>("");
   const [showError, setShowError] = useState(false);
+
+  const{session } = useSession();
+  const user:user = jwtDecode(session as string);
+  const [room, setRoom] = useState<Room[]>([]);
+useEffect(() => {
+    const fetchData = async () => {
+    setError("");
+      try {
+        const response = await axios.get(
+          `https://abmscapstone2024.azurewebsites.net/api/v1/resident-room/get?accountId=${user.Id}`,{
+            timeout:10000
+          }
+        );
+        if(response.data.statusCode==200){
+            setRoom(response?.data?.data);
+        }
+        else{
+            setShowError(true);
+            setError(t("System error please try again later"));
+        }
+      } catch (error) {
+        if(axios.isCancel(error)){
+            setShowError(true);
+            setError(t("System error please try again later"));
+        }
+        console.error('Error fetching data:', error);
+        setShowError(true);
+        setError(t("System error please try again later"));
+      } finally {
+      }
+    };
+
+    fetchData();
+  }, [session, isFocused]);
   useEffect(() => {
-    const fetchItems = async () => {
+    const fetchElevatorData = async () => {
+      if (!room.length) {
+        return;
+      }
         setIsLoading(true);
         setError("");
         try {
-            const response = await axios.get('https://abmscapstone2024.azurewebsites.net/api/v1/elevator/get?room_id=1',{
+            const response = await axios.get(`https://abmscapstone2024.azurewebsites.net/api/v1/elevator/get?room_id=${room[0]?.id}`,{
                 timeout:10000
             });
             if(response.data.statusCode == 200){
-              setData(response.data.data);
-              setDisplayData(response.data.data);
-              console.log(response.data);
+              const filteredData = response.data.data.filter((item: Elevator) => item.status !== 0);
+              setData(filteredData);
+              setDisplayData(filteredData);
             }
            
         } catch (error) {
@@ -63,8 +112,10 @@ const ElevatorList = () => {
             setIsLoading(false);
         }
     };
-    fetchItems();
-}, []); 
+    if(isFocused){
+    fetchElevatorData();
+    }
+}, [room, isFocused]); 
 useEffect(() => {
     const startIndex = (currentPage - 1) * 3;
     const endIndex = startIndex + 3;
@@ -110,10 +161,6 @@ const loadMoreItems = () => {
                     <Text style={{fontWeight:'600'}}> {`${startDate.getUTCHours().toString().padStart(2, '0')}:${startDate.getUTCMinutes().toString().padStart(2, '0')}`}</Text>
                 </View>
                 <View style={{ flexDirection: 'row' ,marginTop:10}}>
-                    <Text style={{color:"#9C9C9C"}}>{t("End date")}: </Text>
-                    <Text style={{fontWeight:'600'}}>{endDate.toLocaleDateString('vi')}</Text>
-                </View>
-                <View style={{ flexDirection: 'row' ,marginTop:10}}>
                     <Text style={{color:"#9C9C9C"}}>{t("End time")}: </Text>
                     <Text style={{fontWeight:'600'}}> {`${endDate.getUTCHours().toString().padStart(2, '0')}:${endDate.getUTCMinutes().toString().padStart(2, '0')}`}</Text>
                 </View>
@@ -122,7 +169,7 @@ const loadMoreItems = () => {
         <View style={{paddingHorizontal: 10,paddingVertical:10 }}>
             <View style={{flexDirection:'row'}}>
                     <Text style={{color:"#9C9C9C"}}>{t("Status")}: </Text>
-                    <Text style={{fontWeight:'600'}}>{status}</Text>
+                    <Text style={{fontWeight:'600'}}>{t(statusUtility[item.status].status)}</Text>
             </View>
         </View>
     </Pressable>

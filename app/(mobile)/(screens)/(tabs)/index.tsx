@@ -25,22 +25,68 @@ import { useTheme } from "../../context/ThemeContext";
 import { useTranslation } from "react-i18next";
 import { useSession } from "../../context/AuthContext";
 import { jwtDecode } from "jwt-decode";
+import { useEffect, useState } from "react";
+import axios from "axios";
+import LoadingComponent from "../../../../components/resident/loading";
+import AlertWithButton from "../../../../components/resident/AlertWithButton";
 
 interface user{
   FullName:string;
   PhoneNumber:string;
-  RoomId:string;
+  Id:string;
   Avatar:string;
 }
-
+  
+interface Room{
+  roomNumber:string;
+  id:string;
+}
 const HomeScreen = () => {
   const { theme } = useTheme();
   const { t } = useTranslation();
-  const{session } = useSession();
+  const{session,isLoading } = useSession();
 const user:user = jwtDecode(session as string);
-console.log(user);
+
+const [error, setError] = useState(false);
+const [errorText, setErrorText] = useState("");
+const [room, setRoom] = useState<Room[]>([]);
+useEffect(() => {
+    const fetchData = async () => {
+    setErrorText("");
+      try {
+        const response = await axios.get(
+          `https://abmscapstone2024.azurewebsites.net/api/v1/resident-room/get?accountId=${user.Id}`,{
+            timeout:10000
+          }
+        );
+        if(response.data.statusCode==200){
+            setRoom(response?.data?.data);
+        }
+        else{
+            setError(true);
+            setErrorText(t("System error please try again later"));
+        }
+      } catch (error) {
+        if(axios.isCancel(error)){
+            setError(true);
+            setErrorText(t("System error please try again later"));
+        }
+        console.error('Error fetching data:', error);
+        setError(true);
+        setErrorText(t("System error please try again later"));
+      } finally {
+      }
+    };
+
+    fetchData();
+  }, [session]);
+  
+
   return (
     <>
+    <AlertWithButton content={errorText} title={t("Error")} 
+    visible={error} onClose={() => setError(false)}></AlertWithButton>
+    <LoadingComponent loading={isLoading}></LoadingComponent>
       <SafeAreaView style={{ backgroundColor: theme.background, flex: 1 }}>
         <StatusBar barStyle="dark-content"></StatusBar>
         <Stack.Screen options={{ headerShown: false }}></Stack.Screen>
@@ -99,7 +145,7 @@ console.log(user);
                   }}
                 >
                   <Text style={{ fontWeight: "bold", marginBottom: 5 }}>
-                    R2.18A00
+                    {room[0]?.roomNumber}
                   </Text>
                   <Text style={{ fontWeight: "300" }}>Times city, Hà Nội</Text>
                 </View>
