@@ -9,6 +9,10 @@ import {statusUtility} from '../../../../../constants/status';
 import { router } from 'expo-router';
 import axios from 'axios';
 import LoadingComponent from '../../../../../components/resident/loading';
+import { useIsFocused } from '@react-navigation/native';
+import { useSession } from '../../../context/AuthContext';
+import { jwtDecode } from 'jwt-decode';
+import AlertWithButton from '../../../../../components/resident/AlertWithButton';
 
 interface Reservation {
         id:string,
@@ -23,26 +27,71 @@ interface Reservation {
         utility:string,
         utility_detail_name:string
   }
-
+  interface user{
+    FullName:string;
+    PhoneNumber:string;
+    Id:string;
+    Avatar:string;
+  }
+  interface Room{
+    roomNumber:string;
+    id:string;
+  }
   const PER_PAGE = 3;
  
   
 const ReservationUtilityList = () => {
     const { theme } = useTheme();
     const { t } = useTranslation();
+    const isFocused = useIsFocused();
     const [isLoading, setIsLoading] = useState(false);
     const [data, setData] = useState<Reservation[]>([]); // Holds all fetched data
     const [displayData, setDisplayData] = useState<Reservation[]>([]); // Data to display
     const [currentPage, setCurrentPage] = useState(1);
-    const [error, setError] = useState<string | null>(null);
-
-    // Fetch all items only once, on component mount
+    const [error, setError] = useState<string>("");
+    const [showError, setShowError] = useState(false);
+    const{session } = useSession();
+    const user:user = jwtDecode(session as string);
+    const [room, setRoom] = useState<Room[]>([]);
+  useEffect(() => {
+      const fetchData = async () => {
+      setError("");
+        try {
+          const response = await axios.get(
+            `https://abmscapstone2024.azurewebsites.net/api/v1/resident-room/get?accountId=${user.Id}`,{
+              timeout:10000
+            }
+          );
+          if(response.data.statusCode==200){
+              setRoom(response?.data?.data);
+          }
+          else{
+              setShowError(true);
+              setError(t("System error please try again later"));
+          }
+        } catch (error) {
+          if(axios.isCancel(error)){
+              setShowError(true);
+              setError(t("System error please try again later"));
+          }
+          console.error('Error fetching data:', error);
+          setShowError(true);
+          setError(t("System error please try again later"));
+        } finally {
+        }
+      };
+  
+      fetchData();
+    }, [session, isFocused]);
     useEffect(() => {
+        if (!room.length) {
+            return;
+          }
         const fetchItems = async () => {
             setIsLoading(true);
-            setError(null);
+            setError("");
             try {
-                const response = await axios.get('https://abmscapstone2024.azurewebsites.net/api/v1/reservation/get',{
+                const response = await axios.get(`https://abmscapstone2024.azurewebsites.net/api/v1/reservation/get?roomId=${room[0]?.id}`,{
                     timeout:10000
                 });
                 setData(response.data.data); // Store all data
@@ -58,8 +107,10 @@ const ReservationUtilityList = () => {
                 setIsLoading(false);
             }
         };
-        fetchItems();
-    }, []); // Empty dependency array ensures this runs once on mount
+        if(isFocused){
+            fetchItems();
+        }
+    }, [room, isFocused]); // Empty dependency array ensures this runs once on mount
 
     // Update displayData when currentPage changes
     useEffect(() => {
@@ -142,6 +193,10 @@ const ReservationUtilityList = () => {
 
     return (
         <>
+          <AlertWithButton 
+      title={t("Error")}
+      visible={showError}
+      content={error} onClose={() =>setShowError(false)}></AlertWithButton>
         <LoadingComponent loading={isLoading}></LoadingComponent>
             <Header headerTitle={t("Booking history")} />
             <SafeAreaView style={{ backgroundColor: theme.background, flex: 1 }}>

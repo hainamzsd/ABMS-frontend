@@ -1,4 +1,4 @@
-import { useLocalSearchParams } from 'expo-router';
+import { useLocalSearchParams, useNavigation } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { View, Text, ScrollView, StyleSheet, Pressable } from 'react-native';
 import Header from '../../../../../components/resident/header';
@@ -11,6 +11,10 @@ import SHADOW from '../../../../../constants/shadow';
 import axios from 'axios';
 import AlertWithButton from '../../../../../components/resident/AlertWithButton';
 import LoadingComponent from '../../../../../components/resident/loading';
+import { statusUtility } from '../../../../../constants/status';
+import { useSession } from '../../../context/AuthContext';
+import CustomAlert from '../../../../../components/resident/confirmAlert';
+import Alert from '../../../../../components/resident/Alert';
 
 interface Elevator{
     id: string
@@ -23,15 +27,16 @@ interface Elevator{
 
 const Page = () => {
     const item = useLocalSearchParams();
+    const navigation = useNavigation();
     const { t } = useTranslation();
     const { theme } = useTheme();
+    const {session} = useSession();
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string>("");
     const [data, setData] = useState<Elevator>();
   const [showError, setShowError] = useState(false);
   const [startDate, setStartDate] = useState<Date>(new Date());
   const [endDate, setEndDate] = useState<Date>(new Date());
-  const [status, setStatus] = useState("");
     useEffect(() => {
       const fetchItems = async () => {
           setIsLoading(true);
@@ -45,9 +50,7 @@ const Page = () => {
                 if(data){
                     setStartDate(new Date(data.startTime))
                     setEndDate(new Date(data.endTime))
-                    if(data.status==2){
-                        setStatus(t("Pending"));
-                    }
+                
                 }
               }
           } catch (error) {
@@ -64,13 +67,65 @@ const Page = () => {
           }
       };
       fetchItems();
-  }, [data]); 
+  }, []); 
+
+  const [disableBtn, setDisableBtn] = useState(false);
+  const [showDeleteMsg, setShowDeleteMsg] = useState(false);
+  const [confirmBox, setShowConfirmBox] = useState(false);
+  const handleDeleteReservation = async () => {
+    setDisableBtn(true);
+    setIsLoading(true);
+    setError("");
+    try {
+        const response = await axios.delete(
+            `https://abmscapstone2024.azurewebsites.net/api/v1/elevator/delete/${data?.id}`, {
+            timeout: 10000,
+            headers:{
+                'Authorization': `Bearer ${session}`
+              }
+        }
+        );
+        if (response.data.statusCode == 200) {
+            setShowConfirmBox(false);
+            setShowDeleteMsg(true);
+            setTimeout(() => {
+                setShowDeleteMsg(false);
+                navigation.goBack();
+              }, 2000);
+        }
+        else {
+            setShowError(true);
+            setError(t("System error please try again later"));
+        }
+    } catch (error) {
+        if (axios.isCancel(error)) {
+            setShowError(true);
+            setError(t("System error please try again later"));
+        }
+        console.error('Error fetching data:', error);
+        setShowError(true);
+        setError(t("System error please try again later"));
+    } finally {
+        setDisableBtn(false);
+        setIsLoading(false);
+    }
+};
+
     return (
         <>
            <AlertWithButton 
       title={t("Error")}
       visible={showError}
       content={error} onClose={() =>setShowError(false)}></AlertWithButton>
+       <CustomAlert title={t("Delete confirmation")} 
+            content={t("Do you want to delete this request")+"?"}
+            visible={confirmBox}
+            onClose={() => setShowConfirmBox(false)}
+            onConfirm={handleDeleteReservation}
+            disable={disableBtn}
+            ></CustomAlert>
+            <Alert title={t("Successful")} content={t("Delete request successfuly")}
+            visible={showDeleteMsg}></Alert>
       <LoadingComponent loading={isLoading}></LoadingComponent>
             <Header headerTitle={t("Elevator request information")} />
             <SafeAreaView style={{ backgroundColor: theme.background, flex: 1, justifyContent: 'space-between' }}>
@@ -82,7 +137,7 @@ const Page = () => {
                                 <View style={{
                                     padding: 10, borderRadius: 20, backgroundColor: theme.primary,
                                     justifyContent: 'center', height: 40}}>
-                                    <Text style={{ fontWeight: 'bold' }}>{status}</Text>
+                                    <Text style={{ fontWeight: 'bold' }}>{t(statusUtility[data?.status as number]?.status)}</Text>
                                 </View>
                             </View>
                             <View style={[styles.reservationBox, { paddingHorizontal: 20, paddingBottom: 20 }]}>
@@ -118,6 +173,7 @@ const Page = () => {
                     paddingVertical: 20
                 }}>
                     <Pressable
+                    onPress={() => setShowConfirmBox(true)}
                         style={[
                             {
                                 backgroundColor: "#ED6666",

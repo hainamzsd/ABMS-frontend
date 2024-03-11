@@ -28,6 +28,7 @@ import { jwtDecode } from "jwt-decode";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import LoadingComponent from "../../../../components/resident/loading";
+import AlertWithButton from "../../../../components/resident/AlertWithButton";
 
 interface user{
   FullName:string;
@@ -83,6 +84,8 @@ useEffect(() => {
 
   return (
     <>
+    <AlertWithButton content={errorText} title={t("Error")} 
+    visible={error} onClose={() => setError(false)}></AlertWithButton>
     <LoadingComponent loading={isLoading}></LoadingComponent>
       <SafeAreaView style={{ backgroundColor: theme.background, flex: 1 }}>
         <StatusBar barStyle="dark-content"></StatusBar>

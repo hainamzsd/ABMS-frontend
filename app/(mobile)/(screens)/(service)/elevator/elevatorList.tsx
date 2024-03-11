@@ -14,6 +14,7 @@ import AlertWithButton from '../../../../../components/resident/AlertWithButton'
 import { useSession } from '../../../context/AuthContext';
 import { jwtDecode } from 'jwt-decode';
 import { statusUtility } from '../../../../../constants/status';
+import { useIsFocused } from '@react-navigation/native';
 
 
 interface Elevator{
@@ -41,6 +42,7 @@ const ElevatorList = () => {
     const { t } = useTranslation();
     const { theme } = useTheme();
     const [currentPage, setCurrentPage] = useState(1);
+    const isFocused = useIsFocused();
     const [data, setData] = useState<Elevator[]>([]); // Holds all fetched data
     const [displayData, setDisplayData] = useState<Elevator[]>([]); // Data to display
   const [isLoading, setIsLoading] = useState(false);
@@ -79,7 +81,7 @@ useEffect(() => {
     };
 
     fetchData();
-  }, [session]);
+  }, [session, isFocused]);
   useEffect(() => {
     const fetchElevatorData = async () => {
       if (!room.length) {
@@ -92,8 +94,9 @@ useEffect(() => {
                 timeout:10000
             });
             if(response.data.statusCode == 200){
-              setData(response.data.data);
-              setDisplayData(response.data.data);
+              const filteredData = response.data.data.filter((item: Elevator) => item.status !== 0);
+              setData(filteredData);
+              setDisplayData(filteredData);
             }
            
         } catch (error) {
@@ -109,8 +112,10 @@ useEffect(() => {
             setIsLoading(false);
         }
     };
+    if(isFocused){
     fetchElevatorData();
-}, [room]); 
+    }
+}, [room, isFocused]); 
 useEffect(() => {
     const startIndex = (currentPage - 1) * 3;
     const endIndex = startIndex + 3;

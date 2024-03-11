@@ -66,15 +66,18 @@ const ElevatorRegisterScreen = () => {
   const [errorText, setErrorText] = useState(t("System error please try again later"));
   const [alertVisible, setAlertVisible] = useState(false);
   const [alertConfirmVisible, setAlertConfirmVisible] = useState(false);
+  const [disableBtn, setDisableBtn] = useState(false);
+  
   const handleCreateRequest = async () => {
     const sendStartDate = combineDateTime(startDate, startTime);
-   
+    const sendEndDate = combineDateTime(startDate, endTime);
     setIsLoading(true);
+    setDisableBtn(true);
     try {
       const body = {
         room_id: "e128b1c8-8bfa-46d7-b88e-f4725749fea7",
         start_time: sendStartDate,
-        end_time: sendStartDate,
+        end_time: sendEndDate,
         description: note
       };
       const response = await axios.post('https://abmscapstone2024.azurewebsites.net/api/v1/elevator/create', body, {
@@ -115,6 +118,7 @@ const ElevatorRegisterScreen = () => {
     } finally {
       setIsLoading(false);
       setAlertVisible(false);
+      setDisableBtn(false);
     }
   };
 
@@ -127,6 +131,7 @@ const ElevatorRegisterScreen = () => {
         content={t("Do you confirm your request") + "?"}
         onClose={() => setAlertVisible(false)}
         onConfirm={handleCreateRequest}
+        disable={disableBtn}
       />
       <AlertWithButton
         visible={alertConfirmVisible}

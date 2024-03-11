@@ -111,8 +111,10 @@ const [errors, setErrors] = useState<any>({});
   const [errorText, setErrorText] = useState(t("System error please try again later"));
   const [alertVisible, setAlertVisible] = useState(false);
   const [alertConfirmVisible, setAlertConfirmVisible] = useState(false);
+  const [disableBtn, setDisableBtn] = useState(false);
   const handleSubmit = async () => {
     try {
+      setDisableBtn(true);
       await validationSchema.validate({
         projectName,
         constructionUnitName,
@@ -144,6 +146,7 @@ const [errors, setErrors] = useState<any>({});
         setAlertConfirmVisible(true);
         setStartDate(new Date());
         setNote("");
+        setErrors(null);
       }
       else {
         setError(true);
@@ -167,6 +170,7 @@ const [errors, setErrors] = useState<any>({});
     } finally {
       setLoading(false);
       setAlertVisible(false);
+      setDisableBtn(false);
     }
   };
   
@@ -180,6 +184,7 @@ const [errors, setErrors] = useState<any>({});
         content={t("Do you confirm your request") + "?"}
         onClose={() => setAlertVisible(false)}
         onConfirm={handleSubmit}
+        disable={disableBtn}
       />
       <AlertWithButton
         visible={alertConfirmVisible}
@@ -189,7 +194,7 @@ const [errors, setErrors] = useState<any>({});
       ></AlertWithButton>
       <AlertWithButton
         visible={error}
-        title={t("Request unsuccessful")}
+        title={t("Error")}
         content={t(errorText)}
         onClose={() => setError(false)}
       ></AlertWithButton>

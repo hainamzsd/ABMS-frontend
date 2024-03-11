@@ -39,6 +39,7 @@ const Page = () => {
     const { t } = useTranslation();
     const { theme } = useTheme();
     const { session } = useSession();
+    const navigation = useNavigation();
     const user: any = jwtDecode(session as string);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string>("");
@@ -112,7 +113,6 @@ const Page = () => {
     const [showDeleteMsg, setShowDeleteMsg] = useState(false);
     const [confirmBox, setShowConfirmBox] = useState(false);
     const [disableBtn, setDisableBtn] = useState(false);
-    const navigation = useNavigation();
     
         const handleDeleteReservation = async () => {
             setDisableBtn(true);
@@ -132,8 +132,8 @@ const Page = () => {
                     setShowDeleteMsg(true);
                     setTimeout(() => {
                         setShowDeleteMsg(false);
-                        router.back();
-                      }, 3000);
+                        navigation.goBack();
+                      }, 2000);
                 }
                 else {
                     setShowError(true);

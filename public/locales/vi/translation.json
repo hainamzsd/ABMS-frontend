@@ -91,7 +91,7 @@
     "Identity number": "Số CMND",
     "Image": "Ảnh",
     "Visitor face": "Ảnh mặt khách",
-    "Identity card iamge(Both sides)": "Ảnh CMND(2 mặt)",
+    "Identity card image(Both sides)": "Ảnh CMND(2 mặt)",
     "Register using elevator for personal purpose": "Đăng ký sử dụng thang máy cho mục đích cá nhân",
     "Start date": "Ngày bắt đầu",
     "End date": "Ngày kết thúc",
@@ -177,6 +177,8 @@
     "Start date is required":"Ngày bắt đầu không được để trống",
     "End date is required":"Ngày kết thúc không được để trống",
     "End date must be after start date":"Ngày kết thúc phải sau ngày bắt đầu",
-    "Invalid phone format":"Số điện thoại không hợp lệ"
+    "Invalid phone format":"Số điện thoại không hợp lệ",
+    "Do you want to delete this request":"Bạn có muốn xóa yêu cầu này không",
+    "Delete request successfuly":"Xóa yêu cầu thành công"
   }
 }

@@ -16,17 +16,23 @@ const StatusData = [
   { label: "Từ chối", value: 4 },
 ]
   
-interface Elevator{
-  id:string;
-  roomId:string;
-  startTime:Date;
-  endTime:Date;
-  status:Number;
-  description:string
+
+interface Construction{
+    id:string;
+    roomId:string;
+    name:string;
+    constructionOrganization:string;
+    phoneContact:string;
+    startTime:Date;
+    endTime:Date;
+    description:string;
+    createTime:Date;
+    status:number;
 }
+
 interface Room{
-  roomNumber:string;
-  id:string;
+    roomNumber:string;
+    id:string;
 }
 
 const page = () => {
@@ -34,7 +40,7 @@ const page = () => {
   const [isLoading, setIsLoading] = useState(false);
   const navigation = useNavigation();
   const [status, setStatus] = useState();
-  const [elevator, setElevator] = useState<Elevator>();
+  const [construction, setConstruction] = useState<Construction>();
   const {session} = useAuth();
   const disableBtn = status===undefined;
   console.log(status);
@@ -43,18 +49,18 @@ const page = () => {
       setIsLoading(true); 
 
       try {
-        const response = await axios.get(`https://abmscapstone2024.azurewebsites.net/api/v1/elevator/get/${item.id}`, {
+        const response = await axios.get(`https://abmscapstone2024.azurewebsites.net/api/v1/construction/get/${item.id}`, {
           timeout: 10000,
         });
         console.log(response);
         if (response.status === 200) {
-          setElevator(response.data.data)
+          setConstruction(response.data.data)
         }
         else {
           console.error(response);
           Toast.show({
             type: 'error',
-            text1: 'Lỗi lấy thông tin phiếu đăng ký thang máy',
+            text1: 'Lỗi lấy thông tin phiếu đăng ký thi công',
             position: 'bottom'
           })
         }
@@ -69,7 +75,7 @@ const page = () => {
         console.error('Error fetching account data:', error);
         Toast.show({
           type: 'error',
-          text1: 'Lỗi lấy thông tin phiếu đăng ký thang máy',
+          text1: 'Lỗi lấy thông tin phiếu đăng ký thi công',
           position: 'bottom'
         })
       } finally {
@@ -79,39 +85,72 @@ const page = () => {
 
     fetchData();
   }, [session]);
-  const approveElevator = async () => {
+
+  const [room, setRoom] = useState<Room>();
+  useEffect(() => {
+    if(construction?.roomId === undefined){
+        return;
+    }
+    const fetchData = async () => {
+      setIsLoading(true)
+      try {
+        const response = await axios.get(`https://abmscapstone2024.azurewebsites.net/api/v1/resident-room/get/${construction?.roomId}`, { timeout: 100000 })
+        if (response.data.statusCode === 200) {
+          setRoom(response.data.data)
+        } else {
+          Toast.show({
+            type: 'error',
+            text1: 'Lỗi hệ thống! vui lòng thử lại sau',
+            position: 'bottom',
+          })
+        }
+      } catch (error) {
+          if(axios.isCancel(error)){
+              Toast.show({
+                  type: 'error',
+                  text1:'Hệ thống không phản hồi, thử lại sau',
+                  position:'bottom'
+              });
+          }
+        Toast.show({
+          type: 'error',
+          text1: 'Lỗi hệ thống! vui lòng thử lại sau',
+          position: 'bottom',
+        })
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    fetchData()
+  }, [construction])
+
+
+  const approveConstruction = async () => {
     try {
       console.log(session);
         setIsLoading(true); // Set loading state to true
-        const response = await axios.put(`https://abmscapstone2024.azurewebsites.net/api/v1/elevator/manage/${elevator?.id}?status=${status}`,{}, {
+        const response = await axios.put(`https://abmscapstone2024.azurewebsites.net/api/v1/construction/manage/${construction?.id}?status=${status}`,{}, {
             timeout: 10000,
             headers:{
               'Authorization': `Bearer ${session}`
           }
         });
         console.log(response);
-        if(response.data.statusCode == 409){
-          Toast.show({
-            type: 'error',
-            text1: 'Không thể phê duyệt yêu cầu này',
-            text2:'Đã có lịch trùng với yêu cầu này trong hệ thống',
-            position:'bottom'
-          })
-          return;
-        }
+       
         if (response.data.statusCode == 200) {
             Toast.show({
                 type: 'success',
                 text1: 'Phê duyệt phiếu đăng ký thành công',
                 position:'bottom'
             })
-            router.replace('/web/Receptionist/services/elevator/');
+            router.replace('/web/Receptionist/services/construction/');
         }
         else {
           console.error(response);
             Toast.show({
                 type: 'error',
-                text1: 'Phê duyệt tài khoản không thành công',
+                text1: 'Phê duyệt yêu cầu không thành công',
                 position:'bottom'
             })
         }
@@ -135,18 +174,18 @@ const page = () => {
         setIsLoading(false);
     }
 };
-const handleDeleteElevator = async () => {
+const handleDeleteConstruction = async () => {
   if (!item.id) {
     Toast.show({
       type:'error',
-      text1:'Không tìm thấy thang máy',
+      text1:'Không tìm thấy thi công',
       position:'bottom'
     })
     return;
   }
   try {
     setIsLoading(true);
-    const response = await axios.delete(`https://abmscapstone2024.azurewebsites.net/api/v1/elevator/delete/${item.id}`, {
+    const response = await axios.delete(`https://abmscapstone2024.azurewebsites.net/api/v1/construction/delete/${item.id}`, {
       timeout: 10000,
       withCredentials:true,
       headers:{
@@ -160,7 +199,7 @@ const handleDeleteElevator = async () => {
         text1:'Xóa yêu cầu thành công',
         position:'bottom'
       })
-      router.replace('/web/Receptionist/services/elevator/');
+      router.replace('/web/Receptionist/services/construction/');
     } else {
       Toast.show({
         type:'error',
@@ -176,51 +215,11 @@ const handleDeleteElevator = async () => {
           position:'bottom'
       })
   }
-    console.error('Error deleting elevator:', error);
+    console.error('Error deleting construction:', error);
   } finally {
     setIsLoading(false);
   }
 };
-
-const [room, setRoom] = useState<Room>();
-useEffect(() => {
-  if(elevator?.roomId === undefined){
-      return;
-  }
-  const fetchData = async () => {
-    setIsLoading(true)
-    try {
-      const response = await axios.get(`https://abmscapstone2024.azurewebsites.net/api/v1/resident-room/get/${elevator?.roomId}`, { timeout: 100000 })
-      if (response.data.statusCode === 200) {
-        setRoom(response.data.data)
-      } else {
-        Toast.show({
-          type: 'error',
-          text1: 'Lỗi hệ thống! vui lòng thử lại sau',
-          position: 'bottom',
-        })
-      }
-    } catch (error) {
-        if(axios.isCancel(error)){
-            Toast.show({
-                type: 'error',
-                text1:'Hệ thống không phản hồi, thử lại sau',
-                position:'bottom'
-            });
-        }
-      Toast.show({
-        type: 'error',
-        text1: 'Lỗi hệ thống! vui lòng thử lại sau',
-        position: 'bottom',
-      })
-    } finally {
-      setIsLoading(false)
-    }
-  }
-
-  fetchData()
-}, [elevator])
-
   return (
     <View
       style={{
@@ -242,7 +241,7 @@ useEffect(() => {
           ></Button>
           <View style={{ marginBottom: 20 }}>
             <Text style={{ fontWeight: "bold", fontSize: 20, marginBottom: 5 }}>
-              Thông tin phiếu đăng kí sử dụng thang máy
+              Thông tin phiếu đăng kí thi công
             </Text>
             <Text>Lễ tân xem xét yêu cầu đăng kí của cư dân về phiếu đăng kí</Text>
           </View>
@@ -262,57 +261,76 @@ useEffect(() => {
           </View>
           <View>
             <Text style={{ marginBottom: 10, fontWeight: "600", fontSize: 16 }}>
+              Tên dự án
+            </Text>
+            <Input
+              editable={false}
+              selectTextOnFocus={false}
+              placeholderTextColor={'black'}
+              placeholder={construction?.name} style={[{ width: "100%", backgroundColor: '#E0E0E0' }]}
+            ></Input>
+          </View>
+          <View>
+            <Text style={{ marginBottom: 10, fontWeight: "600", fontSize: 16 }}>
+              Tên đơn vị thi công
+            </Text>
+            <Input
+              editable={false}
+              selectTextOnFocus={false}
+              placeholderTextColor={'black'}
+              placeholder={construction?.constructionOrganization} style={[{ width: "100%", backgroundColor: '#E0E0E0' }]}
+            ></Input>
+          </View>
+          <View>
+            <Text style={{ marginBottom: 10, fontWeight: "600", fontSize: 16 }}>
+              Số điện thoại liên lạc
+            </Text>
+            <Input
+              editable={false}
+              selectTextOnFocus={false}
+              placeholderTextColor={'black'}
+              placeholder={construction?.phoneContact} style={[{ width: "100%", backgroundColor: '#E0E0E0' }]}
+            ></Input>
+          </View>
+          <View>
+            <Text style={{ marginBottom: 10, fontWeight: "600", fontSize: 16 }}>
               Ngày bắt đầu
             </Text>
-            {/* <Text style={{color:'#9c9c9c', fontSize:12,marginBottom: 10,}}>Họ và tên không được trống.</Text>
-                        <Text style={{color:'#9c9c9c', fontSize:12,marginBottom: 10,}}>Họ và tên tối thiểu 8 kí tự, tối đa 20 kí tự.</Text> */}
             <Input
               editable={false}
               selectTextOnFocus={false}
               placeholderTextColor={'black'}
-              placeholder={moment.utc(elevator?.startTime).format('YYYY-MM-DD')} style={[{ width: "100%", backgroundColor: '#E0E0E0' }]}
+              placeholder={moment.utc(construction?.startTime).format('YYYY-MM-DD')} style={[{ width: "100%", backgroundColor: '#E0E0E0' }]}
             ></Input>
           </View>
           <View>
             <Text style={{ marginBottom: 10, fontWeight: "600", fontSize: 16 }}>
-              Giờ bắt đầu
+              Ngày kết thúc
             </Text>
             <Input
               editable={false}
               selectTextOnFocus={false}
               placeholderTextColor={'black'}
-              placeholder={moment.utc(elevator?.startTime).format('HH:mm')} style={[{ width: "100%", backgroundColor: '#E0E0E0' }]}
-            ></Input>
-          </View>
-          <View>
-            <Text style={{ marginBottom: 10, fontWeight: "600", fontSize: 16 }}>
-              Giờ kết thúc
-            </Text>
-            <Input
-              editable={false}
-              selectTextOnFocus={false}
-              placeholderTextColor={'black'}
-              placeholder={moment.utc(elevator?.endTime).format('HH:mm')} style={[{ width: "100%", backgroundColor: '#E0E0E0' }]}
+              placeholder={moment.utc(construction?.endTime).format('YYYY-MM-DD')} style={[{ width: "100%", backgroundColor: '#E0E0E0' }]}
             ></Input>
           </View>
           <View style={{ marginBottom: 10,flexDirection:'row', alignItems:'center'}}>
             <Text style={{ fontWeight: "600", fontSize: 16, marginRight:5 }}>
               Ghi chú: 
             </Text>
-            <Text>{elevator?.description}</Text>
+            <Text>{construction?.description}</Text>
           </View>
           <View>
-            
             <Text style={{ marginBottom: 10, fontWeight: "600", fontSize: 16 }}>
               Trạng thái
             </Text>
             <View style={{flexDirection:'row', alignItems:'center'}}>
               <Text>Trạng thái hiện tại:</Text>
-              {elevator?.status &&
-                 <Button text={statusForReceptionist?.[elevator?.status as any].status}
+              {construction?.status &&
+                 <Button text={statusForReceptionist?.[construction?.status as any].status}
                  style={{borderRadius:20, 
                   marginLeft:10,
-                  backgroundColor:statusForReceptionist?.[elevator?.status as any].color}}
+                  backgroundColor:statusForReceptionist?.[construction?.status as any].color}}
                  > </Button>
               }
            
@@ -336,7 +354,7 @@ useEffect(() => {
           </View>
           <View style={{ flexDirection: 'row', marginTop: 10 }}>
             <Button
-            onPress={approveElevator}
+            onPress={approveConstruction}
             disabled={disableBtn}
             text="Phê duyệt" style={[{ width: 100, marginRight: 10,
             opacity:disableBtn?0.7:1}]}></Button>
@@ -351,7 +369,7 @@ useEffect(() => {
                 confirmButtonColor:'#9b2c2c',
               }).then((result) => {
                 if(result.isConfirmed){
-                  handleDeleteElevator();
+                  handleDeleteConstruction();
                 }
               })
             }}

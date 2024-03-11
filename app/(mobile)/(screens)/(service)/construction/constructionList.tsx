@@ -13,6 +13,9 @@ import { jwtDecode } from 'jwt-decode';
 import { useSession } from '../../../context/AuthContext';
 import moment from 'moment';
 import { statusUtility } from '../../../../../constants/status';
+import { useIsFocused } from '@react-navigation/native';
+import AlertWithButton from '../../../../../components/resident/AlertWithButton';
+import LoadingComponent from '../../../../../components/resident/loading';
 export const MOCK_DATA = [
   { id: 1, name: 'Xay nha', description: 'Description for item 1' },
   { id: 2, name: 'Hoa', description: 'Description for item 2Description for item 2Description for item 2Description for item 2' },
@@ -50,7 +53,7 @@ const ConstructionList = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string>("");
   const [showError, setShowError] = useState(false);
-
+  const isFocused = useIsFocused();
   const{session } = useSession();
   const user:user = jwtDecode(session as string);
   const [room, setRoom] = useState<Room[]>([]);
@@ -83,23 +86,26 @@ useEffect(() => {
     };
 
     fetchData();
-  }, [session]);
+  }, [session, isFocused]);
   useEffect(() => {
-    const fetchElevatorData = async () => {
+    const fetchConstructionData = async () => {
       if (!room.length) {
         return;
       }
-        setIsLoading(true);
-        setError("");
-        try {
-            const response = await axios.get(`https://abmscapstone2024.azurewebsites.net/api/v1/constuction/get?room_id=${room[0]?.id}`,{
-                timeout:10000
-            });
-            if(response.data.statusCode == 200){
-              setData(response.data.data);
-              setDisplayData(response.data.data);
-            }
-           
+      setIsLoading(true);
+      setError("");
+      try {
+        const response = await axios.get(`https://abmscapstone2024.azurewebsites.net/api/v1/construction/get?room_id=${room[0]?.id}`, {
+          timeout: 10000
+        });
+        if (response.data.statusCode == 200) {
+          const filteredData = response.data.data.filter((item: Construction) => item.status !== 0);
+
+          // Set the filtered data
+          setData(filteredData);
+          setDisplayData(filteredData);
+        }
+
         } catch (error) {
             if(axios.isAxiosError(error)){
                 setShowError(true);
@@ -113,8 +119,10 @@ useEffect(() => {
             setIsLoading(false);
         }
     };
-    fetchElevatorData();
-}, [room]); 
+    if(isFocused){
+      fetchConstructionData();
+    }
+}, [room, isFocused]); 
   useEffect(() => {
     const startIndex = (currentPage - 1) * 3;
     const endIndex = startIndex + 3;
@@ -154,7 +162,7 @@ const loadMoreItems = () => {
                     padding: 10, borderRadius: 20, backgroundColor: theme.primary,
                     justifyContent: 'center', height: 40
                 }}>
-                    <Text style={{ fontWeight: '600',color:'white' }}>{t(statusUtility[item.status].status)}</Text>
+                    <Text style={{ fontWeight: '600',color:'white' }}>{t(statusUtility[item?.status]?.status)}</Text>
                 </View>
            </View>
         </View>
@@ -162,6 +170,11 @@ const loadMoreItems = () => {
     )
     return (
       <>
+        <AlertWithButton 
+      title={t("Error")}
+      visible={showError}
+      content={error} onClose={() =>setShowError(false)}></AlertWithButton>
+      <LoadingComponent loading={isLoading}></LoadingComponent>
         <Header headerTitle={t("Manage construction request")} />
         <SafeAreaView style={{ backgroundColor: theme.background, flex: 1 }}>
           <View style={{ marginHorizontal: 26 }}>
