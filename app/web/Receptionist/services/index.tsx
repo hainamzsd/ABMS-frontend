@@ -8,7 +8,8 @@ interface Services{
   title: string,
   description: string,
   footerText: string,
-  imageUrl: string
+  imageUrl: string;
+  href:string
 
 }
 // Sample data for the cards
@@ -16,20 +17,24 @@ const data:Services[] = [
   { id: '1', title: 'Quản lý đăng kí thang máy', 
   description: 'Tiếp nhận yêu cầu đăng ký sử dụng thang máy cho các trường hợp đặc biệt, Ghi chép lịch sử sử dụng thang máy.',
   footerText: 'Truy cập', 
-  imageUrl: require('../../../../assets/images/elevator.png')},
+  imageUrl: require('../../../../assets/images/elevator.png'),
+  href: '/web/Receptionist/services/elevator/'},
   { id: '2', title: 'Quản lý đăng kí thi công', 
   description: 'Tiếp nhận yêu cầu đăng ký thi công, sửa chữa, ', 
   footerText: 'Truy cập', 
   imageUrl:
-   require('../../../../assets/images/support.png') },
+   require('../../../../assets/images/support.png'),
+   href: '/web/Receptionist/services/construction/'},
   { id: '3', title: 'Quản lý đăng kí vé xe',
    description: 'Tiếp nhận các đơn đăng kí để xe tại chung cư',
     footerText: 'Truy cập',
-   imageUrl: require('../../../../assets/images/garage-car.png') },
+   imageUrl: require('../../../../assets/images/garage-car.png'),
+   href: '/web/Receptionist/services/elevator/'},
    { id: '4', title: 'Quản lý đăng kí khách thăm', 
    description: 'Tiếp nhận các đơn đăng kí khách thăm từ cư dân',
     footerText: 'Truy cập',
-   imageUrl: require('../../../../assets/images/id-card.png') },
+   imageUrl: require('../../../../assets/images/id-card.png'),
+   href: '/web/Receptionist/services/elevator/' },
   // Add more items...
 ];
 interface CardData {
@@ -45,11 +50,12 @@ interface CardItemProps {
   description: string;
   footerText: string;
   imageUrl: string;
+  href:any;
 }
-const CardItem: React.FC<CardItemProps> = ({ title, description, footerText, imageUrl }) => (
+const CardItem: React.FC<CardItemProps> = ({ title, description, footerText, imageUrl, href }) => (
   <TouchableOpacity style={styles.card} 
   onPress={()=>{
-    router.push('/web/Receptionist/services/elevator/')
+    router.push(href)
   }}>
     <Image source={imageUrl as any} style={styles.cardImage} />
     <Text style={styles.cardTitle}>{title}</Text>
@@ -71,6 +77,7 @@ const index = () => {
       data={data}
       renderItem={({ item }) => (
         <CardItem
+        href={item.href}
           title={item.title}
           description={item.description}
           footerText={item.footerText}
@@ -90,11 +97,11 @@ const index = () => {
 const styles = StyleSheet.create({
   row: {
     flex: 1,
-    justifyContent: 'space-around',
     marginBottom: 10,
+    justifyContent:'flex-start'
   },
   card: {
-    flex: 1,
+    flex: 0.3,
     borderRadius: 10,
     borderWidth: 1,
     borderColor: '#ddd',
@@ -102,7 +109,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 5,
     backgroundColor: '#FFFFFF',
     overflow: 'hidden',
-    padding:10
+    padding:10,
   },
   cardImage: {
     width: 80,

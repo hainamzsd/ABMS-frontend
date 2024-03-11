@@ -13,6 +13,8 @@ import LoadingComponent from '../../../../../components/resident/loading';
 import AlertWithButton from '../../../../../components/resident/AlertWithButton';
 import { useSession } from '../../../context/AuthContext';
 import { jwtDecode } from 'jwt-decode';
+import { statusUtility } from '../../../../../constants/status';
+import { useIsFocused } from '@react-navigation/native';
 
 
 interface Elevator{
@@ -40,6 +42,7 @@ const ElevatorList = () => {
     const { t } = useTranslation();
     const { theme } = useTheme();
     const [currentPage, setCurrentPage] = useState(1);
+    const isFocused = useIsFocused();
     const [data, setData] = useState<Elevator[]>([]); // Holds all fetched data
     const [displayData, setDisplayData] = useState<Elevator[]>([]); // Data to display
   const [isLoading, setIsLoading] = useState(false);
@@ -78,9 +81,12 @@ useEffect(() => {
     };
 
     fetchData();
-  }, [session]);
+  }, [session, isFocused]);
   useEffect(() => {
-    const fetchItems = async () => {
+    const fetchElevatorData = async () => {
+      if (!room.length) {
+        return;
+      }
         setIsLoading(true);
         setError("");
         try {
@@ -88,8 +94,9 @@ useEffect(() => {
                 timeout:10000
             });
             if(response.data.statusCode == 200){
-              setData(response.data.data);
-              setDisplayData(response.data.data);
+              const filteredData = response.data.data.filter((item: Elevator) => item.status !== 0);
+              setData(filteredData);
+              setDisplayData(filteredData);
             }
            
         } catch (error) {
@@ -105,8 +112,10 @@ useEffect(() => {
             setIsLoading(false);
         }
     };
-    fetchItems();
-}, [room]); 
+    if(isFocused){
+    fetchElevatorData();
+    }
+}, [room, isFocused]); 
 useEffect(() => {
     const startIndex = (currentPage - 1) * 3;
     const endIndex = startIndex + 3;
@@ -152,10 +161,6 @@ const loadMoreItems = () => {
                     <Text style={{fontWeight:'600'}}> {`${startDate.getUTCHours().toString().padStart(2, '0')}:${startDate.getUTCMinutes().toString().padStart(2, '0')}`}</Text>
                 </View>
                 <View style={{ flexDirection: 'row' ,marginTop:10}}>
-                    <Text style={{color:"#9C9C9C"}}>{t("End date")}: </Text>
-                    <Text style={{fontWeight:'600'}}>{endDate.toLocaleDateString('vi')}</Text>
-                </View>
-                <View style={{ flexDirection: 'row' ,marginTop:10}}>
                     <Text style={{color:"#9C9C9C"}}>{t("End time")}: </Text>
                     <Text style={{fontWeight:'600'}}> {`${endDate.getUTCHours().toString().padStart(2, '0')}:${endDate.getUTCMinutes().toString().padStart(2, '0')}`}</Text>
                 </View>
@@ -164,7 +169,7 @@ const loadMoreItems = () => {
         <View style={{paddingHorizontal: 10,paddingVertical:10 }}>
             <View style={{flexDirection:'row'}}>
                     <Text style={{color:"#9C9C9C"}}>{t("Status")}: </Text>
-                    <Text style={{fontWeight:'600'}}>{status}</Text>
+                    <Text style={{fontWeight:'600'}}>{t(statusUtility[item.status].status)}</Text>
             </View>
         </View>
     </Pressable>

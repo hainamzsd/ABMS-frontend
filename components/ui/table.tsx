@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, Dimensions, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, Dimensions, ScrollView, ViewStyle, TextStyle } from 'react-native';
 import Button from './button';
 
 interface TableProps {
@@ -29,19 +29,21 @@ const TableComponent: React.FC<TableProps> = ({ headers, children }) => {
 
 interface CellProps {
   children: React.ReactNode;
+  style?:TextStyle | TextStyle[];
 }
 
-const Cell: React.FC<CellProps> = ({ children }) => {
-  return <Text style={styles.cell}>{children}</Text>;
+const Cell: React.FC<CellProps> = ({ children,style }) => {
+  return <Text style={[styles.cell, style]}>{children}</Text>;
 };
 
 interface TableRowProps {
   children: React.ReactNode;
-  active?:boolean
+  active?:boolean;
+  style?:ViewStyle | ViewStyle[];
 }
 
-const TableRow: React.FC<TableRowProps> = ({ children }) => {
-  return <View style={[styles.row]}>{children}</View>;
+const TableRow: React.FC<TableRowProps> = ({ children,style }) => {
+  return <View style={[styles.row, style]}>{children}</View>;
 };
 
 
