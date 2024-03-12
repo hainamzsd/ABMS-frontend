@@ -1,4 +1,4 @@
-import { Link, Redirect } from "expo-router";
+import { Link, Redirect, useNavigation } from "expo-router";
 import { SafeAreaView, Text, View, ScrollView, TextInput, TouchableOpacity, Image, FlatList, ActivityIndicator } from "react-native";
 import Button from "../../../components/ui/button";
 import { Cell, TableComponent, TableRow } from "../../../components/ui/table";
@@ -8,6 +8,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import Toast from "react-native-toast-message";
 import { useSession } from "../../(mobile)/context/AuthContext";
+import { paginate } from "../../../utils/pagination";
 
 interface Account {
     id: string;
@@ -29,7 +30,7 @@ interface Account {
 
 export default function AccountManagement() {
     const headers = ['Họ và tên', 'Số điện thoại', 'Email', ''];
-    const [accountData, setAccountData] = useState<Account[]>();
+    const [accountData, setAccountData] = useState<Account[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
    
@@ -60,6 +61,26 @@ export default function AccountManagement() {
 
         fetchData();
     }, []);
+        //search box
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filteredRequests, setFilteredRequests] = useState<Account[]>([]);
+  useEffect(() => {
+    if (searchQuery.trim() !== '') {
+      const filtered = accountData.filter(item =>
+        item.fullName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        item.phoneNumber.includes(searchQuery) // Assuming phone numbers are stored as strings
+      );
+      setFilteredRequests(filtered);
+    } else {
+      setFilteredRequests(accountData);
+    }
+  }, [searchQuery, accountData]);
+   //paging
+   const itemsPerPage = 5;
+   const navigate = useNavigation();
+   const [currentPage, setCurrentPage] = useState(1)
+   const { currentItems, totalPages } = paginate(filteredRequests, currentPage, itemsPerPage);
+
     return (
         <View style={{ flex: 1, backgroundColor: '#F9FAFB' }}>
             <SafeAreaView style={{flex:1}}>
@@ -74,10 +95,11 @@ export default function AccountManagement() {
                     <View style={styles.searchContainer}>
                         <View style={styles.searchWrapper}>
                             <TextInput
-                                style={styles.searchInput}
-                                placeholder="Tìm tên tài khoản"
-                                value=""
-                                onChange={() => { }}
+                                      style={styles.searchInput}
+                                      placeholderTextColor={'black'}
+                                      placeholder="Tìm theo theo họ tên hoặc số điện thoại"
+                                      value={searchQuery}
+                                      onChangeText={(text) => setSearchQuery(text)}
                             />
                         </View>
                         {/* <TouchableOpacity style={styles.searchBtn} onPress={() => { }}>
@@ -89,9 +111,9 @@ export default function AccountManagement() {
                         </TouchableOpacity> */}
                     </View>
                     {isLoading && <ActivityIndicator size={'large'} color={'#171717'}></ActivityIndicator>}
-                    {!accountData ? <Text style={{marginBottom:10, fontSize:18,fontWeight:'600'}}>Chưa có dữ liệu</Text>:
+                    {!filteredRequests.length ? <Text style={{marginBottom:10, fontSize:18,fontWeight:'600'}}>Chưa có dữ liệu</Text>:
                           <TableComponent headers={headers}>
-                            <FlatList data={accountData}
+                            <FlatList data={currentItems}
                             renderItem={({ item }) =>
                             {
                                 console.log(item);
@@ -112,7 +134,16 @@ export default function AccountManagement() {
                         /> 
                         
                       </TableComponent>  }
-                 
+                      <View style={{flexDirection:'row', alignItems:"center", justifyContent:'center', marginTop:20}}>
+            <Button text="Trước"
+            style={{width:50}}
+            onPress={() => setCurrentPage((prev) => Math.max(prev - 1, 1))} disabled={currentPage === 1} />
+            <Text style={{marginHorizontal:10, fontWeight:"600"}}>
+              Page {currentPage} of {totalPages}
+            </Text>
+            <Button text="Sau" onPress={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))} disabled={currentPage === totalPages} />
+
+          </View>
                 </ScrollView>
             </SafeAreaView>
         </View>

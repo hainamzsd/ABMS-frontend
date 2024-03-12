@@ -33,7 +33,6 @@ const styles = StyleSheet.create({
         paddingHorizontal: SIZES.medium,
         borderWidth: 1,
         borderRadius: 10,
-        color: COLORS.gray2,
         borderColor:'#9c9c9c'
     },
     searchBtn: {

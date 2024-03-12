@@ -24,15 +24,33 @@ import { useTranslation } from "react-i18next";
 import { jwtDecode } from "jwt-decode";
 import Alert from "../../../../components/resident/Alert";
 import CustomAlert from "../../../../components/resident/confirmAlert";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import axios from "axios";
+import LoadingComponent from "../../../../components/resident/loading";
+import AlertWithButton from "../../../../components/resident/AlertWithButton";
 
 interface user{
   FullName:string;
   PhoneNumber:string;
   RoomId:string;
-  Avatar:string;
+  Email:string;
+  Id:string;
 }
 
+interface Room{
+  roomNumber:string;
+  id:string;
+}
+interface UserDatabase {
+  id: string;
+  fullName: string;
+  phoneNumber: string;
+  roomId: string;
+  avatar: string;
+  buildingId:string;
+  email:string;
+  userName:string;
+}
 const ProfileScreen = () => {
   const { signOut } = useSession();
   const { theme } = useTheme();
@@ -40,8 +58,80 @@ const ProfileScreen = () => {
   const [confirm, setConfirm] = useState(false);
   const{session } = useSession();
   const user:user = jwtDecode(session as string);
+  
+const [error, setError] = useState(false);
+const [errorText, setErrorText] = useState("");
+const [room, setRoom] = useState<Room[]>([]);
+useEffect(() => {
+    const fetchData = async () => {
+    setErrorText("");
+      try {
+        const response = await axios.get(
+          `https://abmscapstone2024.azurewebsites.net/api/v1/resident-room/get?accountId=${user.Id}`,{
+            timeout:10000
+          }
+        );
+        if(response.data.statusCode==200){
+            setRoom(response?.data?.data);
+        }
+        else{
+            setError(true);
+            setErrorText(t("System error please try again later"));
+        }
+      } catch (error) {
+        if(axios.isCancel(error)){
+            setError(true);
+            setErrorText(t("System error please try again later"));
+        }
+        console.error('Error fetching data:', error);
+        setError(true);
+        setErrorText(t("System error please try again later"));
+      } finally {
+      }
+    };
+
+    fetchData();
+  }, [session]);
+  
+const [fetchUser,setFetchUser] = useState<UserDatabase>();
+const [loading,setLoading] = useState(false);
+useEffect(() => {
+  const fetchItems = async () => {
+    setErrorText("");
+    if (user.Id) {
+      setLoading(true);
+      try {
+        const response = await axios.get(`https://abmscapstone2024.azurewebsites.net/api/v1/account/get/${user.Id}`, {
+          timeout: 10000
+        });
+        if (response.data.statusCode == 200) {
+          setFetchUser(response.data.data);
+        }
+        else {
+          setError(true);
+          setErrorText(t("Failed to return requests") + ".");
+        }
+      } catch (error) {
+        if (axios.isAxiosError(error)) {
+          setError(true);
+          setErrorText(t("System error please try again later") + ".");
+          return;
+        }
+        console.error('Error fetching reservations:', error);
+        setError(true);
+        setErrorText(t('Failed to return requests') + ".");
+      } finally {
+        setLoading(false);
+      }
+    }
+  };
+  fetchItems();
+}, [session]);
   return (
     <>
+      <AlertWithButton content={errorText} title={t("Error")} 
+    visible={error} onClose={() => setError(false)}></AlertWithButton>
+    <LoadingComponent loading={loading}></LoadingComponent>
       <SafeAreaView style={{ backgroundColor: theme.background, flex: 1 }}>
         <StatusBar barStyle="dark-content"></StatusBar>
         <View style={styles.gradientContainer}>
@@ -78,7 +168,7 @@ const ProfileScreen = () => {
               <Image
                 style={stylesProfileScreen.avatar}
                 source={{
-                  uri: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSiGAdWpsJQwrcEtjaAxG-aci3VxO7n2qYey0tI9Syx4Ai9ziAUea6-dAjlaGmRUNQW-Lo&usqp=CAU",
+                  uri: fetchUser && fetchUser.avatar ? fetchUser.avatar : "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a7/Atlantic_near_Faroe_Islands.jpg/800px-Atlantic_near_Faroe_Islands.jpg" ,
                 }}
               />
             </TouchableOpacity>
@@ -113,7 +203,7 @@ const ProfileScreen = () => {
               }}
             >
               <Text style={{ fontWeight: "bold", marginBottom: 5 }}>
-                R2.18A00
+                {room[0]?.roomNumber}
               </Text>
               <Text style={{ fontWeight: "300" }}>Times city, Hà Nội</Text>
             </View>

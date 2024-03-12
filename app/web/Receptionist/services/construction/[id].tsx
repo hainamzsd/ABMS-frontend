@@ -28,6 +28,7 @@ interface Construction{
     description:string;
     createTime:Date;
     status:number;
+   
 }
 
 interface Room{

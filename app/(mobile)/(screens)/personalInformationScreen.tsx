@@ -5,10 +5,30 @@ import SHADOW from "../../../constants/shadow";
 import { useTheme } from "../context/ThemeContext";
 import { useTranslation } from "react-i18next";
 import { Info } from "lucide-react-native";
+import { useSession } from "../context/AuthContext";
+import { jwtDecode } from "jwt-decode";
+import * as yup from "yup";
+interface user{
+  FullName:string;
+  PhoneNumber:string;
+  RoomId:string;
+  Email:string;
+  Id:string;
+}
+
+const validationSchema = yup.object().shape({
+  name: yup.string().required('Name is required'),
+  email: yup.string().email('Invalid email format').required('Email is required'),
+  age: yup.number().typeError('Age must be a number').positive('Age must be positive').required('Age is required'),
+});
+
 
 const personalInformationScreen = () => {
   const { theme } = useTheme();
   const { t } = useTranslation();
+  const{session } = useSession();
+  const user:user = jwtDecode(session as string);
+  
   return (
     <>
       <Header headerTitle={t("Update Information")}></Header>

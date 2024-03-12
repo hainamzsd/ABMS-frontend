@@ -44,7 +44,10 @@ const LoginScreen = () => {
     try {
   
       const result = await signIn(phone, password)
-       console.log(result.data)
+      if(result.error){
+        setErrorText(t("There is no account in the system, please check your phone number and password"));
+        return;
+      }
        if(result.data.errMsg=="User not found!"){
         setErrorText(t("There is no account in the system, please check your phone number and password"));
         return;
@@ -94,6 +97,10 @@ const LoginScreen = () => {
             onChangeText={(text: string) => setPassword(text)}
             value={password}
           />
+            {errorText&&
+          <View style={{alignItems:'center', marginTop:5}}>
+          <Text style={{color:'red', fontWeight:'600'}}>{t("Error")}: {errorText}</Text></View>}
+
           <View style={{ alignItems: "flex-end" }}>
             <Text>{t("Forgot password")}</Text>
           </View>
@@ -105,10 +112,7 @@ const LoginScreen = () => {
               {t("Login")}
             </Text>
           </TouchableOpacity>
-          {errorText&&
-          <View style={{alignItems:'center', marginTop:5}}>
-          <Text style={{color:'red', fontWeight:'600'}}>{t("Error")}: {errorText}</Text></View>}
-
+        
           <View
             style={{
               justifyContent: "center",

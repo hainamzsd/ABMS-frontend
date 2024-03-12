@@ -41,10 +41,20 @@ interface Room{
   roomNumber:string;
   id:string;
 }
+interface UserDatabase {
+  id: string;
+  fullName: string;
+  phoneNumber: string;
+  roomId: string;
+  avatar: string;
+  buildingId:string;
+  email:string;
+  userName:string;
+}
 const HomeScreen = () => {
   const { theme } = useTheme();
   const { t } = useTranslation();
-  const{session,isLoading } = useSession();
+  const{session } = useSession();
 const user:user = jwtDecode(session as string);
 
 const [error, setError] = useState(false);
@@ -81,12 +91,45 @@ useEffect(() => {
     fetchData();
   }, [session]);
   
-
+const [fetchUser,setFetchUser] = useState<UserDatabase>();
+const [loading,setLoading] = useState(false);
+useEffect(() => {
+  const fetchItems = async () => {
+    setErrorText("");
+    if (user.Id) {
+      setLoading(true);
+      try {
+        const response = await axios.get(`https://abmscapstone2024.azurewebsites.net/api/v1/account/get/${user.Id}`, {
+          timeout: 10000
+        });
+        if (response.data.statusCode == 200) {
+          setFetchUser(response.data.data);
+        }
+        else {
+          setError(true);
+          setErrorText(t("Failed to return requests") + ".");
+        }
+      } catch (error) {
+        if (axios.isAxiosError(error)) {
+          setError(true);
+          setErrorText(t("System error please try again later") + ".");
+          return;
+        }
+        console.error('Error fetching reservations:', error);
+        setError(true);
+        setErrorText(t('Failed to return requests') + ".");
+      } finally {
+        setLoading(false);
+      }
+    }
+  };
+  fetchItems();
+}, [session]);
   return (
     <>
     <AlertWithButton content={errorText} title={t("Error")} 
     visible={error} onClose={() => setError(false)}></AlertWithButton>
-    <LoadingComponent loading={isLoading}></LoadingComponent>
+    <LoadingComponent loading={loading}></LoadingComponent>
       <SafeAreaView style={{ backgroundColor: theme.background, flex: 1 }}>
         <StatusBar barStyle="dark-content"></StatusBar>
         <Stack.Screen options={{ headerShown: false }}></Stack.Screen>
@@ -124,7 +167,7 @@ useEffect(() => {
               <Image
                 style={stylesHomeScreen.avatar}
                 source={{
-                  uri: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSiGAdWpsJQwrcEtjaAxG-aci3VxO7n2qYey0tI9Syx4Ai9ziAUea6-dAjlaGmRUNQW-Lo&usqp=CAU",
+                  uri: fetchUser && fetchUser.avatar ? fetchUser.avatar : "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a7/Atlantic_near_Faroe_Islands.jpg/800px-Atlantic_near_Faroe_Islands.jpg" ,
                 }}
               />
             </Pressable>

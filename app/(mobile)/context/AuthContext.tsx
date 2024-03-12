@@ -19,17 +19,13 @@ export const API_URL = "https://api.developbetterapps.com";
 const AuthContext = createContext<{
   signIn: (phone: string, password: string) => Promise<any>;
   signOut: () => Promise<any>;
-  authState: { token: string | null; authenticated: boolean | null };
   session?: string | null;
   isLoading: boolean;
-  user: any;
 }>({
   signIn: () => Promise.resolve({}),
   signOut: () => Promise.resolve({}),
-  authState: { token: null, authenticated: null },
   session: null,
   isLoading: false,
-  user:null
 });
 
 
@@ -108,10 +104,8 @@ export const AuthProvider = ({ children }: any) => {
       value={{
         signIn: login,
         signOut: logout,
-        authState: authState,
         session: session,
         isLoading: isLoading,
-        user:user
       }}
     >
       {children}

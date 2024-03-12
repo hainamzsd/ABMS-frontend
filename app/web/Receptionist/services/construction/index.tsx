@@ -24,6 +24,10 @@ interface Construction{
     description:string;
     createTime:Date;
     status:number;
+    room:{
+        id:string;
+        roomNumber:string;
+    }
 }
 
 interface Room{
@@ -86,8 +90,22 @@ const index = () => {
       fetchData()
     }, [status])
 
-    const navigate = useNavigation();
-    const { currentItems, totalPages } = paginate(request, currentPage, itemsPerPage)
+    const [searchQuery, setSearchQuery] = useState('');
+    const [filteredRequests, setFilteredRequests] = useState<Construction[]>([]);
+    useEffect(() => {
+      if (searchQuery.trim() !== '') {
+        const filtered = request.filter(item =>
+          item.room.roomNumber.toLowerCase().includes(searchQuery.toLowerCase())
+        );
+        setFilteredRequests(filtered);
+      } else {
+        setFilteredRequests(request);
+      }
+    }, [searchQuery, request]);
+     //paging
+     const navigate = useNavigation();
+     const { currentItems, totalPages } = paginate(filteredRequests, currentPage, itemsPerPage);
+  
   return (
     <View style={{ flex: 1, backgroundColor: '#F9FAFB' }}>
     <SafeAreaView style={{flex:1}}>
@@ -104,10 +122,11 @@ const index = () => {
             <View style={styles.searchContainer}>
                 <View style={styles.searchWrapper}>
                     <TextInput
-                        style={styles.searchInput}
-                        placeholder="Tìm theo tên căn hộ"
-                        value=""
-                        onChange={() => { }}
+                         style={styles.searchInput}
+                         placeholderTextColor={'black'}
+                         placeholder="Tìm theo tên căn hộ"
+                         value={searchQuery}
+                         onChangeText={(text) => setSearchQuery(text)}
                     />
                 </View>
                 {/* <TouchableOpacity style={styles.searchBtn} onPress={() => { }}>
@@ -135,14 +154,14 @@ const index = () => {
            
             
             {isLoading && <ActivityIndicator size={'large'} color={'#171717'}></ActivityIndicator>}
-            {request.length==0 ? <Text style={{marginBottom:10, fontSize:18,fontWeight:'600'}}>Chưa có dữ liệu</Text>:
+            {!filteredRequests.length? <Text style={{marginBottom:10, fontSize:18,fontWeight:'600'}}>Chưa có dữ liệu</Text>:
                   <TableComponent headers={headers}>
                     <FlatList data={currentItems}
                     renderItem={({ item }) => 
                     {
                       return( 
                         <TableRow>
-                        <Cell>{item.roomId}</Cell>
+                        <Cell>{item.room.roomNumber}</Cell>
                         <Cell>{item.name}</Cell>
                         <Cell>{item.constructionOrganization}</Cell>
                         <Cell>{moment.utc(item.startTime).format('YYYY-MM-DD')}</Cell>
@@ -221,7 +240,6 @@ const styles = StyleSheet.create({
         paddingHorizontal: SIZES.medium,
         borderWidth: 1,
         borderRadius: 10,
-        color: COLORS.gray2,
         borderColor:'#9c9c9c'
     },
     searchBtn: {

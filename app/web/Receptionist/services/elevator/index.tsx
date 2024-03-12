@@ -19,6 +19,10 @@ interface Elevator{
     startTime:Date;
     endTime:Date;
     status:Number;
+    room:{
+        id:string;
+        roomNumber:string;
+    }
 }
 const StatusData = [
   { label: "Yêu cầu chưa phê duyệt", value: 2 },
@@ -79,9 +83,25 @@ const index = () => {
   
       fetchData()
     }, [status])
-  
-    const navigate = useNavigation();
-    const { currentItems, totalPages } = paginate(request, currentPage, itemsPerPage)
+ 
+
+  //search box
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filteredRequests, setFilteredRequests] = useState<Elevator[]>([]);
+  useEffect(() => {
+    if (searchQuery.trim() !== '') {
+      const filtered = request.filter(item =>
+        item.room.roomNumber.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+      setFilteredRequests(filtered);
+    } else {
+      setFilteredRequests(request);
+    }
+  }, [searchQuery, request]);
+   //paging
+   const navigate = useNavigation();
+   const { currentItems, totalPages } = paginate(filteredRequests, currentPage, itemsPerPage);
+
   return (
     <View style={{ flex: 1, backgroundColor: '#F9FAFB' }}>
     <SafeAreaView style={{flex:1}}>
@@ -96,22 +116,14 @@ const index = () => {
                 <Text>Thông tin những phiếu đăng kí trong bảng</Text>
             </View>
             <View style={styles.searchContainer}>
-                <View style={styles.searchWrapper}>
-                    <TextInput
-                        style={styles.searchInput}
-                        placeholder="Tìm theo tên căn hộ"
-                        value=""
-                        onChange={() => { }}
-                    />
-                </View>
-                {/* <TouchableOpacity style={styles.searchBtn} onPress={() => { }}>
-                    <Image
-                        source={icons.search}
-                        resizeMode="contain"
-                        style={styles.searchBtnIcon}
-                    ></Image>
-                </TouchableOpacity> */}
-            </View>
+            <TextInput
+              style={styles.searchInput}
+              placeholderTextColor={'black'}
+              placeholder="Tìm theo tên căn hộ"
+              value={searchQuery}
+              onChangeText={(text) => setSearchQuery(text)}
+            />
+          </View>
             <Dropdown
               style={styles.comboBox}
               placeholderStyle={{ fontSize: 14, }}
@@ -135,42 +147,50 @@ const index = () => {
              </View>}
             
             {isLoading && <ActivityIndicator size={'large'} color={'#171717'}></ActivityIndicator>}
-            {!request ? <Text style={{marginBottom:10, fontSize:18,fontWeight:'600'}}>Chưa có dữ liệu</Text>:
-                  <TableComponent headers={headers}>
-                    <FlatList data={currentItems}
-                    renderItem={({ item }) => 
-                    {
-                      const isOverlapping = overlaps.some(overlap => 
-                        overlap.first.id === item.id || overlap.second.id === item.id
-                     );
-                      return( 
-                        <TableRow style={isOverlapping ? styles.overlap : {}}>
-                        <Cell>{item.roomId}</Cell>
-                        <Cell>{moment.utc(item.startTime).format('YYYY-MM-DD')}</Cell>
-                        <Cell>{moment.utc(item.startTime).format('HH:mm')}</Cell>
-                        <Cell>{moment.utc(item.endTime).format('HH:mm')}</Cell>
-                        <Cell>
-                          {item.status && 
-                           <Button text={statusForReceptionist?.[item.status as number].status}
-                           style={{borderRadius:20, backgroundColor:statusForReceptionist?.[item.status as number].color}}
-                           > </Button>}
-                       
-                        </Cell>
-                        <Cell>
-                                <Button text="Chi tiết"
-                                 onPress={()=>router.push({
-                                  pathname: `/web/Receptionist/services/elevator/${item.id}`})}/>
-                        </Cell>
+            {!filteredRequests.length ? (
+            <Text style={{ marginBottom: 10, fontSize: 18, fontWeight: '600' }}>Chưa có dữ liệu</Text>
+          ) : (
+            <TableComponent headers={headers}>
+              <FlatList
+                data={currentItems}
+                renderItem={({ item }) => {
+                  const isOverlapping = overlaps.some(
+                    overlap => overlap.first.id === item.id || overlap.second.id === item.id
+                  );
+                  return (
+                    <TableRow style={isOverlapping ? styles.overlap : {}}>
+                      <Cell>{item.room.roomNumber}</Cell>
+                      <Cell>{moment.utc(item.startTime).format('YYYY-MM-DD')}</Cell>
+                      <Cell>{moment.utc(item.startTime).format('HH:mm')}</Cell>
+                      <Cell>{moment.utc(item.endTime).format('HH:mm')}</Cell>
+                      <Cell>
+                        {item.status && (
+                          <Button
+                            text={statusForReceptionist?.[item.status as number].status}
+                            style={{
+                              borderRadius: 20,
+                              backgroundColor: statusForReceptionist?.[item.status as number].color,
+                            }}
+                          />
+                        )}
+                      </Cell>
+                      <Cell>
+                        <Button
+                          text="Chi tiết"
+                          onPress={() =>
+                            router.push({
+                              pathname: `/web/Receptionist/services/elevator/${item.id}`,
+                            })
+                          }
+                        />
+                      </Cell>
                     </TableRow>
-  
-                      )
-                }
-                       
-                      }
-                    keyExtractor={(item: Elevator) => item.id}
-                /> 
-                
-              </TableComponent>  }
+                  );
+                }}
+                keyExtractor={(item: Elevator) => item.id}
+              />
+            </TableComponent>
+          )}
               <View style={{flexDirection:'row', alignItems:"center", justifyContent:'center', marginTop:20}}>
             <Button text="Trước"
             style={{width:50}}
@@ -186,6 +206,9 @@ const index = () => {
 </View>
   )
 }
+
+
+
 
 export default index
 const styles = StyleSheet.create({
@@ -223,7 +246,6 @@ const styles = StyleSheet.create({
         paddingHorizontal: SIZES.medium,
         borderWidth: 1,
         borderRadius: 10,
-        color: COLORS.gray2,
         borderColor:'#9c9c9c'
     },
     searchBtn: {
