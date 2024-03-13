@@ -1,5 +1,5 @@
 import { View, Text, StyleSheet, SafeAreaView, TextInput, Pressable, SectionList, Button, Image } from 'react-native'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import SHADOW from '../../../../../constants/shadow'
 import LoadingComponent from '../../../../../components/resident/loading'
 import Header from '../../../../../components/resident/header'
@@ -10,14 +10,39 @@ import { useTheme } from '../../../context/ThemeContext'
 import { useTranslation } from 'react-i18next'
 import { Dropdown } from 'react-native-element-dropdown'
 import * as ImagePicker from 'expo-image-picker';
-
+import * as yup from 'yup'
+import { useSession } from '../../../context/AuthContext'
+import { jwtDecode } from 'jwt-decode'
 interface ImageInfo {
   uri: string;
   name: string | null | undefined;
   type: "image" | "video" | undefined;
 }
 
+interface user {
+  FullName: string;
+  PhoneNumber: string;
+  Id: string;
+  Avatar: string;
+}
+
+interface Room {
+  roomNumber: string;
+  id: string;
+}
+
+const parkingCardSchema = yup.object().shape({
+  color: yup.string().required("This field is required"),
+  brand: yup.string().required("This field is required"), 
+  note: yup.string().required("This field is required"), // Optional field with max length validation
+});
 const parkingCardRegisterScreen = () => {
+  const [loading, setLoading] = useState(false);
+  const { theme } = useTheme();
+  const { t } = useTranslation();
+  const { session } = useSession();
+  const user: user = jwtDecode(session as string);
+  const [errors, setErrors] = useState<any>({});
   const pickImages = async () => {
     const options: any = {
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
@@ -56,15 +81,19 @@ const parkingCardRegisterScreen = () => {
     setSelectedImages(newSelectedImages);
   };
 
-  const [loading, setLoading] = useState(false);
-  const { theme } = useTheme();
-  const { t } = useTranslation();
-  const vehicleTypeList = [
-    { label: t("Car"), value: "Car" },
-    { label: t("Motorbike"), value: "Motorbike" },
-    { label: t("Bicycle"), value: "Bicycle" },
-  ]
-  const [vehicleTypes, setVehicleTypes] = useState(null);
+
+    const vehicleTypeList = [
+      { label: t("Car"), value: "Ô tô" },
+      { label: t("Motorbike"), value: "Xe máy" },
+      { label: t("Bicycle"), value: "Xe đạp" },
+    ]
+  const [vehicleTypes, setVehicleTypes] = useState("");
+
+  const [isLicensePlateRequired, setIsLicensePlateRequired] = useState(true); 
+
+  useEffect(() => {
+    setIsLicensePlateRequired(vehicleTypes !== 'Bicycle');
+  }, [vehicleTypes]);
   const isButtonDisabled = false;
   return (
     <>
@@ -97,6 +126,7 @@ const parkingCardRegisterScreen = () => {
                 valueField="value"
                 onChange={(item: any) => {
                   setVehicleTypes(item.value);
+                  setIsLicensePlateRequired(item.value !== 'Bicycle'); 
                 }}
               ></Dropdown>
             </View>
@@ -109,9 +139,24 @@ const parkingCardRegisterScreen = () => {
                   style={[styles.textInput]}
                 />
               </View>
+              {errors.color && <Text style={styles.errorText}>{t(errors.color)}</Text>}
             </View>
             <View style={{ marginTop: 20 }}>
-              <Label required text={t("License plate")}></Label>
+              <Label required text={t("Brand")}></Label>
+              <View style={[styles.inputContainer]}>
+                <TextInput
+                  placeholder={t("Type") + "..."}
+                  placeholderTextColor={"#9C9C9C"}
+                  style={[styles.textInput]}
+                />
+              </View>
+              {errors.brand && <Text style={styles.errorText}>{t(errors.brand)}</Text>}
+            </View>
+            <View style={{ marginTop: 20 }}>
+              <Label required={isLicensePlateRequired} text={t("License plate")}></Label>
+              <View style={{ marginLeft: 10 }}>
+                <Text style={styles.imageText}>• {t("If vehicle type is bicycle, license plate can leave blank")}</Text>
+               </View>
               <View style={[styles.inputContainer]}>
                 <TextInput
                   placeholder={t("Type") + "..."}
@@ -131,6 +176,8 @@ const parkingCardRegisterScreen = () => {
                   numberOfLines={4}
                 />
               </View>
+              
+              {errors.note && <Text style={styles.errorText}>{t(errors.note)}</Text>}
             </View>
             <View style={{ marginTop: 20 }}>
               <Label text={t("Image")} required></Label>
@@ -194,6 +241,9 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderStyle: "dashed",
     marginRight: 5
+  },
+  errorText:{
+    color:'red'
   },
   headerBox: {
     marginTop: 20,

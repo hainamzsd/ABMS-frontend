@@ -52,7 +52,7 @@ const validationSchema = yup.object({
         .min(yup.ref('arrivalDate'), 'Departure date must be after arrival date'),
     description: yup.string().required('This field is required'),
     phone: yup.string().required('This field is required').min(10, 'Invalid phone number'),
-    identityNumber: yup.string().required('This field is required'),
+    identityNumber: yup.string().required('This field is required').min(9, 'Invalid identity number').max(12, 'Invalid identity number'),
     images: yup.array().min(1, 'At least one image is required').max(5, 'Maximum 5 images allowed'),
 });
 
@@ -61,6 +61,9 @@ const visitorRegisterScreen = () => {
     const [loading, setLoading] = useState(false);
     const { session } = useSession();
     const user: user = jwtDecode(session as string);
+    const { t } = useTranslation();
+    const [showError, setShowError] = useState(false);
+    const [errorText, setErrorText] = useState(t("System error please try again later"));
     const pickImages = async () => {
         const options: any = {
             mediaTypes: ImagePicker.MediaTypeOptions.Images,
@@ -88,6 +91,8 @@ const visitorRegisterScreen = () => {
             }
         } catch (error) {
             console.error(error);
+            setShowError(true);
+            setErrorText(t("Unable to pick images, try again"));
         } finally {
         }
     };
@@ -119,7 +124,7 @@ const visitorRegisterScreen = () => {
             await imagesRef.set({
                 images: downloadURLs
             });
-            return `${databaseURL}imageFolders/${folderPath}/images`;
+            return `/imageFolders/${folderPath}/images`;
     
         } catch (error) {
             console.error('Error uploading images:', error);
@@ -127,7 +132,6 @@ const visitorRegisterScreen = () => {
             setErrorText("System error please try again later.");
         }
     };
-    const { t } = useTranslation();
 
     const genderList = [
         { label: t("Male"), value: true },
@@ -147,8 +151,7 @@ const visitorRegisterScreen = () => {
     const [gender, setGender] = useState();
 
     const [errors, setErrors] = useState<any>({});
-    const [showError, setShowError] = useState(false);
-    const [errorText, setErrorText] = useState(t("System error please try again later"));
+   
     const [room, setRoom] = useState<Room[]>([]);
     useEffect(() => {
         const fetchData = async () => {
@@ -202,15 +205,14 @@ const visitorRegisterScreen = () => {
             const body = {
                 roomId: room[0].id,
                 fullName: fullName,
-                arrivalTime: moment.utc(arrivalDate).toISOString(),
-                departureDate: moment.utc(departureDate).toISOString(),
+                arrivalTime: arrivalDate,
+                departureTime: departureDate,
                 gender: gender,
                 phoneNumber: phone,
                 identityNumber: identityNumber,
                 identityCardImgUrl: url,
                 description: description,
             };
-            console.log(body);
             if (url) {
                 const response = await axios.post('https://abmscapstone2024.azurewebsites.net/api/v1/visitor/create', body, {
                     timeout: 10000,
@@ -219,10 +221,15 @@ const visitorRegisterScreen = () => {
                     }
                 },
                 );
-                console.log(response);
                 if (response.data.statusCode == 200) {
                     setShowSuccess(true);
-                    
+                    setFullName("");
+                    setArrivalDate(new Date());
+                    setDepartureDate(new Date());
+                    setPhone("");
+                    setIdentityNumber("");
+                    setDescription("");                    
+                    setSelectedImages([]);
                 }
                 else {
                     setShowError(true);
@@ -386,6 +393,7 @@ const visitorRegisterScreen = () => {
                                         placeholderTextColor={'#9C9C9C'}
                                         style={styles.textInput}
                                         value={phone}
+                                        keyboardType='phone-pad'
                                         onChangeText={setPhone}
 
                                     />
@@ -394,11 +402,15 @@ const visitorRegisterScreen = () => {
                             </View>
                             <View style={{ marginTop: 20 }}>
                                 <Label text={t("Identity number")} required></Label>
+                                <View style={{ marginLeft: 10 }}>
+                                    <Text style={styles.imageText}>• {t("Identity card must from 9 to 12 digits")}</Text>
+                                </View>
                                 <View style={[styles.inputContainer]}>
                                     <TextInput
                                         placeholder={t("Type") + "..."}
                                         placeholderTextColor={'#9C9C9C'}
                                         style={styles.textInput}
+                                        keyboardType='number-pad'
                                         value={identityNumber}
                                         onChangeText={setIdentityNumber}
                                     />
@@ -406,6 +418,7 @@ const visitorRegisterScreen = () => {
                             </View>
                             <View style={{ marginTop: 20 }}>
                                 <Label text={t("Note")} required></Label>
+                               
                                 <View style={[styles.inputContainer]}>
                                     <TextInput
                                         multiline

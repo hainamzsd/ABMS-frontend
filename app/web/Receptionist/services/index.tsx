@@ -34,7 +34,7 @@ const data:Services[] = [
    description: 'Tiếp nhận các đơn đăng kí khách thăm từ cư dân',
     footerText: 'Truy cập',
    imageUrl: require('../../../../assets/images/id-card.png'),
-   href: '/web/Receptionist/services/elevator/' },
+   href: '/web/Receptionist/services/visitor/' },
   // Add more items...
 ];
 interface CardData {

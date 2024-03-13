@@ -187,6 +187,12 @@
     "Invalid phone number":"Invalid phone number",
     "At least one image is required":"At least one image is required",
     "Maximum 5 images allowed" :"Maximum 5 images allowed",
-    "Error uploading images":"Error uploading images"
+    "Error uploading images":"Error uploading images",
+    "Invalid identity number":"Invalid identity number",
+    "Identity card must from 9 to 12 digits":"Identity card must from 9 to 12 digits",
+    "You dont have any visitor requests":"You dont have any visitor requests",
+    "Unable to pick images, try again":"Unable to pick images, try again",
+    "Brand":"Brand",
+    "If vehicle type is bicycle, license plate can leave blank":"If vehicle type is bicycle, license plate can leave blank"
   }
 }

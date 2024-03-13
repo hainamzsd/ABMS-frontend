@@ -88,6 +88,7 @@ const LoginScreen = () => {
             placeholderTextColor="#A9A9A9"
             onChangeText={(text: string) => setPhone(text)}
             value={phone}
+            keyboardType="phone-pad"
           />
           <TextInput
             style={styles.input}

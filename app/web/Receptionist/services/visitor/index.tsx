@@ -13,27 +13,22 @@ import { Dropdown } from 'react-native-element-dropdown'
 import { checkForOverlaps, checkOverlaps } from '../../../../../utils/checkOverlap'
 import { AlertCircle } from 'lucide-react-native'
 
-interface Construction{
-    id:string;
-    roomId:string;
-    name:string;
-    constructionOrganization:string;
-    phoneContact:string;
-    startTime:Date;
-    endTime:Date;
-    description:string;
-    createTime:Date;
-    status:number;
+interface Visitor{
+    id: string;
+    roomId: string;
+    fullName: string;
+    arrivalTime: Date;
+    departureTime: Date;
+    gender: boolean;
+    phoneNumber: string;
+    identityNumber: string;
+    identityCardImgUrl: string;
+    description: string;
+    status: number,
     room:{
-        id:string;
-        roomNumber:string;
+        roomNumber: string;
     }
-}
-
-interface Room{
-    roomNumber:string;
-    id:string;
-}
+  }
 const StatusData = [
   { label: "Yêu cầu chưa phê duyệt", value: 2 },
   { label: "Yêu cầu đã phê duyệt", value: 3 },
@@ -41,27 +36,30 @@ const StatusData = [
 ]
 
 const index = () => {
-    const headers = ['ID Căn hộ', 'Tên dự án', 'Đơn vị thi công', 'Ngày bắt đầu', 'Ngày kết thúc', 'Trạng thái',''];
-    const [request, setRequest] = useState<Construction[]>([]);
+    const headers = ['Căn hộ', 'Tên khách thăm', 'Ngày tới', 'Ngày đi', 'Trạng thái',''];
+    const [request, setRequest] = useState<Visitor[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
-    const [overlapError, setOverlapError] = useState('');
     const [currentPage, setCurrentPage] = useState(1)
     const itemsPerPage = 7
     const [status, setStatus] = useState<number | null>(2) // null for approved, 2 for pending
+    const [overlaps, setOverlaps] = useState<any[]>([]);
     useEffect(() => {
       const fetchData = async () => {
         setIsLoading(true)
         setError(null)
   
         try {
-          let url = `https://abmscapstone2024.azurewebsites.net/api/v1/construction/get`
+          let url = `https://abmscapstone2024.azurewebsites.net/api/v1/visitor/get-all`
           if (status !== null) {
             url += `?status=${status}`
           }
           const response = await axios.get(url, { timeout: 100000 })
           if (response.data.statusCode === 200) {
             setRequest(response.data.data)
+            const overlappingPairs = checkOverlaps(response.data.data);
+            setOverlaps(overlappingPairs);
+      
           } else {
             Toast.show({
               type: 'error',
@@ -89,23 +87,25 @@ const index = () => {
   
       fetchData()
     }, [status])
+ 
 
-    const [searchQuery, setSearchQuery] = useState('');
-    const [filteredRequests, setFilteredRequests] = useState<Construction[]>([]);
-    useEffect(() => {
-      if (searchQuery.trim() !== '') {
-        const filtered = request.filter(item =>
-          item.room.roomNumber.toLowerCase().includes(searchQuery.toLowerCase())
-        );
-        setFilteredRequests(filtered);
-      } else {
-        setFilteredRequests(request);
-      }
-    }, [searchQuery, request]);
-     //paging
-     const navigate = useNavigation();
-     const { currentItems, totalPages } = paginate(filteredRequests, currentPage, itemsPerPage);
-  
+  //search box
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filteredRequests, setFilteredRequests] = useState<Visitor[]>([]);
+  useEffect(() => {
+    if (searchQuery.trim() !== '') {
+      const filtered = request.filter(item =>
+        item.room.roomNumber.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+      setFilteredRequests(filtered);
+    } else {
+      setFilteredRequests(request);
+    }
+  }, [searchQuery, request]);
+   //paging
+   const navigate = useNavigation();
+   const { currentItems, totalPages } = paginate(filteredRequests, currentPage, itemsPerPage);
+
   return (
     <View style={{ flex: 1, backgroundColor: '#F9FAFB' }}>
     <SafeAreaView style={{flex:1}}>
@@ -116,27 +116,18 @@ const index = () => {
                         onPress={() => navigate.goBack()}
                     ></Button>
             <View style={{ marginBottom: 20 }}>
-                <Text style={{ fontWeight: 'bold', fontSize: 20, marginBottom: 5 }}>Danh sách phiếu đăng kí thi công trong căn hộ</Text>
+                <Text style={{ fontWeight: 'bold', fontSize: 20, marginBottom: 5 }}>Danh sách phiếu đăng kí khách thăm</Text>
                 <Text>Thông tin những phiếu đăng kí trong bảng</Text>
             </View>
             <View style={styles.searchContainer}>
-                <View style={styles.searchWrapper}>
-                    <TextInput
-                         style={styles.searchInput}
-                         placeholderTextColor={'black'}
-                         placeholder="Tìm theo tên căn hộ"
-                         value={searchQuery}
-                         onChangeText={(text) => setSearchQuery(text)}
-                    />
-                </View>
-                {/* <TouchableOpacity style={styles.searchBtn} onPress={() => { }}>
-                    <Image
-                        source={icons.search}
-                        resizeMode="contain"
-                        style={styles.searchBtnIcon}
-                    ></Image>
-                </TouchableOpacity> */}
-            </View>
+            <TextInput
+              style={styles.searchInput}
+              placeholderTextColor={'black'}
+              placeholder="Tìm theo tên căn hộ"
+              value={searchQuery}
+              onChangeText={(text) => setSearchQuery(text)}
+            />
+          </View>
             <Dropdown
               style={styles.comboBox}
               placeholderStyle={{ fontSize: 14, }}
@@ -151,43 +142,56 @@ const index = () => {
                 setStatus(item.value);
               }}
             ></Dropdown>
-           
+            {overlaps.length > 0 &&<View style={{marginVertical:10, flexDirection:'row', alignItems:'center'}}>
+              <AlertCircle strokeWidth={3} color={'#9b2c2c'}></AlertCircle>
+             <Text style={{ fontWeight:'bold', fontSize:16
+            ,color:'#9b2c2c'}}>
+               Lưu ý: những lịch có màu đỏ là trùng lịch với lịch khác
+             </Text>
+             </View>}
             
             {isLoading && <ActivityIndicator size={'large'} color={'#171717'}></ActivityIndicator>}
-            {!filteredRequests.length? <Text style={{marginBottom:10, fontSize:18,fontWeight:'600'}}>Chưa có dữ liệu</Text>:
-                  <TableComponent headers={headers}>
-                    <FlatList data={currentItems}
-                    renderItem={({ item }) => 
-                    {
-                      return( 
-                        <TableRow>
-                        <Cell>{item.room.roomNumber}</Cell>
-                        <Cell>{item.name}</Cell>
-                        <Cell>{item.constructionOrganization}</Cell>
-                        <Cell>{moment.utc(item.startTime).format('DD-MM-YYYY')}</Cell>
-                        <Cell>{moment.utc(item.endTime).format('DD-MM-YYYY')}</Cell>
-                        <Cell>
-                          {item.status && 
-                           <Button text={statusForReceptionist?.[item.status as number].status}
-                           style={{borderRadius:20, backgroundColor:statusForReceptionist?.[item.status as number].color}}
-                           > </Button>}
-                       
-                        </Cell>
-                        <Cell>
-                                <Button text="Chi tiết"
-                                 onPress={()=>router.push({
-                                  pathname: `/web/Receptionist/services/construction/${item.id}`})}/>
-                        </Cell>
+            {!filteredRequests.length ? (
+            <Text style={{ marginBottom: 10, fontSize: 18, fontWeight: '600' }}>Chưa có dữ liệu</Text>
+          ) : (
+            <TableComponent headers={headers}>
+              <FlatList
+                data={currentItems}
+                renderItem={({ item }) => {
+                  return (
+                    <TableRow>
+                      <Cell>{item.room.roomNumber}</Cell>
+                      <Cell>{item.fullName}</Cell>
+                      <Cell>{moment.utc(item.arrivalTime).format('DD-MM-YYYY')}</Cell>
+                      <Cell>{moment.utc(item.departureTime).format('DD-MM-YYYY')}</Cell>
+                      <Cell>
+                        {item.status && (
+                          <Button
+                            text={statusForReceptionist?.[item.status as number].status}
+                            style={{
+                              borderRadius: 20,
+                              backgroundColor: statusForReceptionist?.[item.status as number].color,
+                            }}
+                          />
+                        )}
+                      </Cell>
+                      <Cell>
+                        <Button
+                          text="Chi tiết"
+                          onPress={() =>
+                            router.push({
+                              pathname: `/web/Receptionist/services/visitor/${item.id}`,
+                            })
+                          }
+                        />
+                      </Cell>
                     </TableRow>
-  
-                      )
-                }
-                       
-                      }
-                    keyExtractor={(item: Construction) => item.id}
-                /> 
-                
-              </TableComponent>  }
+                  );
+                }}
+                keyExtractor={(item: Visitor) => item.id}
+              />
+            </TableComponent>
+          )}
               <View style={{flexDirection:'row', alignItems:"center", justifyContent:'center', marginTop:20}}>
             <Button text="Trước"
             style={{width:50}}
@@ -203,6 +207,9 @@ const index = () => {
 </View>
   )
 }
+
+
+
 
 export default index
 const styles = StyleSheet.create({

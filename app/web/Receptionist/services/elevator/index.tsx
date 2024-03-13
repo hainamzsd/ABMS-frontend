@@ -160,7 +160,7 @@ const index = () => {
                   return (
                     <TableRow style={isOverlapping ? styles.overlap : {}}>
                       <Cell>{item.room.roomNumber}</Cell>
-                      <Cell>{moment.utc(item.startTime).format('YYYY-MM-DD')}</Cell>
+                      <Cell>{moment.utc(item.startTime).format('DD-MM-YYYY')}</Cell>
                       <Cell>{moment.utc(item.startTime).format('HH:mm')}</Cell>
                       <Cell>{moment.utc(item.endTime).format('HH:mm')}</Cell>
                       <Cell>
