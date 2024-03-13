@@ -3,56 +3,34 @@ import { View, Text, StyleSheet, TouchableOpacity, FlatList } from 'react-native
 import { SIZES, COLORS } from '../../../constants';
 import { posts } from '../../../constants/fakeData';
 import RoomItemCard from './roomItemCard';
+import { Link } from 'expo-router';
+import { ActivityIndicator } from 'react-native-paper';
 
 const RoomItem = (props: any) => {
-  const { floor, children } = props;
-  const handleCardPress = () => {
-    
-  }
+  const { floor, data, isLoading } = props;
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
+    <TouchableOpacity style={styles.container}>
+      {/* <View style={styles.header}>
         <Text style={styles.headerTitle}>Floor {floor}</Text>
         <TouchableOpacity>
           <Text style={styles.headerBtn}>Show all</Text>
         </TouchableOpacity>
-      </View>
+      </View> */}
 
-      {/* <View style={styles.cardsContainer}>
+      <View style={styles.cardsContainer}>
         {isLoading ? (
           <ActivityIndicator size='large' color={COLORS.primary} />
-        ) : error ? (
-          <Text>Something went wrong</Text>
+          // ) : error ? (
+          // <Text>Something went wrong</Text>
         ) : (
-          <FlatList
-            data={data}
-            renderItem={({ item }) => (
-              <PopularJobCard
-                item={item}
-                selectedJob={selectedJob}
-                handleCardPress={handleCardPress}
-              />
-            )}
-            keyExtractor={(item) => item.job_id}
-            contentContainerStyle={{ columnGap: SIZES.medium }}
-            horizontal
-          />
+          <Link href={`./rooms/${data.accountId}`}>
+            <RoomItemCard
+              item={data}
+            />
+          </Link>
         )}
-      </View> */}
-      <FlatList
-        data={posts}
-        renderItem={({ item }: { item: any }) => (
-          <RoomItemCard
-            item={item}
-            selectedJob={"selectedJob"}
-            handleCardPress={handleCardPress}
-          />
-        )}
-        keyExtractor={(item) => item.id}
-        contentContainerStyle={{ columnGap: SIZES.medium }}
-        horizontal
-      />
-    </View>
+      </View>
+    </TouchableOpacity>
   )
 }
 
@@ -75,7 +53,7 @@ const styles = StyleSheet.create({
     color: COLORS.gray,
   },
   cardsContainer: {
-    marginTop: SIZES.medium,
+    // marginTop: SIZES.xSmall,
   },
 
 })

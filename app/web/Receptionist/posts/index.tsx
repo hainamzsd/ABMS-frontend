@@ -10,7 +10,7 @@ const PostList = () => {
 
   return (
     <View style={{ flex: 1, backgroundColor: '#F9FAFB' }}>
-      <SafeAreaView >
+      <SafeAreaView style={{flex:1}}>
         <View style={{ paddingHorizontal: 30, paddingTop: 30 }}>
           <View style={{ marginBottom: 20 }}>
             <Text style={{ fontWeight: 'bold', fontSize: 20, marginBottom: 5 }}>Danh sách bài viết</Text>
