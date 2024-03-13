@@ -1,9 +1,69 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { View, TouchableOpacity, Image, Text, StyleSheet } from 'react-native'
 import { COLORS, SIZES, SHADOWS } from '../../../constants';
+import Toast from 'react-native-toast-message';
+import axios from 'axios';
+
+interface Account {
+    id:string,
+    buildingId?: string | null;
+    phoneNumber: string;
+    userName: string;
+    email: string;
+    fullName: string;
+    role: number;
+    avatar: string | null;
+    createUser: string;
+    createTime: string;
+    modifyUser: string | null;
+    modifyTime: string | null;
+    status: number;
+  }
 
 const RoomItemCard = (props: any) => {
     const { item } = props;
+    const [isLoading, setIsLoading] = useState(false);
+    const [data, setData] = useState<Account>();
+
+    useEffect(() => {
+        const fetchData = async () => {
+          setIsLoading(true);
+          try {
+            // Replace accountId ? 
+            const response = await axios.get(`https://abmscapstone2024.azurewebsites.net/api/v1/account/get/${item.accountId}`, {
+              timeout: 10000,
+            });
+            console.log(response);
+            if (response.status === 200) {
+                setData(response.data.data);
+            } else {
+              Toast.show({
+                type: 'error',
+                text1: 'Lỗi lấy thông tin căn hộ',
+                position: 'bottom'
+              })
+            }
+          } catch (error) {
+            if (axios.isCancel(error)) {
+              Toast.show({
+                type: 'error',
+                text1: 'Hệ thống lỗi! Vui lòng thử lại sau',
+                position: 'bottom'
+              })
+            }
+            console.error('Error fetching room data:', error);
+            Toast.show({
+              type: 'error',
+              text1: 'Lỗi lấy thông tin căn hộ',
+              position: 'bottom'
+            })
+          } finally {
+            setIsLoading(false); // Set loading state to false regardless of success or failure
+          }
+        };
+        fetchData();
+      }, []);
+
     return (
         <TouchableOpacity
             style={styles.container}
@@ -11,21 +71,19 @@ const RoomItemCard = (props: any) => {
             <TouchableOpacity style={styles.logoContainer}>
                 <Image
                     source={{
-                        uri: item.imageUrl
-                            ? item.imageUrl
-                            : "https://t4.ftcdn.net/jpg/05/05/61/73/360_F_505617309_NN1CW7diNmGXJfMicpY9eXHKV4sqzO5H.jpg",
+                        uri: "https://png.pngtree.com/png-vector/20190827/ourlarge/pngtree-home-house-apartment-building-office-flat-color-icon-vector-png-image_1701835.jpg",
                     }}
                     resizeMode='contain'
                     style={styles.logoImage}
                 />
             </TouchableOpacity>
             <Text style={styles.roomMaster} numberOfLines={1}>
-            Lê Thị Ánh
+                {data?.fullName}
             </Text>
 
             <View style={styles.infoContainer}>
                 <Text style={styles.roomNumber} numberOfLines={1}>
-                    Room 102
+                    {item?.roomNumber}
                 </Text>
             </View>
         </TouchableOpacity>
@@ -39,7 +97,7 @@ const styles = StyleSheet.create({
         padding: SIZES.large,
         backgroundColor: "#FFF",
         borderRadius: SIZES.medium,
-        borderWidth:1,
+        borderWidth: 1,
         borderColor: COLORS.gray2,
         justifyContent: "space-between",
         ...SHADOWS.medium,
