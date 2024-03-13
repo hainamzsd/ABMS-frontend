@@ -276,6 +276,7 @@ const RoomDetail = () => {
                     text1: 'Xóa thành viên thành công',
                     position: 'bottom'
                 })
+                fetchRoomMember();
             } else {
                 Toast.show({
                     type: 'error',
@@ -294,7 +295,6 @@ const RoomDetail = () => {
             console.error('Error deleting room member:', error);
             // setError('An error occurred. Please try again.');
         } finally {
-            fetchRoomMember();
             setIsLoading(false);
         }
     };
@@ -331,6 +331,7 @@ const RoomDetail = () => {
                 setFullName("");
                 setDob("");
                 setPhone("");
+                fetchRoomMember();
             }
             else {
                 Toast.show({
@@ -395,6 +396,39 @@ const RoomDetail = () => {
 
     const closeUpdate = () => {
         setIsUpdate(false);
+    }
+
+    const renderItem = ({ item }: any) => {
+        if (item?.status !== 0) {
+            return (
+                <View style={{ flexDirection: 'row', gap: SIZES.medium }}>
+                    <View style={{ borderWidth: 1, alignSelf: 'flex-start', padding: SIZES.xSmall, borderColor: COLORS.gray2, ...SHADOWS.small, borderRadius: SIZES.small, marginVertical: SIZES.xSmall - 2 }}>
+                        <View style={{ flexDirection: 'row', gap: 10 }}>
+                            <View style={{ flexDirection: 'column' }}>
+                                <Text style={{ fontWeight: 'bold' }}>{item.fullName}</Text>
+                                {item.isHouseholder ? <Badge colorScheme="danger" style={{ marginTop: 2 }}>Master</Badge> :
+                                    <Badge colorScheme="info" style={{ marginTop: 2 }}>Member</Badge>
+                                }
+                            </View>
+                            <Button text={isDetail ? 'Hide' : 'Detail'} onPress={toggleDetail} />
+                        </View>
+                    </View>
+
+                    {isDetail && <View style={{ borderWidth: 1, alignSelf: 'flex-start', padding: SIZES.small, borderColor: COLORS.gray2, ...SHADOWS.small, borderRadius: SIZES.small, marginVertical: SIZES.xSmall - 2 }}>
+                        <Text>Họ và tên: <Text style={{ fontWeight: 'bold' }}>{item.fullName}</Text></Text>
+                        <Text>Số điện thoại: <Text style={{ fontWeight: 'bold' }}>{item.phone}</Text></Text>
+                        <Text>Ngày sinh: <Text style={{ fontWeight: 'bold' }}>{item.dateOfBirth}</Text></Text>
+                        <Text>Giới tính: <Text style={{ fontWeight: 'bold' }}>{item.gender ? 'Nam' : 'Nữ'}</Text></Text>
+                        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+                            <Button text="Xoá thành viên" onPress={() => handleDeleteMember(item.id)} color={COLORS.buttonRed} />
+                            <Button text="Cập nhập" onPress={() => openUpdate(item)} color={COLORS.buttonYellow} />
+                        </View>
+                    </View>}
+                </View>
+            )
+        } else {
+            return (<></>)
+        }
     }
 
     return (
@@ -481,30 +515,7 @@ const RoomDetail = () => {
                         <View id='member' style={{ width: '100%', flexDirection: 'row', gap: SIZES.small, marginVertical: SIZES.xSmall - 2, justifyContent: 'space-between' }}>
                             <FlatList
                                 data={roomMembers}
-                                renderItem={({ item }: { item: any }) => (
-                                    <View style={{ flexDirection: 'row', gap: SIZES.medium }}>
-                                        <View style={{ borderWidth: 1, alignSelf: 'flex-start', padding: SIZES.xSmall, borderColor: COLORS.gray2, ...SHADOWS.small, borderRadius: SIZES.small, marginVertical: SIZES.xSmall - 2 }}>
-                                            <View style={{ flexDirection: 'row', gap: 10 }}>
-                                                <View style={{ flexDirection: 'column' }}>
-                                                    <Text style={{ fontWeight: 'bold' }}>{item.fullName}</Text>
-                                                    {item.isHouseholder ? <Badge colorScheme="danger" style={{ marginTop: 2 }}>Master</Badge> :
-                                                        <Badge colorScheme="info" style={{ marginTop: 2 }}>Member</Badge>
-                                                    }
-                                                </View>
-                                                <Button text={isDetail ? 'Hide' : 'Detail'} onPress={toggleDetail} />
-                                            </View>
-                                        </View>
-
-                                        {isDetail && <View style={{ borderWidth: 1, alignSelf: 'flex-start', padding: SIZES.small, borderColor: COLORS.gray2, ...SHADOWS.small, borderRadius: SIZES.small, marginVertical: SIZES.xSmall - 2 }}>
-                                            <Text>Họ và tên: <Text style={{ fontWeight: 'bold' }}>{item.fullName}</Text></Text>
-                                            <Text>Số điện thoại: <Text style={{ fontWeight: 'bold' }}>{item.phone}</Text></Text>
-                                            <Text>Ngày sinh: <Text style={{ fontWeight: 'bold' }}>{item.dateOfBirth}</Text></Text>
-                                            <Text>Giới tính: <Text style={{ fontWeight: 'bold' }}>{item.gender ? 'Nam' : 'Nữ'}</Text></Text>
-                                            <Button text="Xoá thành viên" onPress={() => handleDeleteMember(item.id)} color={COLORS.buttonRed} />
-                                            <Button style={{ marginTop: 4 }} text="Cập nhập" onPress={() => openUpdate(item)} color={COLORS.buttonYellow} />
-                                        </View>}
-                                    </View>
-                                )}
+                                renderItem={renderItem}
                                 keyExtractor={(item) => item?.id}
                                 contentContainerStyle={{ columnGap: SIZES.medium }}
                             />
