@@ -29,7 +29,6 @@ const RoomItemCard = (props: any) => {
         const fetchData = async () => {
           setIsLoading(true);
           try {
-            // Replace accountId ? 
             const response = await axios.get(`https://abmscapstone2024.azurewebsites.net/api/v1/account/get/${item.accountId}`, {
               timeout: 10000,
             });
