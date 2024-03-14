@@ -193,6 +193,17 @@
     "You dont have any visitor requests":"You dont have any visitor requests",
     "Unable to pick images, try again":"Unable to pick images, try again",
     "Brand":"Brand",
-    "If vehicle type is bicycle, license plate can leave blank":"If vehicle type is bicycle, license plate can leave blank"
+    "If vehicle type is bicycle, license plate can leave blank":"If vehicle type is bicycle, license plate can leave blank",
+    "Parking card request":"Parking card request",
+    "Error retrieving resident datas, try again later":"Error retrieving resident datas, try again later",
+    "Card owner":"Card owner",
+    "Choose card owner":"Choose card owner",
+    "Expire date":"Expire date",
+    "Card Details":"Card Details",
+    "Confirmation":"Confirmation",
+    "Do you want to cancle this card":"Do you want to cancle this card",
+    "Cancel card":"Cancel card",
+    "Choose card to cancel":"Choose card to delete",
+    "Cancel card successfuly":"Cancel card successfuly"
   }
 }

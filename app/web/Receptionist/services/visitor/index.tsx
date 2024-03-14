@@ -12,6 +12,8 @@ import { statusForReceptionist, statusUtility } from '../../../../../constants/s
 import { Dropdown } from 'react-native-element-dropdown'
 import { checkForOverlaps, checkOverlaps } from '../../../../../utils/checkOverlap'
 import { AlertCircle } from 'lucide-react-native'
+import { useAuth } from '../../../context/AuthContext'
+import { jwtDecode } from 'jwt-decode'
 
 interface Visitor{
     id: string;
@@ -34,31 +36,33 @@ const StatusData = [
   { label: "Yêu cầu đã phê duyệt", value: 3 },
   { label: "Yêu cầu đã từ chối", value: 4 },
 ]
-
+interface User{
+  id: string;
+  BuildingId:string;
+}
 const index = () => {
     const headers = ['Căn hộ', 'Tên khách thăm', 'Ngày tới', 'Ngày đi', 'Trạng thái',''];
     const [request, setRequest] = useState<Visitor[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [currentPage, setCurrentPage] = useState(1)
+    const {session} = useAuth(); 
+    const User:User = jwtDecode(session as string);
     const itemsPerPage = 7
     const [status, setStatus] = useState<number | null>(2) // null for approved, 2 for pending
-    const [overlaps, setOverlaps] = useState<any[]>([]);
     useEffect(() => {
       const fetchData = async () => {
         setIsLoading(true)
         setError(null)
   
         try {
-          let url = `https://abmscapstone2024.azurewebsites.net/api/v1/visitor/get-all`
+          let url = `https://abmscapstone2024.azurewebsites.net/api/v1/visitor/get-all?building_id=${User.BuildingId}`
           if (status !== null) {
-            url += `?status=${status}`
+            url += `&status=${status}`
           }
           const response = await axios.get(url, { timeout: 100000 })
           if (response.data.statusCode === 200) {
             setRequest(response.data.data)
-            const overlappingPairs = checkOverlaps(response.data.data);
-            setOverlaps(overlappingPairs);
       
           } else {
             Toast.show({
@@ -86,7 +90,7 @@ const index = () => {
       }
   
       fetchData()
-    }, [status])
+    }, [status,session])
  
 
   //search box
@@ -142,13 +146,6 @@ const index = () => {
                 setStatus(item.value);
               }}
             ></Dropdown>
-            {overlaps.length > 0 &&<View style={{marginVertical:10, flexDirection:'row', alignItems:'center'}}>
-              <AlertCircle strokeWidth={3} color={'#9b2c2c'}></AlertCircle>
-             <Text style={{ fontWeight:'bold', fontSize:16
-            ,color:'#9b2c2c'}}>
-               Lưu ý: những lịch có màu đỏ là trùng lịch với lịch khác
-             </Text>
-             </View>}
             
             {isLoading && <ActivityIndicator size={'large'} color={'#171717'}></ActivityIndicator>}
             {!filteredRequests.length ? (
@@ -247,7 +244,8 @@ const styles = StyleSheet.create({
         paddingHorizontal: SIZES.medium,
         borderWidth: 1,
         borderRadius: 10,
-        borderColor:'#9c9c9c'
+        borderColor:'#9c9c9c',
+        backgroundColor:'white'
     },
     searchBtn: {
         width: 50,

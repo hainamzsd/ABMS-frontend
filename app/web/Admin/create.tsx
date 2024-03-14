@@ -36,7 +36,7 @@ const validationSchema = Yup.object().shape({
       .required('Nhập lại mật khẩu không được trống')
       .oneOf([Yup.ref('password')], 'Mật khẩu không khớp'),
   });
-  
+
 
 
 const page = () => {
@@ -48,7 +48,31 @@ const page = () => {
     const [email, setEmail] = useState("");
     const [username, setUsername] = useState("");
     const [fullName, setFullName] = useState("");
-    
+
+    const createBuilding = async () => {
+        try {
+            const response = await axios.post('https://abmscapstone2024.azurewebsites.net/api/v1/building/create', {
+                name: "",
+                address: "",
+                number_of_floor: 0,
+                room_each_floor: 0
+            }, {
+                timeout: 10000,
+                headers: {
+                    'Authorization': `Bearer ${session}`
+                }
+            });
+            console.log(response.data)
+            return response.data.data;
+        }catch(error){
+            Toast.show({
+                type: 'error',
+                text1: 'Lỗi tạo tòa nhà! vui lòng thử lại sau',
+                position: 'bottom'
+            })
+        }
+            
+      }
   const [error, setError] = useState<string | null>(null);
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
     const handlePhoneChange = (phone: string) => {
@@ -62,75 +86,84 @@ const page = () => {
     const createAccount = async () => {
         setError(null);
         setValidationErrors({});
-
-        const bodyData={
-            building_id:"1",
-            phone:phoneNumber,
-            full_name:fullName,
-            user_name:username,
-            role:1,
-            password:password,
-            email:email,
-            avatar:""
-        }
-        console.log(bodyData)
-        try {
-            setIsLoading(true); // Set loading state to true
-            await validationSchema.validate({
+        const building_id = await createBuilding();
+        if(building_id){
+            const bodyData={
+                building_id:building_id,
                 phone:phoneNumber,
                 full_name:fullName,
                 user_name:username,
+                role:1,
                 password:password,
-                re_password:reEnterPassword,
                 email:email,
-            }, { abortEarly: false });
-            const response = await axios.post('https://abmscapstone2024.azurewebsites.net/api/v1/account/register', bodyData, {
-                timeout: 10000,
-                headers:{
-                    'Authorization': `Bearer ${session}`
+                avatar:""
+            }
+            console.log(bodyData)
+            try {
+                setIsLoading(true); // Set loading state to true
+                await validationSchema.validate({
+                    phone:phoneNumber,
+                    full_name:fullName,
+                    user_name:username,
+                    password:password,
+                    re_password:reEnterPassword,
+                    email:email,
+                }, { abortEarly: false });
+                const response = await axios.post('https://abmscapstone2024.azurewebsites.net/api/v1/account/register', bodyData, {
+                    timeout: 10000,
+                    headers:{
+                        'Authorization': `Bearer ${session}`
+                    }
+                });
+                if (response.data.statusCode == 200) {
+                    Toast.show({
+                        type: 'success',
+                        text1: 'Tạo tài khoản thành công',
+                        position:'bottom'
+                    })
+                    router.replace('/web/Admin/');
                 }
-            });
-            if (response.data.statusCode == 200) {
-                Toast.show({
-                    type: 'success',
-                    text1: 'Tạo tài khoản thành công',
-                    position:'bottom'
-                })
-                router.replace('/web/Admin/');
+                else {
+                    Toast.show({
+                        type: 'error',
+                        text1: 'Tạo tài khoản không thành công',
+                        position:'bottom'
+                    })
+                }
+            } catch (error:any) {
+                if (error.name === 'ValidationError') {
+                  const errors:any = {};
+                  error.inner.forEach((err: any) => {
+                    errors[err.path] = err.message;
+                  });
+                  setValidationErrors(errors);
+                }
+                if (axios.isCancel(error)) {
+                    Toast.show({
+                        type: 'error',
+                        text1: 'Lỗi hệ thống! vui lòng thử lại sau',
+                        position:'bottom'
+                    })
+                }
+                else{
+                    console.error('Error creating account:', error);
+                    Toast.show({
+                        type: 'error',
+                        text1: 'Lỗi tạo tài khoản',
+                        position:'bottom'
+                    })
+                }
+            } finally {
+                setIsLoading(false);
             }
-            else {
-                Toast.show({
-                    type: 'error',
-                    text1: 'Tạo tài khoản không thành công',
-                    position:'bottom'
-                })
-            }
-        } catch (error:any) {
-            if (error.name === 'ValidationError') {
-              const errors:any = {};
-              error.inner.forEach((err: any) => {
-                errors[err.path] = err.message;
-              });
-              setValidationErrors(errors);
-            }
-            if (axios.isCancel(error)) {
-                Toast.show({
-                    type: 'error',
-                    text1: 'Lỗi hệ thống! vui lòng thử lại sau',
-                    position:'bottom'
-                })
-            }
-            else{
-                console.error('Error creating account:', error);
-                Toast.show({
-                    type: 'error',
-                    text1: 'Lỗi tạo tài khoản',
-                    position:'bottom'
-                })
-            }
-        } finally {
-            setIsLoading(false);
         }
+       else{
+        Toast.show({
+            type: 'error',
+            text1: 'Lỗi tạo tòa nhà! vui lòng thử lại sau',
+            position: 'bottom'  
+        })
+       }
     };
     return (
         <View

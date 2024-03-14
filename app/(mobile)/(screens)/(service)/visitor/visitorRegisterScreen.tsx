@@ -295,7 +295,7 @@ const visitorRegisterScreen = () => {
                 content={t(errorText)}
                 onClose={() => setShowError(false)}
             ></AlertWithButton>
-            {<ProgressBar progress={uploadProgress} loading={uploadProgress > 0 && uploadProgress < 1} />}
+            {/* {<ProgressBar progress={uploadProgress} loading={uploadProgress > 0 && uploadProgress < 1} />} */}
             <LoadingComponent loading={loading}></LoadingComponent>
             <Header headerTitle={t("Register visitor")}></Header>
             <SafeAreaView style={{ backgroundColor: theme.background, flex: 1 }}>

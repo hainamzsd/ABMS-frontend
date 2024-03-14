@@ -193,6 +193,18 @@
     "Unsuccess":"Không thành công",
     "Unable to pick images, try again":"Không thể chọn ảnh, thử lại",
     "Brand":"Nhãn hiệu",
-    "If vehicle type is bicycle, license plate can leave blank":"Nếu loại xe là xe đạp, biển số xe có thể để trống"
+    "If vehicle type is bicycle, license plate can leave blank":"Nếu loại xe là xe đạp, biển số xe có thể để trống",
+    "Parking card request":"Yêu cầu thẻ gửi xe",
+    "Error retrieving resident datas, try again later":"Lỗi lấy dữ liệu cư dân, thử lại sau",
+    "Card owner":"Chủ thẻ",
+    "Choose card owner":"Chọn chủ thẻ",
+    "Expire date":"Ngày hết hạn",
+    "Bill details":"Chi tiết hóa đơn",
+    "Card Details":"Chi tiết thẻ",
+    "Confirmation":"Xác nhận",
+    "Do you want to cancle this card":"Bạn có muốn hủy thẻ này không",
+    "Cancel card":"Hủy thẻ",
+    "Choose card to cancel":"Chọn thẻ cần xóa",
+    "Cancel card successfuly":"Cancel card successfuly"
   }
 }

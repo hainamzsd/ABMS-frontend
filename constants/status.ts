@@ -19,6 +19,10 @@ const statusUtility: StatusUtility = {
 };
 
 const statusForReceptionist: StatusUtility = {
+  1: {
+    status: "Đã xác minh",
+    color: "#276749"
+  },
   2: {
     status: "Đang chờ",
     color: "#ca8a04"

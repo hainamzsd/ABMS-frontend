@@ -12,6 +12,8 @@ import { statusForReceptionist, statusUtility } from '../../../../../constants/s
 import { Dropdown } from 'react-native-element-dropdown'
 import { checkForOverlaps, checkOverlaps } from '../../../../../utils/checkOverlap'
 import { AlertCircle } from 'lucide-react-native'
+import { useAuth } from '../../../context/AuthContext'
+import { jwtDecode } from 'jwt-decode'
 
 interface Construction{
     id:string;
@@ -39,13 +41,17 @@ const StatusData = [
   { label: "Yêu cầu đã phê duyệt", value: 3 },
   { label: "Yêu cầu đã từ chối", value: 4 },
 ]
-
+interface User{
+  id: string;
+  BuildingId:string;
+}
 const index = () => {
     const headers = ['ID Căn hộ', 'Tên dự án', 'Đơn vị thi công', 'Ngày bắt đầu', 'Ngày kết thúc', 'Trạng thái',''];
     const [request, setRequest] = useState<Construction[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
-    const [overlapError, setOverlapError] = useState('');
+    const {session} = useAuth(); 
+    const User:User = jwtDecode(session as string);
     const [currentPage, setCurrentPage] = useState(1)
     const itemsPerPage = 7
     const [status, setStatus] = useState<number | null>(2) // null for approved, 2 for pending
@@ -55,9 +61,9 @@ const index = () => {
         setError(null)
   
         try {
-          let url = `https://abmscapstone2024.azurewebsites.net/api/v1/construction/get`
+          let url = `https://abmscapstone2024.azurewebsites.net/api/v1/construction/get?building_id=${User.BuildingId}`
           if (status !== null) {
-            url += `?status=${status}`
+            url += `&status=${status}`
           }
           const response = await axios.get(url, { timeout: 100000 })
           if (response.data.statusCode === 200) {
@@ -88,7 +94,7 @@ const index = () => {
       }
   
       fetchData()
-    }, [status])
+    }, [status,session])
 
     const [searchQuery, setSearchQuery] = useState('');
     const [filteredRequests, setFilteredRequests] = useState<Construction[]>([]);

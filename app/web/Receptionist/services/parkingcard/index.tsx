@@ -15,53 +15,66 @@ import { AlertCircle } from 'lucide-react-native'
 import { useAuth } from '../../../context/AuthContext'
 import { jwtDecode } from 'jwt-decode'
 
-interface Elevator{
-    id:string;
-    roomId:string;
-    startTime:Date;
-    endTime:Date;
-    status:Number;
-    room:{
-        id:string;
+interface ParkingCard{
+    id: string;
+    residentId: string;
+    licensePlate: string;
+    brand: string;
+    color: string;
+    type: number,
+    image: string,
+    expireDate: string,
+    note: string;
+    createUser: string;
+    createTime: Date,
+    modifyUser: string;
+    modifyTime: string;
+    status: number,
+    resident: {
+      id: string;
+      fullName:string;
+      room:{
         roomNumber:string;
-    }
-}
+      }
+  }
+  }
+  interface User{
+    id: string;
+    BuildingId:string;
+  }
 const StatusData = [
-  { label: "Yêu cầu chưa phê duyệt", value: 2 },
-  { label: "Yêu cầu đã phê duyệt", value: 3 },
-  { label: "Yêu cầu đã từ chối", value: 4 },
+  { label: "Thẻ chưa phê duyệt", value: 2 },
+  { label: "Thẻ đã xác minh", value: 1 },
+  { label: "Thẻ đã từ chối", value: 4 },
 ]
-interface User{
-  id: string;
-  BuildingId:string;
+const vehicleType: { [key: number]: string } ={
+    1: "Xe máy",
+    2: "Ô tô",
+    3: "Xe đạp"
 }
 const index = () => {
-    const headers = ['Căn hộ', 'Ngày bắt đầu', 'Giờ bắt đầu', 'Giờ kết thúc', 'Trạng thái',''];
-    const [request, setRequest] = useState<Elevator[]>([]);
-    const {session} = useAuth(); 
-    const User:User = jwtDecode(session as string);
+    const headers = ['Căn hộ', 'Họ và tên chủ thẻ', 'Loại xe', 'Ngày tạo', 'Trạng thái',''];
+    const [request, setRequest] = useState<ParkingCard[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
-    const [overlapError, setOverlapError] = useState('');
     const [currentPage, setCurrentPage] = useState(1)
     const itemsPerPage = 7
-    const [status, setStatus] = useState<number | null>(2) // null for approved, 2 for pending
-    const [overlaps, setOverlaps] = useState<any[]>([]);
+    const [status, setStatus] = useState<number | null>(2);
+    const {session} = useAuth(); 
+    const User:User = jwtDecode(session as string);
     useEffect(() => {
       const fetchData = async () => {
         setIsLoading(true)
         setError(null)
-  
+        
         try {
-          let url = `https://abmscapstone2024.azurewebsites.net/api/v1/elevator/get?building_id=${User.BuildingId}`
+          let url = `https://abmscapstone2024.azurewebsites.net/api/v1/parking-card/get?building_id=${User.BuildingId}`
           if (status !== null) {
             url += `&status=${status}`
           }
           const response = await axios.get(url, { timeout: 100000 })
           if (response.data.statusCode === 200) {
             setRequest(response.data.data)
-            const overlappingPairs = checkOverlaps(response.data.data);
-            setOverlaps(overlappingPairs);
       
           } else {
             Toast.show({
@@ -94,11 +107,12 @@ const index = () => {
 
   //search box
   const [searchQuery, setSearchQuery] = useState('');
-  const [filteredRequests, setFilteredRequests] = useState<Elevator[]>([]);
+  const [filteredRequests, setFilteredRequests] = useState<ParkingCard[]>([]);
   useEffect(() => {
     if (searchQuery.trim() !== '') {
       const filtered = request.filter(item =>
-        item.room.roomNumber.toLowerCase().includes(searchQuery.toLowerCase())
+        item.resident.room.roomNumber.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        item.resident.fullName.toLowerCase().includes(searchQuery.toLowerCase())
       );
       setFilteredRequests(filtered);
     } else {
@@ -119,14 +133,14 @@ const index = () => {
                         onPress={() => navigate.goBack()}
                     ></Button>
             <View style={{ marginBottom: 20 }}>
-                <Text style={{ fontWeight: 'bold', fontSize: 20, marginBottom: 5 }}>Danh sách phiếu đăng kí sử dụng thang máy</Text>
+                <Text style={{ fontWeight: 'bold', fontSize: 20, marginBottom: 5 }}>Danh sách phiếu đăng kí vé xe</Text>
                 <Text>Thông tin những phiếu đăng kí trong bảng</Text>
             </View>
             <View style={styles.searchContainer}>
             <TextInput
               style={styles.searchInput}
               placeholderTextColor={'black'}
-              placeholder="Tìm theo tên căn hộ"
+              placeholder="Tìm theo tên căn hộ hoặc tên chủ thẻ"
               value={searchQuery}
               onChangeText={(text) => setSearchQuery(text)}
             />
@@ -145,13 +159,7 @@ const index = () => {
                 setStatus(item.value);
               }}
             ></Dropdown>
-            {overlaps.length > 0 &&<View style={{marginVertical:10, flexDirection:'row', alignItems:'center'}}>
-              <AlertCircle strokeWidth={3} color={'#9b2c2c'}></AlertCircle>
-             <Text style={{ fontWeight:'bold', fontSize:16
-            ,color:'#9b2c2c'}}>
-               Lưu ý: những lịch có màu đỏ là trùng lịch với lịch khác
-             </Text>
-             </View>}
+           
             
             {isLoading && <ActivityIndicator size={'large'} color={'#171717'}></ActivityIndicator>}
             {!filteredRequests.length ? (
@@ -161,22 +169,19 @@ const index = () => {
               <FlatList
                 data={currentItems}
                 renderItem={({ item }) => {
-                  const isOverlapping = overlaps.some(
-                    overlap => overlap.first.id === item.id || overlap.second.id === item.id
-                  );
                   return (
-                    <TableRow style={isOverlapping ? styles.overlap : {}}>
-                      <Cell>{item.room.roomNumber}</Cell>
-                      <Cell>{moment.utc(item.startTime).format('DD-MM-YYYY')}</Cell>
-                      <Cell>{moment.utc(item.startTime).format('HH:mm')}</Cell>
-                      <Cell>{moment.utc(item.endTime).format('HH:mm')}</Cell>
+                    <TableRow>
+                      <Cell>{item.resident.room.roomNumber}</Cell>
+                      <Cell>{item.resident.fullName}</Cell>
+                      <Cell>{vehicleType[item.type]}</Cell>
+                      <Cell>{moment.utc(item.createTime).format('DD-MM-YYYY')}</Cell>
                       <Cell>
-                        {item.status && (
+                        {item?.status && (
                           <Button
-                            text={statusForReceptionist?.[item.status as number].status}
+                            text={statusForReceptionist[item?.status as number]?.status}
                             style={{
                               borderRadius: 20,
-                              backgroundColor: statusForReceptionist?.[item.status as number].color,
+                              backgroundColor: statusForReceptionist[item?.status as number]?.color,
                             }}
                           />
                         )}
@@ -186,7 +191,7 @@ const index = () => {
                           text="Chi tiết"
                           onPress={() =>
                             router.push({
-                              pathname: `/web/Receptionist/services/elevator/${item.id}`,
+                              pathname: `/web/Receptionist/services/parkingcard/${item.id}`,
                             })
                           }
                         />
@@ -194,7 +199,7 @@ const index = () => {
                     </TableRow>
                   );
                 }}
-                keyExtractor={(item: Elevator) => item.id}
+                keyExtractor={(item: ParkingCard) => item.id}
               />
             </TableComponent>
           )}
@@ -253,7 +258,8 @@ const styles = StyleSheet.create({
         paddingHorizontal: SIZES.medium,
         borderWidth: 1,
         borderRadius: 10,
-        borderColor:'#9c9c9c'
+        borderColor:'#9c9c9c',
+        backgroundColor:'white'
     },
     searchBtn: {
         width: 50,

@@ -16,6 +16,7 @@ import moment from 'moment';
 import ParkingCardDetail from '../../../../../components/resident/ParkingCardDetail';
 import CustomAlert from '../../../../../components/resident/confirmAlert';
 import Alert from '../../../../../components/resident/Alert';
+import { useNavigation } from 'expo-router';
 interface Room{
   roomNumber:string;
   id:string;
@@ -46,14 +47,14 @@ interface ParkingCard{
     fullName:string;
 }
 }
-const CardList = () => {
+const DeleteParkingCard = () => {
 
   const { t } = useTranslation();
   const { theme } = useTheme();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string>("");
-  const [showError, setShowError] = useState(false);
-
+  const [showError, setShowError] = useState(false);    
+  const navigation = useNavigation();
   const [data, setData] = useState<ParkingCard[]>([]);
   const isFocused = useIsFocused();
   const{session } = useSession();
@@ -122,35 +123,66 @@ const CardList = () => {
     fetchElevatorData();
     }
 }, [room, isFocused]); 
-const [isModalVisible, setModalVisible] = useState(false);
-// State to manage the currently selected item for detail
-const [selectedItem, setSelectedItem] = useState<ParkingCard|null>(null);
 
-// Function to open modal with item details
-const openModal = (item:ParkingCard) => {
-  setSelectedItem(item);
-  setModalVisible(true);
+
+const [disableBtn, setDisableBtn] = useState(false);
+const [showDeleteMsg, setShowDeleteMsg] = useState(false);
+const [confirmBox, setShowConfirmBox] = useState(false);
+const handleDeleteCard = async (id:string) => {
+  setDisableBtn(true);
+  setIsLoading(true);
+  setError("");
+  try {
+      const response = await axios.delete(
+          `https://abmscapstone2024.azurewebsites.net/api/v1/parking-card/delete/${id}`, {
+          timeout: 10000,
+          headers:{
+              'Authorization': `Bearer ${session}`
+            }
+      }
+      );
+      console.log(response);
+      if (response.data.statusCode == 200) {
+          setShowConfirmBox(false);
+          setShowDeleteMsg(true);
+          setTimeout(() => {
+              setShowDeleteMsg(false);
+              navigation.goBack();
+            }, 2000);
+      }
+      else {
+          setShowError(true);
+          setError(t("System error please try again later"));
+      }
+  } catch (error) {
+      if (axios.isCancel(error)) {
+          setShowError(true);
+          setError(t("System error please try again later"));
+      }
+      console.error('Error fetching data:', error);
+      setShowError(true);
+      setError(t("System error please try again later"));
+  } finally {
+      setDisableBtn(false);
+      setIsLoading(false);
+  }
 };
-
-// Function to close the modal
-const closeModal = () => {
-  setSelectedItem(null);
-  setModalVisible(false);
-};
-
   return (
     <>
        <AlertWithButton 
       title={t("Error")}
       visible={showError}
       content={error} onClose={() =>setShowError(false)}></AlertWithButton>
+      
+            <Alert title={t("Successful")} content={t("Cancel card successfuly")}
+            visible={showDeleteMsg}></Alert>
       <LoadingComponent loading={isLoading}></LoadingComponent>
       <Header headerTitle={t("Manage parking card")} />
       <SafeAreaView style={{ backgroundColor: theme.background, flex: 1 }}>
         <View style={{ paddingHorizontal: 26 }}>
           <View style={{ marginTop: 20 }}>
             <Text style={{ marginBottom: 5, fontSize: 20, fontWeight: 'bold' }}>{t("Registered card")}</Text>
-            <Text>{t("Card has been verified")}</Text>
+            <Text>{t("Choose card to cancel")}</Text>
           </View>
          
           {data.length>0 &&
@@ -159,9 +191,15 @@ const closeModal = () => {
                     style={{marginTop:10}}
                     renderItem={({item}:{item:ParkingCard}) => {return(
                       <TouchableOpacity
-                      onPress={() => openModal(item)}
+                      onPress={() => setShowConfirmBox(true)}
                       >
-                       
+                       <CustomAlert title={t("Confirmation")} 
+            content={t("Do you want to cancle this card")+"?"}
+            visible={confirmBox}
+            onClose={() => setShowConfirmBox(false)}
+            onConfirm={()=>handleDeleteCard(item.id)}
+            disable={disableBtn}
+            ></CustomAlert>
                       <View style={styles.cardContainer}
                      
                       >
@@ -190,14 +228,7 @@ const closeModal = () => {
                    />
                  
                    }
-                     {selectedItem && (
-                    <ParkingCardDetail
-                      visible={isModalVisible}
-                      item={selectedItem}
-                      onRequestClose={closeModal}
-                     
-                    />
-                  )}
+                    
          
         </View>
       </SafeAreaView>
@@ -245,4 +276,4 @@ const styles = StyleSheet.create({
 })
 
 
-export default CardList
+export default DeleteParkingCard
