@@ -20,7 +20,7 @@ const RoomDetail = () => {
     // STATE
     const [isLoading, setIsLoading] = useState(false);
     const [roomData, setRoomData] = useState<Room>();
-    const [buildings, setBuildings] = useState<Building[]>();
+    const [building, setBuilding] = useState<Building>();
     const [roomNumber, setRoomNumber] = useState("");
     const [buildingId, setBuildingId] = useState("");
     const [roomArea, setRoomArea] = useState("");
@@ -40,57 +40,62 @@ const RoomDetail = () => {
     const { session } = useAuth();
 
     useEffect(() => {
-        const fetchRoom = async () => {
-            setIsLoading(true);
-            try {
-                const response = await axios.get(`https://abmscapstone2024.azurewebsites.net/api/v1/resident-room/get/${item?.roomDetail}`, {
-                    timeout: 10000,
-                });
-                if (response.status === 200) {
-                    setRoomNumber(response.data.data.roomNumber);
-                    setBuildingId(response.data.data.buildingId);
-                    setRoomArea(response.data.data.roomArea);
-                    setNumberOfResident(response.data.data.numberOfResident);
-                    setRoomData(response.data.data);
-                } else {
-                    Toast.show({
-                        type: 'error',
-                        text1: 'Lỗi lấy thông tin căn hộ',
-                        position: 'bottom'
-                    })
-                }
-            } catch (error) {
-                if (axios.isCancel(error)) {
-                    Toast.show({
-                        type: 'error',
-                        text1: 'Hệ thống lỗi! Vui lòng thử lại sau',
-                        position: 'bottom'
-                    })
-                }
-                console.error('Error fetching room data:', error);
+        fetchRoom();
+        fetchRoomMember();
+    }, []); // Chỉ gọi fetchRoom và fetchRoomMember khi component mount
+
+    useEffect(() => {
+        fetchBuilding(); // Gọi fetchBuilding mỗi khi buildingId thay đổi
+    }, [buildingId]);
+
+    const fetchRoom = async () => {
+        setIsLoading(true);
+        try {
+            const response = await axios.get(`https://abmscapstone2024.azurewebsites.net/api/v1/resident-room/get/${item?.roomDetail}`, {
+                timeout: 10000,
+            });
+            if (response.status === 200) {
+                setRoomNumber(response.data.data.roomNumber);
+                setBuildingId(response.data.data.buildingId);
+                setRoomArea(response.data.data.roomArea);
+                setNumberOfResident(response.data.data.numberOfResident);
+                setRoomData(response.data.data);
+            } else {
                 Toast.show({
                     type: 'error',
                     text1: 'Lỗi lấy thông tin căn hộ',
                     position: 'bottom'
                 })
-            } finally {
-                setIsLoading(false); // Set loading state to false regardless of success or failure
             }
-        };
-        fetchRoom();
-        fetchRoomMember();
-        fetchBuildings();
-    }, []);
+        } catch (error) {
+            if (axios.isCancel(error)) {
+                Toast.show({
+                    type: 'error',
+                    text1: 'Hệ thống lỗi! Vui lòng thử lại sau',
+                    position: 'bottom'
+                })
+            }
+            console.error('Error fetching room data:', error);
+            Toast.show({
+                type: 'error',
+                text1: 'Lỗi lấy thông tin căn hộ',
+                position: 'bottom'
+            })
+        } finally {
+            setIsLoading(false); // Set loading state to false regardless of success or failure
+        }
+    };
 
-    // GET: all buildings
-    const fetchBuildings = async () => {
+    // GET: building
+    const fetchBuilding = async () => {
         setIsLoading(true);
         try {
-            const response = await axios.get(`https://abmscapstone2024.azurewebsites.net/api/v1/building/get`, {
+            const response = await axios.get(`https://abmscapstone2024.azurewebsites.net/api/v1/building/get/${buildingId}`, {
                 timeout: 10000,
             });
+            console.log(response);
             if (response.status === 200) {
-                setBuildings(response.data.data)
+                setBuilding(response.data.data);
             } else {
                 Toast.show({
                     type: 'error',
@@ -513,7 +518,7 @@ const RoomDetail = () => {
                                     Toà nhà
                                 </Text>
                                 <Text style={{ color: '#9c9c9c', fontSize: 12, marginBottom: 6, }}>Số căn hộ không được trống.</Text>
-                                <Box>
+                                {/* <Box>
                                     <Select
                                         selectedValue={buildingId}
                                         minWidth="100%"
@@ -531,7 +536,13 @@ const RoomDetail = () => {
                                             <Select.Item key={item?.id} label={item?.name} value={item?.id} />
                                         ))}
                                     </Select>
-                                </Box>
+                                </Box> */}
+                                <Input
+                                    value={building?.name}
+                                    style={[{ width: "100%", backgroundColor: COLORS.buttonDisable }]}
+                                    editable={false}
+                                
+                                ></Input>
                             </View>
                         </View>
                         <View>

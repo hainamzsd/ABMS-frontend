@@ -37,6 +37,7 @@ export const COLORS = {
   lightWhite: "#FAFAFC",
   buttonRed: "#891652",
   buttonYellow: "#FFC700",
+  buttonDisable: "#E0E0E0",
 };
 
 export const SIZES = {
