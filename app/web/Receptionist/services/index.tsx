@@ -29,12 +29,12 @@ const data:Services[] = [
    description: 'Tiếp nhận các đơn đăng kí để xe tại chung cư',
     footerText: 'Truy cập',
    imageUrl: require('../../../../assets/images/garage-car.png'),
-   href: '/web/Receptionist/services/elevator/'},
+   href: '/web/Receptionist/services/parkingcard/'},
    { id: '4', title: 'Quản lý đăng kí khách thăm', 
    description: 'Tiếp nhận các đơn đăng kí khách thăm từ cư dân',
     footerText: 'Truy cập',
    imageUrl: require('../../../../assets/images/id-card.png'),
-   href: '/web/Receptionist/services/elevator/' },
+   href: '/web/Receptionist/services/visitor/' },
   // Add more items...
 ];
 interface CardData {

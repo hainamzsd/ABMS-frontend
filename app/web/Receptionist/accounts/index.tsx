@@ -1,4 +1,4 @@
-import { Link, Redirect } from "expo-router";
+import { Link, Redirect, useNavigation } from "expo-router";
 import { SafeAreaView, Text, View, ScrollView, TextInput, TouchableOpacity, Image, FlatList, ActivityIndicator } from "react-native";
 import Button from "../../../../components/ui/button";
 import { Cell, TableComponent, TableRow } from "../../../../components/ui/table";
@@ -60,9 +60,26 @@ export default function AccountManagement() {
 
         fetchData();
     }, []);
-    const [currentPage, setCurrentPage] = useState(1)
     const itemsPerPage = 7 
-    const { currentItems, totalPages } = paginate(accountData, currentPage, itemsPerPage)
+    //search box
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filteredRequests, setFilteredRequests] = useState<Account[]>([]);
+  useEffect(() => {
+    if (searchQuery.trim() !== '') {
+      const filtered = accountData.filter(item =>
+        item.fullName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        item.phoneNumber.includes(searchQuery) // Assuming phone numbers are stored as strings
+      );
+      setFilteredRequests(filtered);
+    } else {
+      setFilteredRequests(accountData);
+    }
+  }, [searchQuery, accountData]);
+   //paging
+   const navigate = useNavigation();
+   const [currentPage, setCurrentPage] = useState(1)
+   const { currentItems, totalPages } = paginate(filteredRequests, currentPage, itemsPerPage);
+
     return (
         <View style={{ flex: 1, backgroundColor: '#F9FAFB' }}>
             <SafeAreaView style={{flex:1}}>
@@ -77,10 +94,11 @@ export default function AccountManagement() {
                     <View style={styles.searchContainer}>
                         <View style={styles.searchWrapper}>
                             <TextInput
-                                style={styles.searchInput}
-                                placeholder="Tìm tên tài khoản"
-                                value=""
-                                onChange={() => { }}
+                                 style={styles.searchInput}
+                                 placeholderTextColor={'black'}
+                                 placeholder="Tìm theo theo họ tên hoặc số điện thoại"
+                                 value={searchQuery}
+                                 onChangeText={(text) => setSearchQuery(text)}
                             />
                         </View>
                         {/* <TouchableOpacity style={styles.searchBtn} onPress={() => { }}>
@@ -92,9 +110,9 @@ export default function AccountManagement() {
                         </TouchableOpacity> */}
                     </View>
                     {isLoading && <ActivityIndicator size={'large'} color={'#171717'}></ActivityIndicator>}
-                    {!accountData ? <Text style={{marginBottom:10, fontSize:18,fontWeight:'600'}}>Chưa có dữ liệu</Text>:
+                    {!filteredRequests.length ? <Text style={{marginBottom:10, fontSize:18,fontWeight:'600'}}>Chưa có dữ liệu</Text>:
                           <TableComponent headers={headers}>
-                            <FlatList data={accountData}
+                            <FlatList data={currentItems}
                             renderItem={({ item }) => <TableRow>
                                 <Cell>{item.fullName}</Cell>
                                 <Cell>{item.phoneNumber}</Cell>

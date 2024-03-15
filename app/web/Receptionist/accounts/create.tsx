@@ -5,12 +5,17 @@ import { ScrollView } from 'react-native';
 import Button from '../../../../components/ui/button';
 import Input from '../../../../components/ui/input';
 import styles from './styles';
+import { Select } from "native-base";
+import "react-datepicker/dist/react-datepicker.css";
 import axios from 'axios';
 import Toast from 'react-native-toast-message';
 import { Avatar } from 'react-native-paper';
 import * as Yup from 'yup'
 import { validatePassword } from '../../../../utils/passwordValidate';
 import { useAuth } from '../../context/AuthContext';
+import { CheckIcon } from 'lucide-react-native';
+import DatePicker from '../../../../components/ui/datepicker';
+import { Dropdown } from 'react-native-element-dropdown';
 
 const validationSchema = Yup.object().shape({
     email: Yup.string().email('Email không hợp lệ').required('Email không được trống'),
@@ -31,10 +36,16 @@ const validationSchema = Yup.object().shape({
       re_password: Yup.string()
       .required('Nhập lại mật khẩu không được trống')
       .oneOf([Yup.ref('password')], 'Mật khẩu không khớp'),
+      gender: Yup.boolean().required('Giới tính không được trống'),
+      dob: Yup.date().required('Ngày sinh không được trống')
   });
   
 
-
+  const Gender = [
+    { label: "Nam", value: true },
+    { label: "Nữ", value: false },
+  ]
+  
 const page = () => {
     const navigation = useNavigation();
     const { session } = useAuth();
@@ -44,6 +55,8 @@ const page = () => {
     const [email, setEmail] = useState("");
     const [username, setUsername] = useState("");
     const [fullName, setFullName] = useState("");
+    const [gender, setGender] = useState();
+    const [dob, setDob] = useState(new Date());
     
   const [error, setError] = useState<string | null>(null);
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
@@ -79,6 +92,8 @@ const page = () => {
                 password:password,
                 re_password:reEnterPassword,
                 email:email,
+                gender:gender,
+                dob:dob
             }, { abortEarly: false });
             const response = await axios.post('https://abmscapstone2024.azurewebsites.net/api/v1/account/register', bodyData, {
                 timeout: 10000,
@@ -149,7 +164,7 @@ const page = () => {
                         <Text style={{ fontWeight: "bold", fontSize: 20, marginBottom: 5 }}>
                             Tạo thông tin tài khoản
                         </Text>
-                        <Text>Thông tin tài khoản của cư dân</Text>
+                        <Text>Thông tin tài khoản của chủ căn hộ</Text>
                     </View>
                     <View>
                         <Text style={{ marginBottom: 10, fontWeight: "600", fontSize: 16 }}>
@@ -210,7 +225,39 @@ const page = () => {
                             <Text style={styles.errorText}>{validationErrors.re_password}</Text>
                         )}
                     </View>
+                    {/* <View>
+                        <Text style={{ marginBottom: 10, fontWeight: "600", fontSize: 16 }}>
+                            Ngày, tháng, năm sinh
+                        </Text>
+                        <DatePicker
+                selectedDate={dob}
+                onDateChange={setDob}
+            />    {validationErrors.dob && (
+                            <Text style={styles.errorText}>{validationErrors.dob}</Text>
+                        )}
+                    </View>
                     <View>
+                        <Text style={{ marginBottom: 10, fontWeight: "600", fontSize: 16 }}>
+                            Giới tính
+                        </Text>
+                        <Dropdown
+                            style={styles.customInput}
+                            placeholderStyle={{ fontSize: 14, }}
+                            placeholder={"Chọn giới tính"}
+                            data={Gender}
+                            value={gender}
+                            search={false}
+                            labelField="label"
+                            valueField="value"
+                            onChange={(item: any) => {
+                                setGender(item.value);
+                            }}
+                        ></Dropdown>
+                            {validationErrors.gender && (
+                            <Text style={styles.errorText}>{validationErrors.gender}</Text>
+                        )}
+                    </View> */}
+                    <View> 
                         <Text style={{ marginBottom: 10, fontWeight: "600", fontSize: 16 }}>
                             Email
                         </Text>

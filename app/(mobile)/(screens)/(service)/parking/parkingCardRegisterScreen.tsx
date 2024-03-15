@@ -1,28 +1,134 @@
 import { View, Text, StyleSheet, SafeAreaView, TextInput, Pressable, SectionList, Button, Image } from 'react-native'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import SHADOW from '../../../../../constants/shadow'
 import LoadingComponent from '../../../../../components/resident/loading'
 import Header from '../../../../../components/resident/header'
 import { ScrollView } from 'react-native'
-import { Camera, Info, X } from 'lucide-react-native'
+import { Camera, Info, UserCircle, X } from 'lucide-react-native'
 import Label from '../../../../../components/resident/lable'
 import { useTheme } from '../../../context/ThemeContext'
 import { useTranslation } from 'react-i18next'
 import { Dropdown } from 'react-native-element-dropdown'
 import * as ImagePicker from 'expo-image-picker';
-
+import * as yup from 'yup'
+import { useSession } from '../../../context/AuthContext'
+import { jwtDecode } from 'jwt-decode'
+import { generateRandomGUID } from '../../../../../utils/guid'
+import { firebase } from '../../../../../config';
+import axios from 'axios'
+import CustomAlert from '../../../../../components/resident/confirmAlert'
+import AlertWithButton from '../../../../../components/resident/AlertWithButton'
+import moment from 'moment'
 interface ImageInfo {
   uri: string;
   name: string | null | undefined;
   type: "image" | "video" | undefined;
 }
 
+interface user {
+  FullName: string;
+  PhoneNumber: string;
+  Id: string;
+  Avatar: string;
+}
+
+interface Room {
+  roomNumber: string;
+  id: string;
+  residents:Resident[]
+}
+interface Resident{
+  id:string;
+  fullName:string;
+}
+const parkingCardSchema = yup.object().shape({
+  color: yup.string().required("This field is required"),
+  brand: yup.string().required("This field is required"), 
+  note: yup.string().required("This field is required"), // Optional field with max length validation
+});
+
+
 const parkingCardRegisterScreen = () => {
+  const [loading, setLoading] = useState(false);
+  const { theme } = useTheme();
+  const { t } = useTranslation();
+  const { session } = useSession();
+  const user: user = jwtDecode(session as string);
+  const [errors, setErrors] = useState<any>({});
+  const [showError, setShowError] = useState(false);
+  const [errorText, setErrorText] = useState(t("System error please try again later"));
+  const [residentId,setResidentId]= useState("");
+  const [color,setColor] = useState("");
+  const [brand,setBrand] = useState("");
+  const [note,setNote] = useState("");
+  const [selectedImages, setSelectedImages] = useState<ImageInfo[]>([])
+  const [licensePlate, setLicensePlate] = useState("");
+  const [showSuccess, setShowSuccess] = useState(false);
+    const [showConfirm, setShowConfirm] = useState(false);
+    const vehicleTypeList = [
+      { label: t("Car"), value: "2" },
+      { label: t("Motorbike"), value: "1" },
+      { label: t("Bicycle"), value: "3" },
+    ]
+    const [residents, setResidents] = useState<Resident[]>([]);
+ 
+  const [vehicleTypes, setVehicleTypes] = useState("");
+
+  const [isLicensePlateRequired, setIsLicensePlateRequired] = useState(true); 
+
+  useEffect(() => {
+    setIsLicensePlateRequired(vehicleTypes !== "3");
+  }, [vehicleTypes]);
+    const isButtonDisabled = !color || !brand || !note || selectedImages.length === 0 ||  !vehicleTypes;
+  const [room, setRoom] = useState<Room[]>([]);
+  useEffect(() => {
+      const fetchData = async () => {
+          setErrorText("");
+          try {
+              setLoading(true);
+              const response = await axios.get(
+                  `https://abmscapstone2024.azurewebsites.net/api/v1/resident-room/get?accountId=${user.Id}`, {
+                  timeout: 10000
+              }
+              );
+              console.log(response);
+              if (response.data.statusCode == 200) {
+                  // setRoom(response?.data?.data);
+                  // if(room[0]?.residents.length>0){
+                  //     setResidents(room[0].residents);
+                  // }
+                  // else{
+                  //   setShowError(true);
+                  //   setErrorText(t("Error retrieving resident datas, try again later"));
+                  //   return;
+                  // }
+                  setResidents(response?.data?.data[0].residents);
+              }
+              else {
+                  setShowError(true);
+                  setErrorText(t("System error please try again later"));
+                  return;
+              }
+          } catch (error) {
+              if (axios.isCancel(error)) {
+                  setShowError(true);
+                  setErrorText(t("System error please try again later"));
+              }
+              console.error('Error fetching data:', error);
+              setShowError(true);
+              setErrorText(t("System error please try again later"));
+          } finally {
+              setLoading(false);
+          }
+      };
+
+      fetchData();
+  }, [session]);
   const pickImages = async () => {
     const options: any = {
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowEditing: true,
-      aspect: [4, 3],
+      aspect: [16, 9],
       quality: 1,
       allowsMultipleSelection: true,
       selectionLimit: 20,
@@ -49,27 +155,128 @@ const parkingCardRegisterScreen = () => {
     }
   };
 
-  const [selectedImages, setSelectedImages] = useState<ImageInfo[]>([])
+  const uploadImage = async (images:string[]) => {
+    try {
+        const randomGuid=generateRandomGUID();
+        const folderPath = `parking/${randomGuid}`;
+        let uploadPromises = images.map(async (image, index) => {
+            const response = await fetch(image);
+            const blob = await response.blob();
+            const timestamp = new Date().getTime();
+            const fileName = `${timestamp}-${index}-${image.split('/').pop()}`; // Ensuring unique filenames
+            const fileRef = firebase.storage().ref(`${folderPath}/${fileName}`);
+            await fileRef.put(blob);
+            return fileRef.getDownloadURL();
+        });
+  
+        const downloadURLs = await Promise.all(uploadPromises);
+  
+        const imagesRef = firebase.database().ref(`imageFolders/${folderPath}`);
+        await imagesRef.set({
+            images: downloadURLs
+        });
+        return `/imageFolders/${folderPath}/images`;
+  
+    } catch (error) {
+        console.error('Error uploading images:', error);
+        setShowError(true);
+        setErrorText("System error please try again later.");
+    }
+  };
   const removeImage = (index: number) => {
     const newSelectedImages = [...selectedImages]; // Create a copy to avoid mutation
     newSelectedImages.splice(index, 1);
     setSelectedImages(newSelectedImages);
   };
 
-  const [loading, setLoading] = useState(false);
-  const { theme } = useTheme();
-  const { t } = useTranslation();
-  const vehicleTypeList = [
-    { label: t("Car"), value: "Car" },
-    { label: t("Motorbike"), value: "Motorbike" },
-    { label: t("Bicycle"), value: "Bicycle" },
-  ]
-  const [vehicleTypes, setVehicleTypes] = useState(null);
-  const isButtonDisabled = false;
+  const [disableBtn, setDisableBtn] = useState(false);
+  const handleSubmit = async () => {
+    const currentDate = new Date();
+    const expirationDate = new Date(currentDate.setMonth(currentDate.getMonth() + 12));
+      try {
+          setDisableBtn(true);
+          setShowConfirm(false);
+          setLoading(true);
+          const url =await uploadImage(selectedImages.map((image) => image.uri));
+          await parkingCardSchema.validate({
+            color:color,
+            brand: brand,
+            note: note,
+          }, { abortEarly: false });
+        const body = {
+          resident_id: residentId,
+          license_plate: vehicleTypes==="3"?"Xe dap":licensePlate,
+          brand: brand,
+          color: color,
+          type: Number(vehicleTypes),
+          image: url,
+          expire_date: moment.utc(expirationDate).format("YYYY-MM-DD"),
+          note: note
+        };
+        console.log(body);
+        if (url) {
+          const response = await axios.post('https://abmscapstone2024.azurewebsites.net/api/v1/parking-card/create', body, {
+                  timeout: 10000,
+                  headers: {
+                      'Authorization': `Bearer ${session}`
+                  }
+              },
+              );
+              if (response.data.statusCode == 200) {
+                  setShowSuccess(true);
+                  setColor("");
+                  setBrand("");
+                  setNote("");
+                  setLicensePlate("");
+                  setSelectedImages([]);
+              }
+              else {
+                  setShowError(true);
+                  setErrorText(t("Failed to create request, try again later") + ".");
+                  return;
+              }
+          }
+          else {
+              setShowError(true);
+              setErrorText(t("Error uploading images"));
+              return;
+          }
+      } catch (error: any) {
+          console.error(error);
+          const validationErrors: any = {};
+          error.inner.forEach((err: any) => {
+              validationErrors[err.path] = err.message;
+          });
+          setErrors(validationErrors);
+      } finally {
+          setLoading(false);
+          setDisableBtn(false);
+      }
+  };
   return (
     <>
+     <CustomAlert
+                visible={showConfirm}
+                title={t("Confirm")}
+                content={t("Do you confirm your request") + "?"}
+                onClose={() => setShowConfirm(false)}
+                onConfirm={handleSubmit}
+                disable={disableBtn}
+            />
+            <AlertWithButton
+                visible={showSuccess}
+                title={t("Request successful")}
+                content={t("Your request has been created successfuly, please wait for the receptionist to confirm") + "."}
+                onClose={() => setShowSuccess(false)}
+            ></AlertWithButton>
+            <AlertWithButton
+                visible={showError}
+                title={t("Error")}
+                content={t(errorText)}
+                onClose={() => setShowError(false)}
+            ></AlertWithButton>
       <LoadingComponent loading={loading}></LoadingComponent>
-      <Header headerTitle={t("Elevator request")}></Header>
+      <Header headerTitle={t("Parking card request")}></Header>
       <SafeAreaView style={{ backgroundColor: theme.background, flex: 1 }}>
         <ScrollView automaticallyAdjustKeyboardInsets={true}>
           <View style={{ marginHorizontal: 26, paddingVertical: 20 }}>
@@ -83,6 +290,27 @@ const parkingCardRegisterScreen = () => {
               <Text>{t("The information will be used to register for parking in the apartment")}</Text>
             </View>
             <View style={{ marginTop: 20 }}>
+              <Label text={t("Choose card owner")} required></Label>
+              {residents.length>0 &&
+                 <Dropdown
+                 style={styles.comboBox}
+                 placeholderStyle={{ fontSize: 14 }}
+                 placeholder={t("Card owner")}
+                 itemContainerStyle={{ borderRadius: 10, borderTopWidth: 0.5, borderColor: '#9c9c9c' }}
+                 itemTextStyle={{ fontSize: 14 }}
+                 renderLeftIcon={() => <UserCircle color={"black"} style={{ marginRight: 5 }}></UserCircle>}
+                 data={residents}
+                 value={residentId}
+                 search={false}
+                 labelField="fullName"
+                 valueField="id"
+                 onChange={(item) => {
+                   setResidentId(item.id);
+                 }}
+               ></Dropdown>}
+           
+            </View>
+            <View style={{ marginTop: 20 }}>
               <Label text={t("Vehicle type")} required></Label>
               <Dropdown
                 style={styles.comboBox}
@@ -91,12 +319,13 @@ const parkingCardRegisterScreen = () => {
                 itemContainerStyle={{ borderRadius: 10, borderTopWidth: 0.5, borderColor: '#9c9c9c' }}
                 itemTextStyle={{ fontSize: 14 }}
                 data={vehicleTypeList}
-                value={vehicleTypeList}
+                value={vehicleTypes}
                 search={false}
                 labelField="label"
                 valueField="value"
-                onChange={(item: any) => {
+                onChange={(item) => {
                   setVehicleTypes(item.value);
+                  setIsLicensePlateRequired(item.value !== "3"); 
                 }}
               ></Dropdown>
             </View>
@@ -107,16 +336,37 @@ const parkingCardRegisterScreen = () => {
                   placeholder={t("Type") + "..."}
                   placeholderTextColor={"#9C9C9C"}
                   style={[styles.textInput]}
+                  value={color}
+                  onChangeText={setColor}
                 />
               </View>
+              {errors.color && <Text style={styles.errorText}>{t(errors.color)}</Text>}
             </View>
             <View style={{ marginTop: 20 }}>
-              <Label required text={t("License plate")}></Label>
+              <Label required text={t("Brand")}></Label>
               <View style={[styles.inputContainer]}>
                 <TextInput
                   placeholder={t("Type") + "..."}
                   placeholderTextColor={"#9C9C9C"}
                   style={[styles.textInput]}
+                  value={brand}
+                  onChangeText={setBrand}
+                />
+              </View>
+              {errors.brand && <Text style={styles.errorText}>{t(errors.brand)}</Text>}
+            </View>
+            <View style={{ marginTop: 20 }}>
+              <Label required={isLicensePlateRequired} text={t("License plate")}></Label>
+              <View style={{ marginLeft: 10 }}>
+                <Text style={styles.imageText}>• {t("If vehicle type is bicycle, license plate can leave blank")}</Text>
+               </View>
+              <View style={[styles.inputContainer]}>
+                <TextInput
+                  placeholder={t("Type") + "..."}
+                  placeholderTextColor={"#9C9C9C"}
+                  style={[styles.textInput]}
+                  value={licensePlate}
+                  onChangeText={setLicensePlate}
                 />
               </View>
             </View>
@@ -129,8 +379,12 @@ const parkingCardRegisterScreen = () => {
                   placeholderTextColor={"#9C9C9C"}
                   style={[styles.textInput, { height: 100 }]}
                   numberOfLines={4}
+                  value={note}
+                  onChangeText={setNote}
                 />
               </View>
+              
+              {errors.note && <Text style={styles.errorText}>{t(errors.note)}</Text>}
             </View>
             <View style={{ marginTop: 20 }}>
               <Label text={t("Image")} required></Label>
@@ -165,6 +419,7 @@ const parkingCardRegisterScreen = () => {
             <View style={{ marginTop: 20 }}>
               <Pressable
                 disabled={isButtonDisabled}
+                onPress={()=>setShowConfirm(true)}
                 style={[
                   {
                     backgroundColor: theme.primary,
@@ -194,6 +449,9 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderStyle: "dashed",
     marginRight: 5
+  },
+  errorText:{
+    color:'red'
   },
   headerBox: {
     marginTop: 20,

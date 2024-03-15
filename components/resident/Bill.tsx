@@ -22,7 +22,7 @@ const BillDetail: React.FC<BillDetailProps> = ({ visible, item, onRequestClose }
                 <View style={styles.modalContainer}>
                     <View style={styles.scrollView}>
                         <View style={{ borderBottomWidth: 0.5, borderColor: "#9C9C9C",}}>
-                            <View style={{ flexDirection: 'row', justifyContent: 'space-between', padding: 20, alignItems:'center' }}>
+                            <View style={{ flexDirection: 'row',padding: 20, alignItems:'center',justifyContent:'space-between'}}>
                                 <X color={'black'} size={30} onPress={onRequestClose}></X>
                                 <Text style={styles.detailText}>{t("Bill details")}</Text>
                                 <View></View>

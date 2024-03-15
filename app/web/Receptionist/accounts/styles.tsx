@@ -5,6 +5,20 @@ const styles = StyleSheet.create({
     input: {
         width: '100%'
     },
+    customInput:{
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.25,
+        shadowRadius: 3,
+        backgroundColor: 'white',
+        borderRadius: 8,
+        paddingHorizontal: 10,
+        paddingVertical: 8,
+        borderWidth: 1,
+        borderColor: '#CCCCCC',
+        marginBottom: 10,
+        marginRight:10
+    },
     invalid: {
         borderColor: 'red',
     },
@@ -33,7 +47,6 @@ const styles = StyleSheet.create({
         paddingHorizontal: SIZES.medium,
         borderWidth: 1,
         borderRadius: 10,
-        color: COLORS.gray2,
         borderColor:'#9c9c9c'
     },
     searchBtn: {

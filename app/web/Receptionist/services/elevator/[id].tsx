@@ -111,7 +111,7 @@ const page = () => {
           console.error(response);
             Toast.show({
                 type: 'error',
-                text1: 'Phê duyệt tài khoản không thành công',
+                text1: 'Phê duyệt không thành công',
                 position:'bottom'
             })
         }

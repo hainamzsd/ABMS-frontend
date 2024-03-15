@@ -12,6 +12,8 @@ import { statusForReceptionist, statusUtility } from '../../../../../constants/s
 import { Dropdown } from 'react-native-element-dropdown'
 import { checkForOverlaps, checkOverlaps } from '../../../../../utils/checkOverlap'
 import { AlertCircle } from 'lucide-react-native'
+import { useAuth } from '../../../context/AuthContext'
+import { jwtDecode } from 'jwt-decode'
 
 interface Construction{
     id:string;
@@ -24,6 +26,10 @@ interface Construction{
     description:string;
     createTime:Date;
     status:number;
+    room:{
+        id:string;
+        roomNumber:string;
+    }
 }
 
 interface Room{
@@ -35,13 +41,17 @@ const StatusData = [
   { label: "Yêu cầu đã phê duyệt", value: 3 },
   { label: "Yêu cầu đã từ chối", value: 4 },
 ]
-
+interface User{
+  id: string;
+  BuildingId:string;
+}
 const index = () => {
     const headers = ['ID Căn hộ', 'Tên dự án', 'Đơn vị thi công', 'Ngày bắt đầu', 'Ngày kết thúc', 'Trạng thái',''];
     const [request, setRequest] = useState<Construction[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
-    const [overlapError, setOverlapError] = useState('');
+    const {session} = useAuth(); 
+    const User:User = jwtDecode(session as string);
     const [currentPage, setCurrentPage] = useState(1)
     const itemsPerPage = 7
     const [status, setStatus] = useState<number | null>(2) // null for approved, 2 for pending
@@ -51,9 +61,9 @@ const index = () => {
         setError(null)
   
         try {
-          let url = `https://abmscapstone2024.azurewebsites.net/api/v1/construction/get`
+          let url = `https://abmscapstone2024.azurewebsites.net/api/v1/construction/get?building_id=${User.BuildingId}`
           if (status !== null) {
-            url += `?status=${status}`
+            url += `&status=${status}`
           }
           const response = await axios.get(url, { timeout: 100000 })
           if (response.data.statusCode === 200) {
@@ -84,10 +94,24 @@ const index = () => {
       }
   
       fetchData()
-    }, [status])
+    }, [status,session])
 
-    const navigate = useNavigation();
-    const { currentItems, totalPages } = paginate(request, currentPage, itemsPerPage)
+    const [searchQuery, setSearchQuery] = useState('');
+    const [filteredRequests, setFilteredRequests] = useState<Construction[]>([]);
+    useEffect(() => {
+      if (searchQuery.trim() !== '') {
+        const filtered = request.filter(item =>
+          item.room.roomNumber.toLowerCase().includes(searchQuery.toLowerCase())
+        );
+        setFilteredRequests(filtered);
+      } else {
+        setFilteredRequests(request);
+      }
+    }, [searchQuery, request]);
+     //paging
+     const navigate = useNavigation();
+     const { currentItems, totalPages } = paginate(filteredRequests, currentPage, itemsPerPage);
+  
   return (
     <View style={{ flex: 1, backgroundColor: '#F9FAFB' }}>
     <SafeAreaView style={{flex:1}}>
@@ -104,10 +128,11 @@ const index = () => {
             <View style={styles.searchContainer}>
                 <View style={styles.searchWrapper}>
                     <TextInput
-                        style={styles.searchInput}
-                        placeholder="Tìm theo tên căn hộ"
-                        value=""
-                        onChange={() => { }}
+                         style={styles.searchInput}
+                         placeholderTextColor={'black'}
+                         placeholder="Tìm theo tên căn hộ"
+                         value={searchQuery}
+                         onChangeText={(text) => setSearchQuery(text)}
                     />
                 </View>
                 {/* <TouchableOpacity style={styles.searchBtn} onPress={() => { }}>
@@ -135,18 +160,18 @@ const index = () => {
            
             
             {isLoading && <ActivityIndicator size={'large'} color={'#171717'}></ActivityIndicator>}
-            {request.length==0 ? <Text style={{marginBottom:10, fontSize:18,fontWeight:'600'}}>Chưa có dữ liệu</Text>:
+            {!filteredRequests.length? <Text style={{marginBottom:10, fontSize:18,fontWeight:'600'}}>Chưa có dữ liệu</Text>:
                   <TableComponent headers={headers}>
                     <FlatList data={currentItems}
                     renderItem={({ item }) => 
                     {
                       return( 
                         <TableRow>
-                        <Cell>{item.roomId}</Cell>
+                        <Cell>{item.room.roomNumber}</Cell>
                         <Cell>{item.name}</Cell>
                         <Cell>{item.constructionOrganization}</Cell>
-                        <Cell>{moment.utc(item.startTime).format('YYYY-MM-DD')}</Cell>
-                        <Cell>{moment.utc(item.endTime).format('YYYY-MM-DD')}</Cell>
+                        <Cell>{moment.utc(item.startTime).format('DD-MM-YYYY')}</Cell>
+                        <Cell>{moment.utc(item.endTime).format('DD-MM-YYYY')}</Cell>
                         <Cell>
                           {item.status && 
                            <Button text={statusForReceptionist?.[item.status as number].status}
@@ -221,7 +246,6 @@ const styles = StyleSheet.create({
         paddingHorizontal: SIZES.medium,
         borderWidth: 1,
         borderRadius: 10,
-        color: COLORS.gray2,
         borderColor:'#9c9c9c'
     },
     searchBtn: {
