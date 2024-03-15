@@ -100,7 +100,7 @@ export default function AccountManagement() {
                                 <Cell>{item.phoneNumber}</Cell>
                                 <Cell>{item.email}</Cell>
                                 <Cell>
-                                    <Link href={`/web/Receptionist/accounts/${item.id}&building=1`}
+                                    <Link href={`/web/Receptionist/accounts/${item.id}`}
                                     >
                                         <Button text="Chi tiết" />
                                     </Link>

@@ -441,7 +441,7 @@ const RoomDetail = () => {
                         <View style={{ flexDirection: 'row', gap: 10 }}>
                             <View style={{ flexDirection: 'column' }}>
                                 <Text style={{ fontWeight: 'bold' }}>{item.fullName}</Text>
-                                {item.isHouseholder ? <Badge colorScheme="danger" style={{ marginTop: 2 }}>Master</Badge> :
+                                {item.isHouseholder ? <Badge colorScheme="danger" style={{ marginTop: 2 }}>Owner</Badge> :
                                     <Badge colorScheme="info" style={{ marginTop: 2 }}>Member</Badge>
                                 }
                             </View>

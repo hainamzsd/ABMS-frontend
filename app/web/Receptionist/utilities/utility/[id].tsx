@@ -34,6 +34,7 @@ const UtilityDetail = () => {
         fetchData();
     }, [session])
 
+    // GET: Utility
     const fetchData = async () => {
         setIsLoading(true);
         try {
@@ -68,7 +69,7 @@ const UtilityDetail = () => {
         }
     }
 
-    // 
+    // GET: ROOM
     const fetchRoom = async () => {
         setIsLoading(true)
         try {
@@ -100,6 +101,7 @@ const UtilityDetail = () => {
         }
     }
 
+    // PUT: Approve Status
     const approveUtility = async () => {
         try {
             setIsLoading(true); // Set loading state to true
@@ -155,6 +157,7 @@ const UtilityDetail = () => {
         fetchRoom();
     }, [utility])
 
+    // DELETE: Cancel Status
     const handleDeleteConstruction = async () => {
         if (!item.id) {
             Toast.show({
