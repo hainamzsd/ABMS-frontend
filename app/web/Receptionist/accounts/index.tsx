@@ -1,4 +1,4 @@
-import { Link, Redirect, useNavigation } from "expo-router";
+import { Link, Redirect, router, useNavigation } from "expo-router";
 import { SafeAreaView, Text, View, ScrollView, TextInput, TouchableOpacity, Image, FlatList, ActivityIndicator } from "react-native";
 import Button from "../../../../components/ui/button";
 import { Cell, TableComponent, TableRow } from "../../../../components/ui/table";
@@ -8,6 +8,8 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import Toast from "react-native-toast-message";
 import { paginate } from "../../../../utils/pagination";
+import { useAuth } from "../../context/AuthContext";
+import { jwtDecode } from "jwt-decode";
 
 interface Account {
     id: string;
@@ -32,14 +34,15 @@ export default function AccountManagement() {
     const [accountData, setAccountData] = useState<Account[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
-   
+    const {session} = useAuth();
+    const user:any = jwtDecode(session as string);
     useEffect(() => {
         const fetchData = async () => {
             setIsLoading(true); // Set loading state to true
             setError(null); // Clear any previous errors
 
             try {
-                const response = await axios.get(`https://abmscapstone2024.azurewebsites.net/api/v1/account/get?role=3`, {
+                const response = await axios.get(`https://abmscapstone2024.azurewebsites.net/api/v1/account/get?role=3&buildingId=${user.BuildingId}`, {
                     timeout:100000
                 });
                 setAccountData(response.data.data); // Set account data
@@ -118,10 +121,9 @@ export default function AccountManagement() {
                                 <Cell>{item.phoneNumber}</Cell>
                                 <Cell>{item.email}</Cell>
                                 <Cell>
-                                    <Link href={`/web/Receptionist/accounts/${item.id}&building=1`}
-                                    >
-                                        <Button text="Chi tiết" />
-                                    </Link>
+                                        <Button onPress={() => {
+                                            router.push(`/web/Receptionist/accounts/${item.id}`);
+                                        }} text="Chi tiết" />
                                 </Cell>
                             </TableRow>
                             }
