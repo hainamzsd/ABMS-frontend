@@ -9,18 +9,18 @@ import { SIZES } from '../../../../../constants'
 import axios from 'axios'
 import Toast from 'react-native-toast-message'
 import { useAuth } from '../../../context/AuthContext';
-import { Room, RoomMember } from '../../../../../interface/roomType';
+import { Building, Room, RoomMember } from '../../../../../interface/roomType';
 import { RadioButton } from 'react-native-paper';
 
 const RoomDetail = () => {
     const navigation = useNavigation();
     const router = useRouter();
-    // accountId???
     const item = useLocalSearchParams();
 
     // STATE
     const [isLoading, setIsLoading] = useState(false);
     const [roomData, setRoomData] = useState<Room>();
+    const [buildings, setBuildings] = useState<Building[]>();
     const [roomNumber, setRoomNumber] = useState("");
     const [buildingId, setBuildingId] = useState("");
     const [roomArea, setRoomArea] = useState("");
@@ -40,20 +40,18 @@ const RoomDetail = () => {
     const { session } = useAuth();
 
     useEffect(() => {
-        const fetchData = async () => {
+        const fetchRoom = async () => {
             setIsLoading(true);
             try {
-                // Replace accountId ? 
-                const response = await axios.get(`https://abmscapstone2024.azurewebsites.net/api/v1/resident-room/get?accountId=${item?.roomDetail}`, {
+                const response = await axios.get(`https://abmscapstone2024.azurewebsites.net/api/v1/resident-room/get/${item?.roomDetail}`, {
                     timeout: 10000,
                 });
-                console.log(response);
                 if (response.status === 200) {
-                    setRoomNumber(response.data.data[0].roomNumber);
-                    setBuildingId(response.data.data[0].buildingId);
-                    setRoomArea(response.data.data[0].roomArea);
-                    setNumberOfResident(response.data.data[0].numberOfResident);
-                    setRoomData(response.data.data[0]);
+                    setRoomNumber(response.data.data.roomNumber);
+                    setBuildingId(response.data.data.buildingId);
+                    setRoomArea(response.data.data.roomArea);
+                    setNumberOfResident(response.data.data.numberOfResident);
+                    setRoomData(response.data.data);
                 } else {
                     Toast.show({
                         type: 'error',
@@ -79,20 +77,54 @@ const RoomDetail = () => {
                 setIsLoading(false); // Set loading state to false regardless of success or failure
             }
         };
-        fetchData();
+        fetchRoom();
         fetchRoomMember();
+        fetchBuildings();
     }, []);
 
+    // GET: all buildings
+    const fetchBuildings = async () => {
+        setIsLoading(true);
+        try {
+            const response = await axios.get(`https://abmscapstone2024.azurewebsites.net/api/v1/building/get`, {
+                timeout: 10000,
+            });
+            if (response.status === 200) {
+                setBuildings(response.data.data)
+            } else {
+                Toast.show({
+                    type: 'error',
+                    text1: 'Lỗi lấy thông tin toà nhà',
+                    position: 'bottom'
+                })
+            }
+        } catch (error) {
+            if (axios.isCancel(error)) {
+                Toast.show({
+                    type: 'error',
+                    text1: 'Hệ thống lỗi! Vui lòng thử lại sau',
+                    position: 'bottom'
+                })
+            }
+            console.error('Error fetching building data:', error);
+            Toast.show({
+                type: 'error',
+                text1: 'Lỗi lấy thông tin toà nhà',
+                position: 'bottom'
+            })
+        } finally {
+            setIsLoading(false); // Set loading state to false regardless of success or failure
+        }
+    };
     // GET: RoomMember
     const fetchRoomMember = async () => {
         setIsLoading(true);
         try {
-            const response = await axios.get(`https://abmscapstone2024.azurewebsites.net/api/v1/resident-room-member/get?roomId=${roomData?.id}`, {
+            const response = await axios.get(`https://abmscapstone2024.azurewebsites.net/api/v1/resident-room-member/get?roomId=${item?.roomDetail}`, {
                 timeout: 10000,
             });
             if (response.status === 200) {
                 setRoomMembers(response.data.data);
-                console.log(response.data.data)
             } else {
                 Toast.show({
                     type: 'error',
@@ -119,7 +151,7 @@ const RoomDetail = () => {
         }
     };
 
-    // UPDATE ROOM INFORMATION - API LOI
+    // UPDATE ROOM INFORMATION
     const updateRoom = async () => {
         // setError(null);
         // setValidationErrors({});
@@ -140,7 +172,6 @@ const RoomDetail = () => {
                     'Authorization': `Bearer ${session}`
                 }
             });
-            console.log(response);
             if (response.data.statusCode == 200) {
                 Toast.show({
                     type: 'success',
@@ -205,7 +236,6 @@ const RoomDetail = () => {
                     'Authorization': `Bearer ${session}`
                 }
             });
-            console.log(response);
             if (response.data.statusCode == 200) {
                 Toast.show({
                     type: 'success',
@@ -249,7 +279,7 @@ const RoomDetail = () => {
         }
     }
 
-    //DELETE: ROOM MEMBER - API LOI
+    //DELETE: ROOM MEMBER
     const handleDeleteMember = async (id: any) => {
         if (!id) {
             Toast.show({
@@ -276,6 +306,7 @@ const RoomDetail = () => {
                     text1: 'Xóa thành viên thành công',
                     position: 'bottom'
                 })
+                fetchRoomMember();
             } else {
                 Toast.show({
                     type: 'error',
@@ -294,12 +325,11 @@ const RoomDetail = () => {
             console.error('Error deleting room member:', error);
             // setError('An error occurred. Please try again.');
         } finally {
-            fetchRoomMember();
             setIsLoading(false);
         }
     };
 
-    // UPDATE: ROOM MEMBER - API LOI
+    // UPDATE: ROOM MEMBER
     const handleUpdateMember = async () => {
         const bodyData = {
             roomId: updateMember?.roomId,
@@ -319,7 +349,6 @@ const RoomDetail = () => {
                     'Authorization': `Bearer ${session}`
                 }
             });
-            console.log(response);
             if (response.data.statusCode == 200) {
                 Toast.show({
                     type: 'success',
@@ -331,6 +360,7 @@ const RoomDetail = () => {
                 setFullName("");
                 setDob("");
                 setPhone("");
+                fetchRoomMember();
             }
             else {
                 Toast.show({
@@ -380,6 +410,12 @@ const RoomDetail = () => {
     const toggleAddMember = () => {
         setAddMember(!addMember);
         setIsUpdate(false);
+        setGender("male");
+        setIsHouseholder("Yes");
+        setFullName("");
+        setDob("");
+        setPhone("");
+        fetchRoomMember();
     }
 
     const openUpdate = (item: any) => {
@@ -395,6 +431,39 @@ const RoomDetail = () => {
 
     const closeUpdate = () => {
         setIsUpdate(false);
+    }
+
+    const renderItem = ({ item }: any) => {
+        if (item?.status !== 0) {
+            return (
+                <View style={{ flexDirection: 'row', gap: SIZES.medium }}>
+                    <View style={{ borderWidth: 1, alignSelf: 'flex-start', padding: SIZES.xSmall, borderColor: COLORS.gray2, ...SHADOWS.small, borderRadius: SIZES.small, marginVertical: SIZES.xSmall - 2 }}>
+                        <View style={{ flexDirection: 'row', gap: 10 }}>
+                            <View style={{ flexDirection: 'column' }}>
+                                <Text style={{ fontWeight: 'bold' }}>{item.fullName}</Text>
+                                {item.isHouseholder ? <Badge colorScheme="danger" style={{ marginTop: 2 }}>Owner</Badge> :
+                                    <Badge colorScheme="info" style={{ marginTop: 2 }}>Member</Badge>
+                                }
+                            </View>
+                            <Button text={isDetail ? 'Hide' : 'Detail'} onPress={toggleDetail} />
+                        </View>
+                    </View>
+
+                    {isDetail && <View style={{ borderWidth: 1, alignSelf: 'flex-start', padding: SIZES.small, borderColor: COLORS.gray2, ...SHADOWS.small, borderRadius: SIZES.small, marginVertical: SIZES.xSmall - 2 }}>
+                        <Text>Họ và tên: <Text style={{ fontWeight: 'bold' }}>{item.fullName}</Text></Text>
+                        <Text>Số điện thoại: <Text style={{ fontWeight: 'bold' }}>{item.phone}</Text></Text>
+                        <Text>Ngày sinh: <Text style={{ fontWeight: 'bold' }}>{item.dateOfBirth}</Text></Text>
+                        <Text>Giới tính: <Text style={{ fontWeight: 'bold' }}>{item.gender ? 'Nam' : 'Nữ'}</Text></Text>
+                        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+                            <Button text="Xoá thành viên" onPress={() => handleDeleteMember(item.id)} color={COLORS.buttonRed} />
+                            <Button text="Cập nhập" onPress={() => openUpdate(item)} color={COLORS.buttonYellow} />
+                        </View>
+                    </View>}
+                </View>
+            )
+        } else {
+            return (<></>)
+        }
     }
 
     return (
@@ -420,7 +489,7 @@ const RoomDetail = () => {
                             <Text style={{ fontWeight: "bold", fontSize: 20, marginBottom: 5 }}>
                                 Thông tin căn hộ
                             </Text>
-                            <Text>Thông tin chi tiết của căn hộ <Text style={{ fontWeight: 'bold', fontSize: SIZES.medium - 2 }}>{roomNumber}, Toà {buildingId}</Text></Text>
+                            <Text>Thông tin chi tiết của căn hộ <Text style={{ fontWeight: 'bold', fontSize: SIZES.medium - 2 }}>{roomNumber} </Text></Text>
                         </View>
                         <View style={{ flexDirection: 'row', justifyContent: 'space-between', width: '100%' }}>
                             <View style={{ width: '48%' }}>
@@ -445,12 +514,22 @@ const RoomDetail = () => {
                                 </Text>
                                 <Text style={{ color: '#9c9c9c', fontSize: 12, marginBottom: 6, }}>Số căn hộ không được trống.</Text>
                                 <Box>
-                                    <Select selectedValue={buildingId} minWidth="100%" height='36px' accessibilityLabel="Chọn toà nhà" placeholder="Chọn toà nhà" _selectedItem={{
-                                        bg: "teal.600",
-                                        endIcon: <CheckIcon size="5" />
-                                    }} mt={1} onValueChange={itemValue => setBuildingId(itemValue)}>
-                                        <Select.Item label="1" value="1" />
-                                        <Select.Item label="abc" value="abc" />
+                                    <Select
+                                        selectedValue={buildingId}
+                                        minWidth="100%"
+                                        height='36px'
+                                        accessibilityLabel="Chọn toà nhà"
+                                        placeholder="Chọn toà nhà"
+                                        _selectedItem={{
+                                            bg: "teal.600",
+                                            endIcon: <CheckIcon size="5" />
+                                        }}
+                                        mt={1}
+                                        onValueChange={itemValue => setBuildingId(itemValue)}
+                                    >
+                                        {buildings?.map((item) => (
+                                            <Select.Item key={item?.id} label={item?.name} value={item?.id} />
+                                        ))}
                                     </Select>
                                 </Box>
                             </View>
@@ -481,30 +560,7 @@ const RoomDetail = () => {
                         <View id='member' style={{ width: '100%', flexDirection: 'row', gap: SIZES.small, marginVertical: SIZES.xSmall - 2, justifyContent: 'space-between' }}>
                             <FlatList
                                 data={roomMembers}
-                                renderItem={({ item }: { item: any }) => (
-                                    <View style={{ flexDirection: 'row', gap: SIZES.medium }}>
-                                        <View style={{ borderWidth: 1, alignSelf: 'flex-start', padding: SIZES.xSmall, borderColor: COLORS.gray2, ...SHADOWS.small, borderRadius: SIZES.small, marginVertical: SIZES.xSmall - 2 }}>
-                                            <View style={{ flexDirection: 'row', gap: 10 }}>
-                                                <View style={{ flexDirection: 'column' }}>
-                                                    <Text style={{ fontWeight: 'bold' }}>{item.fullName}</Text>
-                                                    {item.isHouseholder ? <Badge colorScheme="danger" style={{ marginTop: 2 }}>Master</Badge> :
-                                                        <Badge colorScheme="info" style={{ marginTop: 2 }}>Member</Badge>
-                                                    }
-                                                </View>
-                                                <Button text={isDetail ? 'Hide' : 'Detail'} onPress={toggleDetail} />
-                                            </View>
-                                        </View>
-
-                                        {isDetail && <View style={{ borderWidth: 1, alignSelf: 'flex-start', padding: SIZES.small, borderColor: COLORS.gray2, ...SHADOWS.small, borderRadius: SIZES.small, marginVertical: SIZES.xSmall - 2 }}>
-                                            <Text>Họ và tên: <Text style={{ fontWeight: 'bold' }}>{item.fullName}</Text></Text>
-                                            <Text>Số điện thoại: <Text style={{ fontWeight: 'bold' }}>{item.phone}</Text></Text>
-                                            <Text>Ngày sinh: <Text style={{ fontWeight: 'bold' }}>{item.dateOfBirth}</Text></Text>
-                                            <Text>Giới tính: <Text style={{ fontWeight: 'bold' }}>{item.gender ? 'Nam' : 'Nữ'}</Text></Text>
-                                            <Button text="Xoá thành viên" onPress={() => handleDeleteMember(item.id)} color={COLORS.buttonRed} />
-                                            <Button style={{ marginTop: 4 }} text="Cập nhập" onPress={() => openUpdate(item)} color={COLORS.buttonYellow} />
-                                        </View>}
-                                    </View>
-                                )}
+                                renderItem={renderItem}
                                 keyExtractor={(item) => item?.id}
                                 contentContainerStyle={{ columnGap: SIZES.medium }}
                             />

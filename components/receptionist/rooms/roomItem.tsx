@@ -8,6 +8,7 @@ import { ActivityIndicator } from 'react-native-paper';
 
 const RoomItem = (props: any) => {
   const { floor, data, isLoading } = props;
+  console.log("data ROOMS", data)
   return (
     <TouchableOpacity style={styles.container}>
       {/* <View style={styles.header}>
@@ -23,7 +24,7 @@ const RoomItem = (props: any) => {
           // ) : error ? (
           // <Text>Something went wrong</Text>
         ) : (
-          <Link href={`./rooms/${data.accountId}`}>
+          <Link href={`./rooms/${data?.id}`}>
             <RoomItemCard
               item={data}
             />
