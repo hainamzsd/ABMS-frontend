@@ -1,15 +1,15 @@
 import React, { useEffect, useState } from 'react'
 import { View, Text, SafeAreaView, ScrollView, ActivityIndicator, FlatList } from 'react-native'
-import Button from '../../../../../components/ui/button'
-import Input from '../../../../../components/ui/input'
+import Button from '../../../../components/ui/button'
+import Input from '../../../../components/ui/input'
 import { Select, CheckIcon, Box, Badge, Radio } from "native-base";
-import { COLORS, SHADOWS } from '../../../../../constants';
+import { COLORS, SHADOWS } from '../../../../constants';
 import { Link, useLocalSearchParams, useNavigation, useRouter } from 'expo-router'
-import { SIZES } from '../../../../../constants'
+import { SIZES } from '../../../../constants'
 import axios from 'axios'
 import Toast from 'react-native-toast-message'
-import { useAuth } from '../../../context/AuthContext';
-import { Building, Room, RoomMember } from '../../../../../interface/roomType';
+import { useAuth } from '../../context/AuthContext';
+import { Building, Room, RoomMember } from '../../../../interface/roomType';
 import { RadioButton } from 'react-native-paper';
 
 const RoomDetail = () => {

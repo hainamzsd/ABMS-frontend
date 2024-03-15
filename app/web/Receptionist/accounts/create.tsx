@@ -16,6 +16,8 @@ import { useAuth } from '../../context/AuthContext';
 import { CheckIcon } from 'lucide-react-native';
 import DatePicker from '../../../../components/ui/datepicker';
 import { Dropdown } from 'react-native-element-dropdown';
+import { user } from '../../../../interface/accountType';
+import { jwtDecode } from 'jwt-decode';
 
 const validationSchema = Yup.object().shape({
     email: Yup.string().email('Email không hợp lệ').required('Email không được trống'),
@@ -49,6 +51,7 @@ const validationSchema = Yup.object().shape({
 const page = () => {
     const navigation = useNavigation();
     const { session } = useAuth();
+    const user:user = jwtDecode(session as string);
     const [password, setPassword] = useState("");
     const [reEnterPassword, setReEnterPassword] = useState("");
     const [phoneNumber, setPhoneNumber] = useState("");
@@ -73,7 +76,7 @@ const page = () => {
         setValidationErrors({});
 
         const bodyData={
-            building_id:"1",
+            building_id:user?.BuildingId,
             phone:phoneNumber,
             full_name:fullName,
             user_name:username,
