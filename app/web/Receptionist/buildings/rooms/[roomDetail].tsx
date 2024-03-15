@@ -410,6 +410,12 @@ const RoomDetail = () => {
     const toggleAddMember = () => {
         setAddMember(!addMember);
         setIsUpdate(false);
+        setGender("male");
+        setIsHouseholder("Yes");
+        setFullName("");
+        setDob("");
+        setPhone("");
+        fetchRoomMember();
     }
 
     const openUpdate = (item: any) => {
