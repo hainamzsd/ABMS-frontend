@@ -1,19 +1,19 @@
 import { View, Text, SafeAreaView, StyleSheet, ActivityIndicator, InteractionManager } from "react-native";
 import React, { useEffect, useState } from "react";
-import Button from "../../../components/ui/button";
-import Input from "../../../components/ui/input";
+import Button from "../../../../../components/ui/button";
+import Input from "../../../../../components/ui/input";
 import { ScrollView } from "react-native";
-import { isValidPhoneNumber } from "../../../utils/phoneValidate";
+import { isValidPhoneNumber } from "../../../../../utils/phoneValidate";
 import styles from "./styles";
-import { isValidEmail } from "../../../utils/emailValidate";
+import { isValidEmail } from "../../../../../utils/emailValidate";
 import { router, useLocalSearchParams, useNavigation } from "expo-router";
 import axios from "axios";
-import LoadingComponent from "../../../components/resident/loading";
-import { validateFullName, validateUsername } from "../../../utils/usernameValidate";
+import LoadingComponent from "../../../../../components/resident/loading";
+import { validateFullName, validateUsername } from "../../../../../utils/usernameValidate";
 import Toast from "react-native-toast-message";
 import * as Yup from 'yup';
 import { Alert } from "react-native";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "../../../context/AuthContext";
 
 
 interface Account {
@@ -142,7 +142,7 @@ const page = () => {
                 text1: 'Cập nhật tài khoản thành công',
                 position:'bottom'
             })
-            router.replace('/web/Admin/');
+            // router.replace('/web/Admin');
         }
         else {
             Toast.show({

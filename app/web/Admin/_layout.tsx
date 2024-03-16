@@ -16,44 +16,50 @@ import { jwtDecode } from "jwt-decode";
 import Toast from "react-native-toast-message";
 
 const Layout = () => {
-    const {session,signOut} = useAuth();
-    
+    const { session, signOut } = useAuth();
+
     const [windowWidth, setWindowWidth] = useState(
         Dimensions.get("window").width,
     );
     useEffect(() => {
         const updateDimensions = () => {
-          const width = Dimensions.get("window").width;
-          setWindowWidth(width);
-          setIsMobile(width < 768);
+            const width = Dimensions.get("window").width;
+            setWindowWidth(width);
+            setIsMobile(width < 768);
         };
-    
+
         Dimensions.addEventListener("change", updateDimensions);
-    
-        return () => {};
-      }, []);
+
+        return () => { };
+    }, []);
     const [isMobile, setIsMobile] = useState(windowWidth < 768);
     if (!session) {
         return <Redirect href="/web/login" />;
-      }
-      const user:any = jwtDecode(session);
-      if(user.Role!=0){
+    }
+    const user: any = jwtDecode(session);
+    if (user.Role != 0) {
         Toast.show({
             type: 'error',
             text1: 'Bạn không có quyền truy cập trang này',
         })
         signOut();
-      }
+    }
     return (
         <>
             {/* <Stack.Screen options={{ headerShown: false }}></Stack.Screen> */}
             {!isMobile && (
-                <Navbar navigation={[ {
-                    name: "Quản lý tài khoản",
-                    href: "/web/Admin"
-                }]} />
+                <Navbar navigation={[
+                    // {
+                //     name: "Quản lý tài khoản",
+                //     href: "/web/Admin"
+                // },
+                {
+                    name: "Quản lý tòa nhà",
+                    href: "/web/Admin/buildings"
+                }
+                ]} />
             )}
-            <View style={{flex:1}}>
+            <View style={{ flex: 1 }}>
                 <Stack screenOptions={{ headerShown: false }} initialRouteName="index">
                     <Stack.Screen name="index"></Stack.Screen>
                     <Stack.Screen name="create"></Stack.Screen>
