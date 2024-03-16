@@ -74,6 +74,7 @@ const RoomList = () => {
           )}
           keyExtractor={(item) => item?.id}
           contentContainerStyle={{ columnGap: SIZES.medium }}
+          horizontal
         />
 
       </SafeAreaView>

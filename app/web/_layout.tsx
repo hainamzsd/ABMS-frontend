@@ -5,14 +5,16 @@ import { PaperProvider } from "react-native-paper";
 import Toast from 'react-native-toast-message';
 import { View } from "react-native";
 import { NativeBaseProvider } from "native-base";
+import { ThemeProvider } from "../(mobile)/context/ThemeContext";
 export default function Layout() {
   return (
     <PaperProvider>
       <AuthProvider>
-        
-    <NativeBaseProvider>
-        <Slot />
-        </NativeBaseProvider>
+        <ThemeProvider> 
+         <NativeBaseProvider>
+          <Slot />
+         </NativeBaseProvider>
+        </ThemeProvider>
       </AuthProvider>
       <Toast/>
     </PaperProvider>

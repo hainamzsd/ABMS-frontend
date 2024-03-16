@@ -30,6 +30,10 @@ const _layout = () => {
         href: "/web/Receptionist/services",
       },
       {
+        name: "Quản lý tiện ích",
+        href: "/web/Receptionist/utilities",
+      },
+      {
         name: "Quản lý bài viết",
         href: "/web/Receptionist/posts",
       },
