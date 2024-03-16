@@ -36,16 +36,9 @@ const validationSchema = Yup.object().shape({
       re_password: Yup.string()
       .required('Nhập lại mật khẩu không được trống')
       .oneOf([Yup.ref('password')], 'Mật khẩu không khớp'),
-      gender: Yup.boolean().required('Giới tính không được trống'),
-      dob: Yup.date().required('Ngày sinh không được trống')
   });
   
 
-  const Gender = [
-    { label: "Nam", value: true },
-    { label: "Nữ", value: false },
-  ]
-  
 const page = () => {
     const navigation = useNavigation();
     const { session } = useAuth();
