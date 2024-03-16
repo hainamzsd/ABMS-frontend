@@ -1,5 +1,5 @@
 import { View, Text, SafeAreaView, ActivityIndicator } from 'react-native'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { router, useNavigation } from 'expo-router';
 import { ScrollView } from 'react-native';
 import Button from '../../../../components/ui/button';
@@ -11,6 +11,10 @@ import { Avatar } from 'react-native-paper';
 import * as Yup from 'yup'
 import { validatePassword } from '../../../../utils/passwordValidate';
 import { useAuth } from '../../context/AuthContext';
+import { Building } from '../../../../interface/roomType';
+import { user } from '../../../../interface/accountType';
+import { jwtDecode } from 'jwt-decode';
+import { SIZES } from '../../../../constants';
 
 const validationSchema = Yup.object().shape({
     email: Yup.string().email('Email không hợp lệ').required('Email không được trống'),
@@ -44,6 +48,8 @@ const page = () => {
     const [email, setEmail] = useState("");
     const [username, setUsername] = useState("");
     const [fullName, setFullName] = useState("");
+    const [building, setBuilding] = useState<Building>();
+    const user: user = jwtDecode(session as string);
     
   const [error, setError] = useState<string | null>(null);
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
@@ -55,12 +61,48 @@ const page = () => {
     };
     const [isLoading, setIsLoading] = useState(false);
 
+    useEffect(() => {
+        fetchBuilding();
+    },[])
+
+    const fetchBuilding = async () => {
+        setIsLoading(true);
+        try {
+            const response = await axios.get(`https://abmscapstone2024.azurewebsites.net/api/v1/building/get/${user?.BuildingId}`);
+            if (response.status === 200) {
+                setBuilding(response.data.data);
+            } else {
+                Toast.show({
+                    type: 'error',
+                    text1: 'Lỗi lấy thông các tòa nhà',
+                    position: 'bottom'
+                })
+
+            }
+        } catch (error) {
+            if (axios.isCancel(error)) {
+                Toast.show({
+                    type: 'error',
+                    text1: 'Hệ thống lỗi! Vui lòng thử lại sau',
+                    position: 'bottom'
+                })
+            }
+            Toast.show({
+                type: 'error',
+                text1: 'Lỗi lấy thông các tòa nhà',
+                position: 'bottom'
+            })
+        } finally {
+            setIsLoading(false);
+        }
+    }
+
     const createAccount = async () => {
         setError(null);
         setValidationErrors({});
 
         const bodyData={
-            building_id:"1",
+            building_id:user?.BuildingId,
             phone:phoneNumber,
             full_name:fullName,
             user_name:username,
@@ -149,7 +191,7 @@ const page = () => {
                         <Text style={{ fontWeight: "bold", fontSize: 20, marginBottom: 5 }}>
                             Tạo thông tin tài khoản
                         </Text>
-                        <Text>Thông tin tài khoản của lễ tân</Text>
+                        <Text>Thông tin tài khoản của lễ tân thuộc tòa <Text style={{fontWeight: 'bold', fontSize: SIZES.medium}}>{building?.name}</Text></Text>
                     </View>
                     <View>
                         <Text style={{ marginBottom: 10, fontWeight: "600", fontSize: 16 }}>

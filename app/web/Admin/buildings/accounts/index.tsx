@@ -64,6 +64,7 @@ export default function AccountManagement() {
         };
 
         fetchData();
+        fetchBuilding();
     }, []);
 
     const fetchBuilding = async () => {
