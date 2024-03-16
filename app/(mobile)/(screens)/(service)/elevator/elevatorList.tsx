@@ -31,6 +31,7 @@ interface user{
   PhoneNumber:string;
   Id:string;
   Avatar:string;
+  BuildingId:string;
 }
   
 interface Room{
@@ -84,13 +85,13 @@ useEffect(() => {
   }, [session, isFocused]);
   useEffect(() => {
     const fetchElevatorData = async () => {
-      if (!room.length) {
+      if (!room.length || !user.BuildingId) {
         return;
       }
         setIsLoading(true);
         setError("");
         try {
-            const response = await axios.get(`https://abmscapstone2024.azurewebsites.net/api/v1/elevator/get?room_id=${room[0]?.id}`,{
+            const response = await axios.get(`https://abmscapstone2024.azurewebsites.net/api/v1/elevator/get?room_id=${room[0]?.id}&building_id=${user.BuildingId}`,{
                 timeout:10000
             });
             if(response.data.statusCode == 200){

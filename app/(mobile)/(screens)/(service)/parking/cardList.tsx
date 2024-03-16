@@ -25,6 +25,7 @@ interface user{
   PhoneNumber:string;
   Id:string;
   Avatar:string;
+  BuildingId:string;
 }
 interface ParkingCard{
   id: string;
@@ -92,13 +93,13 @@ const CardList = () => {
     
   useEffect(() => {
     const fetchElevatorData = async () => {
-      if (!room.length) {
+      if (!room.length || !user.BuildingId) {
         return;
       }
         setIsLoading(true);
         setError("");
         try {
-            const response = await axios.get(`https://abmscapstone2024.azurewebsites.net/api/v1/parking-card/get?room_id=${room[0]?.id}&status=1`,{
+            const response = await axios.get(`https://abmscapstone2024.azurewebsites.net/api/v1/parking-card/get?room_id=${room[0]?.id}&status=1&building_id=${user.BuildingId}`,{
                 timeout:10000
             });
             if(response.data.statusCode == 200){

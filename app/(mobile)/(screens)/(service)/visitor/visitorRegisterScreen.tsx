@@ -51,7 +51,7 @@ const validationSchema = yup.object({
         .required("This field is required")
         .min(yup.ref('arrivalDate'), 'Departure date must be after arrival date'),
     description: yup.string().required('This field is required'),
-    phone: yup.string().required('This field is required').min(10, 'Invalid phone number'),
+    phone: yup.string().required('Phone contact is required').matches(/(84|0[3|5|7|8|9])+([0-9]{8})\b/g, 'Invalid phone format'), 
     identityNumber: yup.string().required('This field is required').min(9, 'Invalid identity number').max(12, 'Invalid identity number'),
     images: yup.array().min(1, 'At least one image is required').max(5, 'Maximum 5 images allowed'),
 });
@@ -230,6 +230,7 @@ const visitorRegisterScreen = () => {
                     setIdentityNumber("");
                     setDescription("");                    
                     setSelectedImages([]);
+                    setErrors({});
                 }
                 else {
                     setShowError(true);

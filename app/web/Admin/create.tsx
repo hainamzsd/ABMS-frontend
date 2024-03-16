@@ -20,13 +20,10 @@ import { SIZES } from '../../../constants';
 
 const validationSchema = Yup.object().shape({
     email: Yup.string().email('Email không hợp lệ').required('Email không được trống'),
-    phone: Yup.string()
-        .required('Số điện thoại không được trống')
-        .min(10, 'Số điện thoại phải có ít nhất 10 chữ số')
-        .max(10, 'Số điện thoại không được nhiều hơn 10 chữ số'),
-    user_name: Yup.string().required('Tên tài khoản không được trống').
-        min(8, 'Tên tài khoản phải ít nhất 8 kí tự').
-        max(20, 'Tên tài khoản không được nhiều hơn 20 kí tự'),
+    phone:  Yup.string().required('Số điện thoại không được trống').matches(/(84|0[3|5|7|8|9])+([0-9]{8})\b/g, 'Số điện thoại không hợp lệ'),   
+      user_name: Yup.string().required('Tên tài khoản không được trống').
+      min(8, 'Tên tài khoản phải ít nhất 8 kí tự').
+      max(20, 'Tên tài khoản không được nhiều hơn 20 kí tự'),
     full_name: Yup.string().required('Họ và tên không được trống').min(8, 'Họ và tên phải ít nhất 8 kí tự')
         .max(20, 'Họ và tên không được nhiều hơn 20 kí tự'),
     password: Yup.string().required('Mật khẩu không được trống').test(

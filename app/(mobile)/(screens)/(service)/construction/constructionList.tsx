@@ -38,6 +38,7 @@ interface user{
   PhoneNumber:string;
   Id:string;
   Avatar:string;
+  BuildingId:string;
 }
 interface Room{
   roomNumber:string;
@@ -89,13 +90,14 @@ useEffect(() => {
   }, [session, isFocused]);
   useEffect(() => {
     const fetchConstructionData = async () => {
-      if (!room.length) {
-        return;
-      }
       setIsLoading(true);
       setError("");
+      if (!room.length || !user.BuildingId) {
+        return;
+      }
+    
       try {
-        const response = await axios.get(`https://abmscapstone2024.azurewebsites.net/api/v1/construction/get?room_id=${room[0]?.id}`, {
+        const response = await axios.get(`https://abmscapstone2024.azurewebsites.net/api/v1/construction/get?room_id=${room[0]?.id}&building_id=${user.BuildingId}`, {
           timeout: 10000
         });
         if (response.data.statusCode == 200) {

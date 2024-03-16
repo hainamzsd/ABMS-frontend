@@ -11,17 +11,11 @@ import { Avatar } from 'react-native-paper';
 import * as Yup from 'yup'
 import { validatePassword } from '../../../../utils/passwordValidate';
 import { useAuth } from '../../context/AuthContext';
-import { Building } from '../../../../interface/roomType';
-import { user } from '../../../../interface/accountType';
 import { jwtDecode } from 'jwt-decode';
-import { SIZES } from '../../../../constants';
 
 const validationSchema = Yup.object().shape({
     email: Yup.string().email('Email không hợp lệ').required('Email không được trống'),
-    phone: Yup.string()
-      .required('Số điện thoại không được trống')
-      .min(10, 'Số điện thoại phải có ít nhất 10 chữ số')
-      .max(10, 'Số điện thoại không được nhiều hơn 10 chữ số'),
+    phone:  Yup.string().required('Số điện thoại không được trống').matches(/(84|0[3|5|7|8|9])+([0-9]{8})\b/g, 'Số điện thoại không hợp lệ'),
       user_name: Yup.string().required('Tên tài khoản không được trống').
       min(8, 'Tên tài khoản phải ít nhất 8 kí tự').
       max(20, 'Tên tài khoản không được nhiều hơn 20 kí tự'),
@@ -36,12 +30,16 @@ const validationSchema = Yup.object().shape({
       .required('Nhập lại mật khẩu không được trống')
       .oneOf([Yup.ref('password')], 'Mật khẩu không khớp'),
   });
-  
+  interface User{
+    id: string;
+    BuildingId:string;
+  }
 
 
 const page = () => {
     const navigation = useNavigation();
     const {session} = useAuth();
+    const user:User = jwtDecode(session as string);
     const [password, setPassword] = useState("");
     const [reEnterPassword, setReEnterPassword] = useState("");
     const [phoneNumber, setPhoneNumber] = useState("");
@@ -62,9 +60,15 @@ const page = () => {
     const createAccount = async () => {
         setError(null);
         setValidationErrors({});
-
+        if(!user){
+            Toast.show({
+                type: 'error',
+                text1: 'Lỗi hệ thống! vui lòng thử lại sau',
+              });
+              return;
+        }
         const bodyData={
-            building_id:"1",
+            building_id:user.BuildingId,
             phone:phoneNumber,
             full_name:fullName,
             user_name:username,

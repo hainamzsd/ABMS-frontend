@@ -7,7 +7,7 @@ import {
   Pressable,
   TextInput,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import LoadingComponent from "../../../../../components/resident/loading";
 import Header from "../../../../../components/resident/header";
 import { useTheme } from "../../../context/ThemeContext";
@@ -23,7 +23,11 @@ import { useSession } from "../../../context/AuthContext";
 import CustomAlert from "../../../../../components/resident/confirmAlert";
 import AlertWithButton from "../../../../../components/resident/AlertWithButton";
 import * as yup from 'yup';
-
+import { jwtDecode } from "jwt-decode";
+interface Room{
+  roomNumber:string;
+  id:string;
+}
 
 const ElevatorRegisterScreen = () => {
   const [loading, setLoading] = useState(false);
@@ -67,6 +71,40 @@ const ElevatorRegisterScreen = () => {
   const [alertVisible, setAlertVisible] = useState(false);
   const [alertConfirmVisible, setAlertConfirmVisible] = useState(false);
   const [disableBtn, setDisableBtn] = useState(false);
+  const user:any = jwtDecode(session as string);
+  const [room, setRoom] = useState<Room[]>([]);
+  useEffect(() => {
+    const fetchData = async () => {
+    setErrorText("");
+      try {
+        setLoading(true);
+        const response = await axios.get(
+          `https://abmscapstone2024.azurewebsites.net/api/v1/resident-room/get?accountId=${user.Id}`,{
+            timeout:10000
+          }
+        );
+        if(response.data.statusCode==200){
+            setRoom(response?.data?.data);
+        }
+        else{
+            setError(true);
+            setErrorText(t("System error please try again later"));
+        }
+      } catch (error) {
+        if(axios.isCancel(error)){
+            setError(true);
+            setErrorText(t("System error please try again later"));
+        }
+        console.error('Error fetching data:', error);
+        setError(true);
+        setErrorText(t("System error please try again later"));
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [session]);
   
   const handleCreateRequest = async () => {
     const sendStartDate = combineDateTime(startDate, startTime);
@@ -75,7 +113,7 @@ const ElevatorRegisterScreen = () => {
     setDisableBtn(true);
     try {
       const body = {
-        room_id: "e128b1c8-8bfa-46d7-b88e-f4725749fea7",
+        room_id: room[0].id,
         start_time: sendStartDate,
         end_time: sendEndDate,
         description: note
