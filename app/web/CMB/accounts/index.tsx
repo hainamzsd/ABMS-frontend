@@ -8,11 +8,6 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import Toast from "react-native-toast-message";
 import { paginate } from "../../../../utils/pagination";
-import { useAuth } from "../../context/AuthContext";
-import { user } from "../../../../interface/accountType";
-import { jwtDecode } from "jwt-decode";
-import { Building } from "../../../../interface/roomType";
-import { SIZES } from "../../../../constants";
 
 interface Account {
     id: string;
@@ -37,9 +32,6 @@ export default function AccountManagement() {
     const [accountData, setAccountData] = useState<Account[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
-    const [building, setBuilding] = useState<Building>();
-    const { session } = useAuth();
-    const user: user = jwtDecode(session as string);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -47,7 +39,7 @@ export default function AccountManagement() {
             setError(null); // Clear any previous errors
 
             try {
-                const response = await axios.get(`https://abmscapstone2024.azurewebsites.net/api/v1/account/get?buildingId=${user?.BuildingId}&role=2`, {
+                const response = await axios.get(`https://abmscapstone2024.azurewebsites.net/api/v1/account/get?role=2`, {
                     timeout: 100000
                 });
                 setAccountData(response.data.data); // Set account data
@@ -67,39 +59,8 @@ export default function AccountManagement() {
         };
 
         fetchData();
-        fetchBuilding();
     }, []);
-    const fetchBuilding = async () => {
-        setIsLoading(true);
-        try {
-            const response = await axios.get(`https://abmscapstone2024.azurewebsites.net/api/v1/building/get/${user?.BuildingId}`);
-            if (response.status === 200) {
-                setBuilding(response.data.data);
-            } else {
-                Toast.show({
-                    type: 'error',
-                    text1: 'Lỗi lấy thông các tòa nhà',
-                    position: 'bottom'
-                })
-
-            }
-        } catch (error) {
-            if (axios.isCancel(error)) {
-                Toast.show({
-                    type: 'error',
-                    text1: 'Hệ thống lỗi! Vui lòng thử lại sau',
-                    position: 'bottom'
-                })
-            }
-            Toast.show({
-                type: 'error',
-                text1: 'Lỗi lấy thông các tòa nhà',
-                position: 'bottom'
-            })
-        } finally {
-            setIsLoading(false);
-        }
-    }
+    
     //search box
     const [searchQuery, setSearchQuery] = useState('');
     const [filteredRequests, setFilteredRequests] = useState<Account[]>([]);
@@ -126,7 +87,7 @@ export default function AccountManagement() {
                 <ScrollView style={{ paddingHorizontal: 30, paddingVertical: 30, flex: 1 }}>
                     <View style={{ marginBottom: 20 }}>
                         <Text style={{ fontWeight: 'bold', fontSize: 20, marginBottom: 5 }}>Danh sách tài khoản</Text>
-                        <Text>Thông tin tài khoản của lễ tân thuộc tòa <Text style={{fontWeight: 'bold', fontSize: SIZES.medium}}>{building?.name}</Text></Text>
+                        <Text>Thông tin tài khoản của lễ tân</Text>
                     </View>
                     <Link href={"/web/CMB/accounts/create"}>
                         <Button text="Tạo tài khoản lễ tân" style={{ width: 200 }}></Button>

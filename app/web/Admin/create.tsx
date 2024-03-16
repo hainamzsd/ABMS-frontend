@@ -1,22 +1,22 @@
 import { View, Text, SafeAreaView, ActivityIndicator } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { router, useLocalSearchParams, useNavigation } from 'expo-router';
-import { isValidPhoneNumber } from '../../../../../utils/phoneValidate';
-import { isValidEmail } from '../../../../../utils/emailValidate';
+import { isValidPhoneNumber } from '../../../utils/phoneValidate';
+import { isValidEmail } from '../../../utils/emailValidate';
 import { ScrollView } from 'react-native';
-import Button from '../../../../../components/ui/button';
-import Input from '../../../../../components/ui/input';
+import Button from '../../../components/ui/button';
+import Input from '../../../components/ui/input';
 import styles from './styles';
 import axios from 'axios';
 import Toast from 'react-native-toast-message';
-import LoadingComponent from '../../../../../components/resident/loading';
+import LoadingComponent from '../../../components/resident/loading';
 import { Avatar } from 'react-native-paper';
-import { validatePassword } from '../../../../../utils/passwordValidate';
-import { validateFullName, validateUsername } from '../../../../../utils/usernameValidate';
+import { validatePassword } from '../../../utils/passwordValidate';
+import { validateFullName, validateUsername } from '../../../utils/usernameValidate';
 import * as Yup from 'yup'
-import { useAuth } from '../../../context/AuthContext';
-import { Building } from '../../../../../interface/roomType';
-import { SIZES } from '../../../../../constants';
+import { useAuth } from '../context/AuthContext';
+import { Building } from '../../../interface/roomType';
+import { SIZES } from '../../../constants';
 
 const validationSchema = Yup.object().shape({
     email: Yup.string().email('Email không hợp lệ').required('Email không được trống'),
@@ -51,8 +51,6 @@ const page = () => {
     const [email, setEmail] = useState("");
     const [username, setUsername] = useState("");
     const [fullName, setFullName] = useState("");
-    const item = useLocalSearchParams();
-    const [building, setBuilding] = useState<Building>();
 
     const createBuilding = async () => {
         try {
@@ -78,42 +76,6 @@ const page = () => {
         }
 
     }
-
-    useEffect(() => {
-        fetchBuilding();
-    },[])
-
-    const fetchBuilding = async () => {
-        setIsLoading(true);
-        try {
-            const response = await axios.get(`https://abmscapstone2024.azurewebsites.net/api/v1/building/get/${item?.bid}`);
-            if (response.status === 200) {
-                setBuilding(response.data.data);
-            } else {
-                Toast.show({
-                    type: 'error',
-                    text1: 'Lỗi lấy thông các tòa nhà',
-                    position: 'bottom'
-                })
-
-            }
-        } catch (error) {
-            if (axios.isCancel(error)) {
-                Toast.show({
-                    type: 'error',
-                    text1: 'Hệ thống lỗi! Vui lòng thử lại sau',
-                    position: 'bottom'
-                })
-            }
-            Toast.show({
-                type: 'error',
-                text1: 'Lỗi lấy thông các tòa nhà',
-                position: 'bottom'
-            })
-        } finally {
-            setIsLoading(false);
-        }
-    }
     const [error, setError] = useState<string | null>(null);
     const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
     const handlePhoneChange = (phone: string) => {
@@ -127,10 +89,10 @@ const page = () => {
     const createAccount = async () => {
         setError(null);
         setValidationErrors({});
-        // const building_id = await createBuilding();
-        if (item?.bid) {
+        const building_id = await createBuilding();
+        if (building_id) {
             const bodyData = {
-                building_id: item?.bid,
+                building_id: building_id,
                 phone: phoneNumber,
                 full_name: fullName,
                 user_name: username,
@@ -226,7 +188,7 @@ const page = () => {
                         <Text style={{ fontWeight: "bold", fontSize: 20, marginBottom: 5 }}>
                             Tạo thông tin tài khoản
                         </Text>
-                        <Text>Thông tin tài khoản của ban quản lý thuộc tòa <Text style={{fontWeight: 'bold', fontSize: SIZES.medium}}>{building?.name} </Text></Text>
+                        <Text>Thông tin tài khoản của ban quản lý</Text>
                     </View>
                     <View>
                         <Text style={{ marginBottom: 10, fontWeight: "600", fontSize: 16 }}>

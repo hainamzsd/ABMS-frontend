@@ -9,6 +9,9 @@ import axios from 'axios'
 import Toast from 'react-native-toast-message'
 import { useAuth } from '../../context/AuthContext';
 import { Building } from '../../../../interface/roomType';
+import { Box, CheckIcon, Select } from 'native-base';
+import { user } from '../../../../interface/accountType';
+import { jwtDecode } from 'jwt-decode';
 
 const CreateRoom = () => {
   // STATE
@@ -19,6 +22,8 @@ const CreateRoom = () => {
   const [buildingId, setBuildingId] = useState("");
   const [roomArea, setRoomArea] = useState("");
   const [numberOfResident, setNumberOfResident] = useState("");
+  const { session } = useAuth();
+  const user: user = jwtDecode(session as string);
 
   const navigation = useNavigation();
 
@@ -26,25 +31,46 @@ const CreateRoom = () => {
 
   }
 
-  {/* <Box>
-                                    <Select
-                                        selectedValue={buildingId}
-                                        minWidth="100%"
-                                        height='36px'
-                                        accessibilityLabel="Chọn toà nhà"
-                                        placeholder="Chọn toà nhà"
-                                        _selectedItem={{
-                                            bg: "teal.600",
-                                            endIcon: <CheckIcon size="5" />
-                                        }}
-                                        mt={1}
-                                        onValueChange={itemValue => setBuildingId(itemValue)}
-                                    >
-                                        {buildings?.map((item) => (
-                                            <Select.Item key={item?.id} label={item?.name} value={item?.id} />
-                                        ))}
-                                    </Select>
-                                </Box> */}
+  useEffect(() => {
+    fetchBuilding();
+  }, [])
+  const fetchBuilding = async () => {
+    setIsLoading(true);
+    try {
+      const response = await axios.get(`https://abmscapstone2024.azurewebsites.net/api/v1/building/get/${user?.BuildingId}`);
+      if (response.status === 200) {
+        setBuilding(response.data.data);
+      } else {
+        Toast.show({
+          type: 'error',
+          text1: 'Lỗi lấy thông các tòa nhà',
+          position: 'bottom'
+        })
+
+      }
+    } catch (error) {
+      if (axios.isCancel(error)) {
+        Toast.show({
+          type: 'error',
+          text1: 'Hệ thống lỗi! Vui lòng thử lại sau',
+          position: 'bottom'
+        })
+      }
+      Toast.show({
+        type: 'error',
+        text1: 'Lỗi lấy thông các tòa nhà',
+        position: 'bottom'
+      })
+    } finally {
+      setIsLoading(false);
+    }
+  }
+  const fetchAccount = async () => {
+
+
+  }
+
+
   return (
     <View
       style={{
@@ -113,16 +139,41 @@ const CreateRoom = () => {
     )} */}
             </View>
 
+            <View>
+              <Text style={{ marginBottom: 10, fontWeight: "600", fontSize: 16 }}>
+                Chủ căn hộ
+              </Text>
+              {/* <Box>
+              <Select
+                selectedValue={buildingId}
+                minWidth="100%"
+                height='36px'
+                accessibilityLabel="Chọn toà nhà"
+                placeholder="Chọn toà nhà"
+                _selectedItem={{
+                  bg: "teal.600",
+                  endIcon: <CheckIcon size="5" />
+                }}
+                mt={1}
+                onValueChange={itemValue => setBuildingId(itemValue)}
+              >
+                {buildings?.map((item) => (
+                  <Select.Item key={item?.id} label={item?.name} value={item?.id} />
+                ))}
+              </Select>
+            </Box> */}
+            </View>
+
             {/* ACTION */}
             <View style={{ flexDirection: 'row', marginTop: 10, justifyContent: 'center' }}>
               <Button
                 onPress={createRoom}
-                text="Cập nhật" style={[{
+                text="Thêm căn hộ" style={[{
                   width: 100, marginRight: 10,
                 }]}></Button>
               <Button
                 // onPress={handleDeleteAccount}
-                text="Xóa" style={{ width: 100, backgroundColor: '#9b2c2c' }}></Button>
+                text="Hủy bỏ" style={{ width: 100, backgroundColor: '#9b2c2c' }}></Button>
             </View>
           </ScrollView>
         </SafeAreaView>
