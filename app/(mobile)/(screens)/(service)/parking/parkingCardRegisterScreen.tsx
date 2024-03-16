@@ -44,7 +44,7 @@ interface Resident{
 const parkingCardSchema = yup.object().shape({
   color: yup.string().required("This field is required"),
   brand: yup.string().required("This field is required"), 
-  note: yup.string().required("This field is required"), // Optional field with max length validation
+  note: yup.string().required("This field is required"), 
 });
 
 
@@ -229,6 +229,7 @@ const parkingCardRegisterScreen = () => {
                   setNote("");
                   setLicensePlate("");
                   setSelectedImages([]);
+                  setErrors({});
               }
               else {
                   setShowError(true);

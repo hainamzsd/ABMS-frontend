@@ -11,6 +11,7 @@ import { Avatar } from 'react-native-paper';
 import * as Yup from 'yup'
 import { validatePassword } from '../../../../utils/passwordValidate';
 import { useAuth } from '../../context/AuthContext';
+import { jwtDecode } from 'jwt-decode';
 
 const validationSchema = Yup.object().shape({
     email: Yup.string().email('Email không hợp lệ').required('Email không được trống'),
@@ -32,12 +33,16 @@ const validationSchema = Yup.object().shape({
       .required('Nhập lại mật khẩu không được trống')
       .oneOf([Yup.ref('password')], 'Mật khẩu không khớp'),
   });
-  
+  interface User{
+    id: string;
+    BuildingId:string;
+  }
 
 
 const page = () => {
     const navigation = useNavigation();
     const {session} = useAuth();
+    const user:User = jwtDecode(session as string);
     const [password, setPassword] = useState("");
     const [reEnterPassword, setReEnterPassword] = useState("");
     const [phoneNumber, setPhoneNumber] = useState("");
@@ -58,7 +63,13 @@ const page = () => {
     const createAccount = async () => {
         setError(null);
         setValidationErrors({});
-
+        if(!user){
+            Toast.show({
+                type: 'error',
+                text1: 'Lỗi hệ thống! vui lòng thử lại sau',
+              });
+              return;
+        }
         const bodyData={
             building_id:"1",
             phone:phoneNumber,

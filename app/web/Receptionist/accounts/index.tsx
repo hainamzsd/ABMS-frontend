@@ -28,19 +28,25 @@ interface Account {
     modifyTime: string | null; // Optional field to allow null values
     status: number;
 }
-
+interface User{
+    id: string;
+    BuildingId:string;
+  }
 export default function AccountManagement() {
     const headers = ['Họ và tên', 'Số điện thoại', 'Email', ''];
     const [accountData, setAccountData] = useState<Account[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const {session} = useAuth();
-    const user:any = jwtDecode(session as string);
+    const user:User = jwtDecode(session as string);
     useEffect(() => {
         const fetchData = async () => {
             setIsLoading(true); // Set loading state to true
             setError(null); // Clear any previous errors
-
+            if(!user.BuildingId) {
+                 Toast.show({type:'danger',position:"top",text1:"Lỗi hệ thống",text2:"Không tìm thấy thông tin tòa nhà"})
+                return;
+                }
             try {
                 const response = await axios.get(`https://abmscapstone2024.azurewebsites.net/api/v1/account/get?role=3&buildingId=${user.BuildingId}`, {
                     timeout:100000

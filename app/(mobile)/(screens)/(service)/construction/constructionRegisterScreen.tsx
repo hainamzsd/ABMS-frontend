@@ -99,8 +99,7 @@ const [errors, setErrors] = useState<any>({});
   const validationSchema = yup.object().shape({
     projectName: yup.string().required(t('Project name is required')),
     constructionUnitName: yup.string().required(t('Construction unit name is required')),
-    phoneContact: yup.string().required(t('Phone contact is required')).matches(/^[\s\d\)\(\-+\.]+$/, t('Invalid phone format')),  // Generic phone regex (adapt as needed)
-    startDate: yup.date().required(t('Start date is required')),
+    phoneContact: yup.string().required(t('Phone contact is required')).matches(/(84|0[3|5|7|8|9])+([0-9]{8})\b/g, t('Invalid phone format')),      startDate: yup.date().required(t('Start date is required')),
     endDate: yup.date().required(t('End date is required')).when('startDate', {
       is: (startDate:Date) => startDate, // Only apply when startDate exists
       then: (schema) => schema.min(startDate, t('End date must be after start date')),
@@ -145,8 +144,12 @@ const [errors, setErrors] = useState<any>({});
       if (response.data.statusCode == 200) {
         setAlertConfirmVisible(true);
         setStartDate(new Date());
+        setProjectName("");
+        setConstructionUnitName("");
+        setPhoneContact("");
+        setEndDate(new Date());
         setNote("");
-        setErrors(null);
+        setErrors({});
       }
       else {
         setError(true);
@@ -250,6 +253,7 @@ const [errors, setErrors] = useState<any>({});
                   placeholder={t("Type") + "..."}
                   placeholderTextColor={"#9C9C9C"}
                   style={[styles.textInput]}
+                  keyboardType="phone-pad"
                   value={phoneContact}
                   onChangeText={setPhoneContact}
                 />

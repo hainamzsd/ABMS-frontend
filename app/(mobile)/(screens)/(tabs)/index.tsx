@@ -35,6 +35,7 @@ interface user{
   PhoneNumber:string;
   Id:string;
   Avatar:string;
+  BuildingId:string;
 }
   
 interface Room{
@@ -65,7 +66,7 @@ useEffect(() => {
     setErrorText("");
       try {
         const response = await axios.get(
-          `https://abmscapstone2024.azurewebsites.net/api/v1/resident-room/get?accountId=${user.Id}`,{
+          `https://abmscapstone2024.azurewebsites.net/api/v1/resident-room/get?accountId=${user.Id}&buildingId=${user.BuildingId}`,{
             timeout:10000
           }
         );

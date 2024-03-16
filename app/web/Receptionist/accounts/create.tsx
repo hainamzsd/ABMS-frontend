@@ -16,6 +16,7 @@ import { useAuth } from '../../context/AuthContext';
 import { CheckIcon } from 'lucide-react-native';
 import DatePicker from '../../../../components/ui/datepicker';
 import { Dropdown } from 'react-native-element-dropdown';
+import { jwtDecode } from 'jwt-decode';
 
 const validationSchema = Yup.object().shape({
     email: Yup.string().email('Email không hợp lệ').required('Email không được trống'),
@@ -38,7 +39,10 @@ const validationSchema = Yup.object().shape({
       .oneOf([Yup.ref('password')], 'Mật khẩu không khớp'),
   });
   
-
+  interface User{
+    id: string;
+    BuildingId:string;
+  }
 const page = () => {
     const navigation = useNavigation();
     const { session } = useAuth();
@@ -50,7 +54,7 @@ const page = () => {
     const [fullName, setFullName] = useState("");
     const [gender, setGender] = useState();
     const [dob, setDob] = useState(new Date());
-    
+    const user:User = jwtDecode(session as string);
   const [error, setError] = useState<string | null>(null);
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
     const handlePhoneChange = (phone: string) => {
@@ -64,9 +68,15 @@ const page = () => {
     const createAccount = async () => {
         setError(null);
         setValidationErrors({});
-
+        if(!user){
+            Toast.show({
+                type: 'error',
+                text1: 'Lỗi hệ thống! vui lòng thử lại sau',
+              });
+              return;
+        }
         const bodyData={
-            building_id:"1",
+            building_id:user.BuildingId,
             phone:phoneNumber,
             full_name:fullName,
             user_name:username,
