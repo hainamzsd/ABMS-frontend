@@ -14,6 +14,7 @@ import Toast from "react-native-toast-message";
 import * as Yup from 'yup';
 import { Alert } from "react-native";
 import { useAuth } from "../context/AuthContext";
+import { jwtDecode } from "jwt-decode";
 
 
 interface Account {
@@ -45,7 +46,9 @@ const validationSchema = Yup.object().shape({
   .max(20, 'Họ và tên không được nhiều hơn 20 kí tự')
 });
 
-
+interface User{
+  BuildingId:string;
+}
 
 const page = () => {
   const navigation = useNavigation();
@@ -56,7 +59,6 @@ const page = () => {
   const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
   const [fullName, setFullName] = useState("");
-
   const [error, setError] = useState<string | null>(null);
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
 
@@ -112,12 +114,20 @@ const page = () => {
   }, []);
 
   const {session} = useAuth();
+  const user:User = jwtDecode(session as string);
   const updateAccount = async () => {
     setError(null);
     setValidationErrors({});
-
+    if(!user){
+      Toast.show({
+        type: 'error',
+        text1: 'Không tìm thấy thông tin người dùng',
+        position: 'bottom'
+      })
+      return;
+    }
     const bodyData={
-        building_id:"1",
+        building_id:user.BuildingId,
         phone:phoneNumber,
         full_name:fullName,
         user_name:username,
