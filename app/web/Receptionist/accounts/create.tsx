@@ -62,6 +62,35 @@ const page = () => {
     };
     const [isLoading, setIsLoading] = useState(false);
 
+    const createRoom = async (accountId:string) => {
+        if(!user){
+            Toast.show({
+                type: 'error',
+                text1: 'Lỗi hệ thống! vui lòng thử lại sau',
+              });
+              return;
+        }
+        try {
+            const response = await axios.post('https://abmscapstone2024.azurewebsites.net/api/v1/resident-room/create', {
+                accountId: accountId,
+                buildingId: user.BuildingId
+            }, {
+                timeout: 10000,
+                headers: {
+                    'Authorization': `Bearer ${session}`
+                }
+            });
+            console.log(response.data)
+            return response.data.data;
+        }catch(error){
+            Toast.show({
+                type: 'error',
+                text1: 'Lỗi tạo tòa nhà! vui lòng thử lại sau',
+                position: 'bottom'
+            })
+        }
+            
+      }
     const createAccount = async () => {
         setError(null);
         setValidationErrors({});
@@ -107,6 +136,7 @@ const page = () => {
                     text1: 'Tạo tài khoản thành công',
                     position:'bottom'
                 })
+                createRoom(response.data.data);
                 router.replace('/web/Receptionist/accounts/');
             }
             else {
