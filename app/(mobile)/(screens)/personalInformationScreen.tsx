@@ -17,9 +17,8 @@ interface user{
 }
 
 const validationSchema = yup.object().shape({
-  name: yup.string().required('Name is required'),
-  email: yup.string().email('Invalid email format').required('Email is required'),
-  age: yup.number().typeError('Age must be a number').positive('Age must be positive').required('Age is required'),
+  fullName: yup.string().required().min(3).max(50),
+  
 });
 
 
@@ -46,7 +45,7 @@ const personalInformationScreen = () => {
           <View style={{ marginTop: 30 }}>
             <Text style={{ marginBottom: 10 }}>{t("Fullname")}</Text>
             <TextInput
-              placeholder="Điền họ và tên"
+              placeholder={t("Type")+"..."}
               placeholderTextColor={"#9C9C9C"}
               style={[
                 SHADOW,
@@ -55,9 +54,20 @@ const personalInformationScreen = () => {
             ></TextInput>
           </View>
           <View style={{ marginTop: 30 }}>
-            <Text style={{ marginBottom: 10 }}>Email</Text>
+            <Text style={{ marginBottom: 10 }}>{t("Gender")}</Text>
             <TextInput
-              placeholder="Điền email"
+              placeholder={t("Type")+"..."}
+              placeholderTextColor={"#9C9C9C"}
+              style={[
+                SHADOW,
+                { padding: 15, backgroundColor: "white", borderRadius: 10 },
+              ]}
+            ></TextInput>
+          </View>
+          <View style={{ marginTop: 30 }}>
+            <Text style={{ marginBottom: 10 }}>{t("Date of birth")}</Text>
+            <TextInput
+              placeholder={t("Type")+"..."}
               placeholderTextColor={"#9C9C9C"}
               style={[
                 SHADOW,

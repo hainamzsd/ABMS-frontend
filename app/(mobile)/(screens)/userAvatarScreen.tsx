@@ -103,14 +103,13 @@ const UserAvatar = () => {
       const ref = firebase.storage().ref().child(fileName);
       const snapshot = await ref.put(blob);
       const downloadURL = await snapshot.ref.getDownloadURL();
-      updateUserAvatar(downloadURL); 
+      await updateUserAvatar(downloadURL); 
     }catch(error){
       console.error('Error uploading image:', error);
       setShowError(true);
       setError(t("System error please try again later") + ".");
     }finally{
       setUploading(false);
-      setSuccess(true);
     }
 };
   const updateUserAvatar = async (url: string) => {
@@ -131,6 +130,7 @@ const UserAvatar = () => {
       });
         if (updateResponse.data.statusCode === 200) {
         setUser(updateResponse.data.data);
+        setSuccess(true);
       } else {
         setShowError(true);
         setError(t("System error please try again later") + ".");

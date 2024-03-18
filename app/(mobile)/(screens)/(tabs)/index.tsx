@@ -20,7 +20,7 @@ import {
   Settings,
 } from "lucide-react-native";
 import { LinearGradient } from "expo-linear-gradient";
-import { Link, Stack, router } from "expo-router";
+import { Link, Stack, router, useFocusEffect } from "expo-router";
 import { useTheme } from "../../context/ThemeContext";
 import { useTranslation } from "react-i18next";
 import { useSession } from "../../context/AuthContext";
@@ -29,6 +29,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import LoadingComponent from "../../../../components/resident/loading";
 import AlertWithButton from "../../../../components/resident/AlertWithButton";
+import { useIsFocused } from "@react-navigation/native";
 
 interface user{
   FullName:string;
@@ -57,7 +58,7 @@ const HomeScreen = () => {
   const { t } = useTranslation();
   const{session } = useSession();
 const user:user = jwtDecode(session as string);
-
+  const isFocused = useIsFocused();
 const [error, setError] = useState(false);
 const [errorText, setErrorText] = useState("");
 const [room, setRoom] = useState<Room[]>([]);
@@ -124,8 +125,10 @@ useEffect(() => {
       }
     }
   };
-  fetchItems();
-}, [session]);
+  if(isFocused){
+    fetchItems();
+  }
+}, [session, isFocused]);
   return (
     <>
     <AlertWithButton content={errorText} title={t("Error")} 

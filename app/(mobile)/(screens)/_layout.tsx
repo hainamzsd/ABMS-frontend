@@ -8,14 +8,18 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { StatusBar } from "react-native";
 import { useTranslation } from "react-i18next";
 import LoadingComponent from "../../../components/resident/loading";
+import { jwtDecode } from "jwt-decode";
 export default function AppLayout() {
-  const { session, isLoading } = useSession();
+  const { session, isLoading, signOut } = useSession();
   const { theme } = useTheme();
   const { t } = useTranslation();
+  // if(user.Role!=3){
+  //   signOut();
+  // }
   // if (isLoading) {
   //   return <LoadingComponent loading={isLoading}></LoadingComponent>;
   // }
-  if (!session) {
+  if (!session ) {
     return <Redirect href="/login" />;
   }
   return (
