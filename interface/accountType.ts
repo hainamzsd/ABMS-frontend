@@ -8,7 +8,7 @@ export interface user{
 
 export interface AccountOwner{
     fullName:string;
-    phoneNumber:string;
+    phoneNumber: string;
 }
 
 export interface Account {
