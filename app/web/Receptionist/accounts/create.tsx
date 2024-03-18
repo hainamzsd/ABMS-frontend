@@ -43,7 +43,6 @@ const validationSchema = Yup.object().shape({
 const page = () => {
     const navigation = useNavigation();
     const { session } = useAuth();
-    const user:user = jwtDecode(session as string);
     const [password, setPassword] = useState("");
     const [reEnterPassword, setReEnterPassword] = useState("");
     const [phoneNumber, setPhoneNumber] = useState("");
