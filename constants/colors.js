@@ -50,3 +50,10 @@ export const SIZES = {
   x30: 30,
   xxxLarge: 32,
 };
+
+export const FONTS = {
+  boldMedium: {
+    fontSize: 16,
+    fontWeight: 'bold'
+  }
+}

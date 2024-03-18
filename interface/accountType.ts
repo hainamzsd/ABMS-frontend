@@ -6,6 +6,11 @@ export interface user{
     BuildingId: string;
 }
 
+export interface AccountOwner{
+    fullName:string;
+    phoneNumber:string;
+}
+
 export interface Account {
     id: string;
     buildingId?: string | null; // Optional field to allow null values
