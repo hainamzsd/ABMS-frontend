@@ -206,6 +206,11 @@
     "Cancel card":"Hủy thẻ",
     "Choose card to cancel":"Chọn thẻ cần xóa",
     "Cancel card successfuly":"Cancel card successfuly",
-    "Date of birth":"Ngày sinh"
+    "Date of birth":"Ngày sinh",
+    "Error picking image, please choose different picture":"Lỗi chọn ảnh, vui lòng chọn ảnh khác",
+    "Thank you for giving feedback":"Cảm ơn bạn đã phản hồi",
+    "Title":"Tiêu đề",
+    "Do you want to send this request":"Bạn có muốn gửi yêu cầu này không",
+    "House owner":"Chủ nhà"
   }
 }

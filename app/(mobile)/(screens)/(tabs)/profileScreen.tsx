@@ -40,6 +40,8 @@ interface user{
 interface Room{
   roomNumber:string;
   id:string;
+  buildingName: string;
+  buildingAddress: string;
 }
 interface UserDatabase {
   id: string;
@@ -205,7 +207,7 @@ useEffect(() => {
               <Text style={{ fontWeight: "bold", marginBottom: 5 }}>
                 {room[0]?.roomNumber}
               </Text>
-              <Text style={{ fontWeight: "300" }}>Times city, Hà Nội</Text>
+              <Text style={{ fontWeight: "300" }}>{room[0]?.buildingAddress}</Text>
             </View>
           </TouchableOpacity>
 

@@ -205,6 +205,11 @@
     "Cancel card":"Cancel card",
     "Choose card to cancel":"Choose card to delete",
     "Cancel card successfuly":"Cancel card successfuly",
-    "Date of birth":"Date of birth"
+    "Date of birth":"Date of birth",
+    "Error picking image, please choose different picture":"Error picking image, please choose different picture",
+    "Thank you for giving feedback":"Thank you for giving feedback",
+    "Title":"Title",
+    "Do you want to send this request":"Do you want to send this request",
+    "House owner":"House owner"
   }
 }
