@@ -7,10 +7,16 @@ import axios from 'axios'
 import Toast from 'react-native-toast-message'
 import { Utility } from '../../../../interface/utilityType'
 import { router } from 'expo-router'
+import { useAuth } from '../../context/AuthContext'
+import { user } from '../../../../interface/accountType'
+import { jwtDecode } from 'jwt-decode'
+
 const Utilities = () => {
   const { theme } = useTheme();
   const [isLoading, setIsLoading] = useState(false);
   const [utilities, setUtilities] = useState<Utility[]>();
+  const { session } = useAuth();
+  const user:user = jwtDecode(session as string);
 
   useEffect(() => {
     fetchUtilities();
@@ -19,7 +25,7 @@ const Utilities = () => {
   const fetchUtilities = async () => {
     setIsLoading(true);
     try {
-      const response = await axios.get(`https://abmscapstone2024.azurewebsites.net/api/v1/utility/get-all`, {
+      const response = await axios.get(`https://abmscapstone2024.azurewebsites.net/api/v1/utility/get-all?buildingId=${user?.BuildingId}`, {
         timeout: 10000,
       });
       if (response.status === 200) {
@@ -58,7 +64,7 @@ const Utilities = () => {
         <Pressable
           onPress={() =>
             router.push({
-              pathname: `./utilities/utilityPlace`,
+              pathname: `./utilities/place`,
               params: {
                 id: item.id,
                 location: item.location,
@@ -86,7 +92,6 @@ const Utilities = () => {
           <View style={{ marginBottom: 20 }}>
             <Text style={{ fontWeight: 'bold', fontSize: 20 }}>Quản lý tiện ích</Text>
           </View>
-          {/* <View style={{ flexDirection: 'row', justifyContent: 'space-between', flexWrap: 'wrap' }}> */}
           <FlatList
             data={utilities}
             renderItem={renderItem}
@@ -94,7 +99,6 @@ const Utilities = () => {
             numColumns={4}
             columnWrapperStyle={{ gap: 20 }}
           />
-          {/* </View> */}
         </ScrollView>
       </SafeAreaView>
     </View>

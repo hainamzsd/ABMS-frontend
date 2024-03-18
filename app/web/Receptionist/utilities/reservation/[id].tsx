@@ -20,14 +20,12 @@ const StatusData = [
 
 const UtilityDetail = () => {
     const item = useLocalSearchParams();
-    console.log(item.id);
     const [isLoading, setIsLoading] = useState(false);
     const [utility, setUtility] = useState<Reservation>();
     const [status, setStatus] = useState();
     const navigation = useNavigation();
     const disableBtn = status === undefined;
     const { session } = useAuth();
-    console.log(session)
     const [room, setRoom] = useState<Room>();
 
     useEffect(() => {
@@ -105,7 +103,7 @@ const UtilityDetail = () => {
     const approveUtility = async () => {
         try {
             setIsLoading(true); // Set loading state to true
-            const response = await axios.put(`https://abmscapstone2024.azurewebsites.net/api/v1/construction/manage/${utility?.id}?status=${status}`, {}, {
+            const response = await axios.put(`https://abmscapstone2024.azurewebsites.net/api/v1/reservation/manage/${utility?.id}?status=${status}`, {}, {
                 timeout: 10000,
                 headers: {
                     'Authorization': `Bearer ${session}`
@@ -158,40 +156,34 @@ const UtilityDetail = () => {
     }, [utility])
 
     // DELETE: Cancel Status
-    const handleDeleteConstruction = async () => {
-        if (!item.id) {
-            Toast.show({
-                type: 'error',
-                text1: 'Không tìm thấy thi công',
-                position: 'bottom'
-            })
-            return;
-        }
+    const cancelUtility = async () => {
         try {
-            setIsLoading(true);
-            const response = await axios.delete(`https://abmscapstone2024.azurewebsites.net/api/v1/construction/delete/${item.id}`, {
+            setIsLoading(true); // Set loading state to true
+            const response = await axios.put(`https://abmscapstone2024.azurewebsites.net/api/v1/reservation/manage/${utility?.id}?status=${status}`, {}, {
                 timeout: 10000,
-                withCredentials: true,
                 headers: {
                     'Authorization': `Bearer ${session}`
                 }
             });
-            console.log(response);
+            // console.log(response);
+
             if (response.data.statusCode == 200) {
                 Toast.show({
                     type: 'success',
-                    text1: 'Xóa yêu cầu thành công',
+                    text1: 'Từ chối phiếu đặt chỗ thành công',
                     position: 'bottom'
                 })
-                router.replace('/web/Receptionist/services/construction/');
-            } else {
+                // router.replace('/web/Receptionist/utilities/utility');
+            }
+            else {
+                console.error(response);
                 Toast.show({
                     type: 'error',
-                    text1: 'Xóa yêu cầu không thành công',
+                    text1: 'Từ chối yêu cầu không thành công',
                     position: 'bottom'
                 })
             }
-        } catch (error) {
+        } catch (error: any) {
             if (axios.isCancel(error)) {
                 Toast.show({
                     type: 'error',
@@ -199,7 +191,14 @@ const UtilityDetail = () => {
                     position: 'bottom'
                 })
             }
-            console.error('Error deleting construction:', error);
+            else {
+                console.error(error);
+                Toast.show({
+                    type: 'error',
+                    text1: 'Lỗi cập nhật phiếu đặt chỗ! vui lòng thử lại sau',
+                    position: 'bottom'
+                })
+            }
         } finally {
             setIsLoading(false);
         }
@@ -350,14 +349,14 @@ const UtilityDetail = () => {
                             onPress={() => {
                                 Swal.fire({
                                     title: 'Xác nhận',
-                                    text: 'Bạn có muốn xóa phiếu đăng ký này?',
+                                    text: 'Bạn có muốn xóa phiếu đặt chỗ này?',
                                     icon: 'warning',
                                     showCloseButton: true,
                                     confirmButtonText: 'Xóa',
                                     confirmButtonColor: '#9b2c2c',
                                 }).then((result) => {
                                     if (result.isConfirmed) {
-                                        handleDeleteConstruction();
+                                        cancelUtility();
                                     }
                                 })
                             }}
