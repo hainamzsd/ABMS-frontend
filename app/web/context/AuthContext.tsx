@@ -43,6 +43,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
        {
         timeout:10000
        });
+       console.log(result)
         setSession(result.data.data);
         return result;
     } catch (e) {

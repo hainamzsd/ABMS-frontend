@@ -1,4 +1,4 @@
-import { Link, Redirect, useNavigation } from "expo-router";
+import { Link, Redirect, useLocalSearchParams, useNavigation } from "expo-router";
 import { SafeAreaView, Text, View, ScrollView, TextInput, TouchableOpacity, Image, FlatList, ActivityIndicator } from "react-native";
 import Button from "../../../components/ui/button";
 import { Cell, TableComponent, TableRow } from "../../../components/ui/table";
@@ -9,6 +9,8 @@ import axios from "axios";
 import Toast from "react-native-toast-message";
 import { useSession } from "../../(mobile)/context/AuthContext";
 import { paginate } from "../../../utils/pagination";
+import { Building } from "../../../interface/roomType";
+import { SIZES } from "../../../constants";
 
 interface Account {
     id: string;
@@ -33,34 +35,7 @@ export default function AccountManagement() {
     const [accountData, setAccountData] = useState<Account[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
-   
-    useEffect(() => {
-        const fetchData = async () => {
-            setIsLoading(true); // Set loading state to true
-            setError(null); // Clear any previous errors
 
-            try {
-                const response = await axios.get(`https://abmscapstone2024.azurewebsites.net/api/v1/account/get?role=1`, {
-                    timeout:100000
-                });
-                setAccountData(response.data.data); // Set account data
-            } catch (error) {
-                if (axios.isCancel(error)) {
-                    Toast.show({
-                        type: 'error',
-                        text1: 'Lỗi hệ thống! vui lòng thử lại sau',
-                        position:'bottom'
-                    })
-                }
-                console.error('Error fetching account data:', error);
-                setError('Failed to fetch account data.'); // Set error message
-            } finally {
-                setIsLoading(false); // Set loading state to false regardless of success or failure
-            }
-        };
-
-        fetchData();
-    }, []);
         //search box
   const [searchQuery, setSearchQuery] = useState('');
   const [filteredRequests, setFilteredRequests] = useState<Account[]>([]);
@@ -89,7 +64,7 @@ export default function AccountManagement() {
                         <Text style={{ fontWeight: 'bold', fontSize: 20, marginBottom: 5 }}>Danh sách tài khoản</Text>
                         <Text>Thông tin tài khoản của quản lý chung cư</Text>
                     </View>
-                    <Link href={"/web/Admin/create"}>
+                    <Link href={`/web/Admin/create`}>
                     <Button text="Tạo tài khoản ban quản lý" style={{width:200}}></Button>
                     </Link>
                     <View style={styles.searchContainer}>

@@ -45,7 +45,7 @@ const Login: React.FC = () => {
           position:'bottom'
         });
         const data:User =  jwtDecode(token.data.data);
-        console.log(data.Role);
+        console.log("dataUser",data);
         if(data.Role===3){
           Toast.show({
             type: "error",

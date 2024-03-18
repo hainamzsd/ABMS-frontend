@@ -1,5 +1,5 @@
 import { View, Text, SafeAreaView, ActivityIndicator } from 'react-native'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { router, useNavigation } from 'expo-router';
 import { ScrollView } from 'react-native';
 import Button from '../../../../components/ui/button';
