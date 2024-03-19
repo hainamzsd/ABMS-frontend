@@ -12,6 +12,11 @@ export interface Room {
   status: number;
 }
 
+export interface RoomNumber {
+  id: string;
+  roomNumber: string | null;
+}
+
 export interface RoomMember {
   id: string;
   roomId: string;
