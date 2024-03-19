@@ -12,6 +12,7 @@ import { statusForReceptionist, statusUtility } from '../../../../../constants/s
 import { Dropdown } from 'react-native-element-dropdown'
 import { Reservation, Utility } from '../../../../../interface/utilityType';
 import SearchWithButton from '../../../../../components/ui/searchWithButton'
+import { useAuth } from '../../../context/AuthContext'
 
 const StatusData = [
     { label: "Phiếu đã được kiểm duyệt", value: 3 },
@@ -19,27 +20,43 @@ const StatusData = [
     { label: "Phiếu đang chờ được kiểm duyệt", value: 2 }
 ]
 
-const SingleUtility = () => {
+const ReservationUtility = () => {
     const item = useLocalSearchParams();
-    const headers = ['Căn hộ', 'Tên sân','Khung giờ', 'Ghi chú',  'Ngày đặt', 'Tổng tiền', 'Trạng thái', ''];
+    const headers = ['Căn hộ', 'Tên sân', 'Khung giờ', 'Ghi chú', 'Ngày đặt', 'Tổng tiền', 'Trạng thái', ''];
     //   STATE
     const [isLoading, setIsLoading] = useState(false);
     const [utilityReservation, setUtilityReservation] = useState<Reservation[]>();
     const [currentPage, setCurrentPage] = useState(1)
-    const [status, setStatus] = useState(2);
+    const [status, setStatus] = useState<number | null>(2);
     const navigate = useNavigation();
+    const [searchQuery, setSearchQuery] = useState('');
     // const { currentItems, totalPages } = paginate(request, currentPage, itemsPerPage)
 
+    // const [filteredRequests, setFilteredRequests] = useState<Construction[]>([]);
+    // useEffect(() => {
+    //   if (searchQuery.trim() !== '') {
+    //     const filtered = request.filter(item =>
+    //       item.room.roomNumber.toLowerCase().includes(searchQuery.toLowerCase())
+    //     );
+    //     setFilteredRequests(filtered);
+    //   } else {
+    //     setFilteredRequests(request);
+    //   }
+    // }, [searchQuery, request]);
     useEffect(() => {
         fetchData();
-    }, [])
+    }, [status])
+
+
 
     const fetchData = async () => {
         setIsLoading(true);
         try {
-            const response = await axios.get(`https://abmscapstone2024.azurewebsites.net/api/v1/reservation/get?utilityDetailId=${item?.id}`, {
-                timeout: 10000,
-            });
+            let url = `https://abmscapstone2024.azurewebsites.net/api/v1/reservation/get?utilityDetailId=${item?.id}`;
+            if (status !== null) {
+                url += `&status=${status}`
+            }
+            const response = await axios.get(url, { timeout: 10000 })
             if (response.status === 200) {
                 setUtilityReservation(response.data.data);
             } else {
@@ -120,11 +137,12 @@ const SingleUtility = () => {
                                             <Cell>
                                                 <Button text="Chi tiết"
                                                     onPress={() => router.push({
-                                                        pathname: `./utility/${item?.utility_detail_id}`
+                                                        pathname: `./reservation/${item?.utility_detail_id}`
                                                     })} />
                                             </Cell>
                                         </TableRow>
-                                    )}}
+                                    )
+                                }}
                                 keyExtractor={(item: Reservation) => item?.id}
                             />
 
@@ -145,7 +163,7 @@ const SingleUtility = () => {
     )
 }
 
-export default SingleUtility;
+export default ReservationUtility;
 const styles = StyleSheet.create({
     input: {
         width: '100%'
