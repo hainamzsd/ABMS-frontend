@@ -37,6 +37,7 @@ export const COLORS = {
   lightWhite: "#FAFAFC",
   buttonRed: "#891652",
   buttonYellow: "#FFC700",
+  buttonDisable: "#E0E0E0",
 };
 
 export const SIZES = {
@@ -49,3 +50,10 @@ export const SIZES = {
   x30: 30,
   xxxLarge: 32,
 };
+
+export const FONTS = {
+  boldMedium: {
+    fontSize: 16,
+    fontWeight: 'bold'
+  }
+}

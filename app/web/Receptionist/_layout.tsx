@@ -38,8 +38,8 @@ const _layout = () => {
         href: "/web/Receptionist/posts",
       },
       {
-        name: "Quản lý toà nhà",
-        href: "/web/Receptionist/buildings",
+        name: "Quản lý căn hộ",
+        href: "/web/Receptionist/rooms",
       },
     ];
     const [windowWidth, setWindowWidth] = useState(
