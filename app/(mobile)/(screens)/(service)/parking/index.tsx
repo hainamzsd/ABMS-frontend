@@ -17,6 +17,7 @@ import {
     CreditCard,
     GanttChart,
     Hammer,
+    List,
     ListX,
     Settings,
   } from "lucide-react-native";
@@ -39,6 +40,11 @@ import {
         serviceName: t("Cancel card"),
         path: "/(mobile)/(screens)/(service)/parking/delete",
         icon: <ListX color={"black"} strokeWidth={1.5}></ListX>,
+      },
+      {
+        serviceName: t("Request list"),
+        path: "/(mobile)/(screens)/(service)/parking/requestList",
+        icon: <List color={"black"} strokeWidth={1.5}></List>,
       },
     ];
   

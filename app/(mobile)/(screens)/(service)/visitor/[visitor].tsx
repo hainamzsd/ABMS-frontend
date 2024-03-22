@@ -29,7 +29,8 @@ interface Visitor{
     identityNumber: string;
     identityCardImgUrl: string;
     description: string;
-    status: number,
+    status: number;
+    response:string;
   }
 const Page = () => {
     const item = useLocalSearchParams();
@@ -193,7 +194,11 @@ useEffect(() => {
                                     <Text>{t("Note")}:</Text>
                                     <Text style={{marginTop:5}}>{data?.description}</Text>
                                 </View>
-                                
+                                {data?.status==4 &&
+                                 <View style={styles.reservationinformation}>
+                                 <Text>{t("Request response")}:</Text>
+                                 <Text style={{fontSize:16}}>{data?.response}</Text>
+                             </View>}
                             </View>
                             <View>
                                 {imageUrls.length > 0 && 

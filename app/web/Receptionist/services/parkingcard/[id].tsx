@@ -36,6 +36,7 @@ interface ParkingCard{
   createTime: Date,
   modifyUser: string;
   modifyTime: string;
+  response: string;
   status: number,
   resident: {
     id: string;
@@ -66,8 +67,10 @@ const page = () => {
   const [color, setColor] = useState("");
   const [brand, setBrand] = useState("");
   const {session} = useAuth();
+  const [reply, setReply] = useState("");
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
-  const disableBtn = status===undefined;
+  const disableBtn = status===undefined || status==4 && reply=="";
+  console.log(reply)
   useEffect(() => {
     const fetchData = async () => {
       setIsLoading(true); 
@@ -80,6 +83,9 @@ const page = () => {
           setParkingCard(response.data.data)
           setColor(response.data.data.color);
           setBrand(response.data.data.brand);
+          if(response.data.data.response){
+            setReply(response.data.data.response);
+          }
         }
         else {
           console.error(response);
@@ -138,7 +144,8 @@ const page = () => {
         image: parkingcard?.image,
         expire_date: parkingcard?.expireDate,
         status: status,
-        note: parkingcard?.note
+        note: parkingcard?.note,
+        response: reply
       }, {
         timeout: 10000,
         headers: {
@@ -451,6 +458,20 @@ useEffect(() => {
               }}
             ></Dropdown>
           </View>
+          {status==4 &&
+          <View>
+          <Text style={{ marginBottom: 10, fontWeight: "600", fontSize: 16 }}>
+            Phản hồi
+          </Text>
+          <Input
+            placeholderTextColor={'black'}
+            value={reply}
+            onChangeText={setReply}
+            placeholder="Nhập phản hồi" style={[{ width: "100%", backgroundColor: 'white' }]}
+          ></Input>
+        </View>
+          }
+          
           <View style={{ flexDirection: 'row', marginTop: 10 }}>
             <Button
             onPress={approveParkingCard}

@@ -13,62 +13,98 @@ import { useTheme } from "../../context/ThemeContext";
 import { useTranslation } from "react-i18next";
 import SHADOW from "../../../../constants/shadow";
 import { useEffect, useState } from "react";
+import { useIsFocused } from "@react-navigation/native";
+import { useSession } from "../../context/AuthContext";
+import { jwtDecode } from "jwt-decode";
+import axios from "axios";
+import AlertWithButton from "../../../../components/resident/AlertWithButton";
+import LoadingComponent from "../../../../components/resident/loading";
+import moment from "moment";
+import { truncateText } from "../../../../utils/truncate";
+import { Clock } from "lucide-react-native";
+import { router } from "expo-router";
 
+interface user{
+  FullName:string;
+  PhoneNumber:string;
+  Id:string;
+  BuildingId:string;
+}
 
-export const MOCK_DATA = [
-  { id: 1, name: 'Item 1', description: 'Description for item 1' },
-  { id: 2, name: 'Item 2', description: 'Description for item 2' },
-  { id: 3, name: 'Item 3', description: 'Description for item 3' },
-  { id: 4, name: 'Item 3', description: 'Description for item 3' },
-  { id: 5, name: 'Item 3', description: 'Description for item 3' },
-  { id: 6, name: 'Item 3', description: 'Description for item 3' },
-  { id: 7, name: 'Item 3', description: 'Description for item 3' },
-  { id: 8, name: 'Item 3', description: 'Description for item 3' },
-];
-
+interface Post{
+  id: string;
+  title: string;
+  content: string;
+  image: string;
+  createUser: string;
+  createTime: Date,
+  modifyUser: string;
+  modifyTime: string;
+  status: number;
+  buildingId: string;
+  type: number;
+}
 const NotificationScreen = () => {
   const { theme } = useTheme();
   const { t } = useTranslation();
-
+  const isFocused = useIsFocused();
+  const [isLoading, setIsLoading] = useState(false);
+  const [data, setData] = useState<Post[]>([]); 
+  const [displayData, setDisplayData] = useState<Post[]>([]); 
   const [currentPage, setCurrentPage] = useState(1);
-  const [dataToDisplay, setDataToDisplay] = useState<any[]>([]);
-  const [isLoadingMore, setIsLoadingMore] = useState(false); // Track loading state
-
+  const [error, setError] = useState<string>("");
+  const [showError, setShowError] = useState(false);
+  const{session } = useSession();
+  const user:user = jwtDecode(session as string);
   useEffect(() => {
-    const startIndex = (currentPage - 1) * 4;
-    const endIndex = startIndex + 4;
-    const newData = MOCK_DATA.slice(startIndex, endIndex);
-    // Append new data to existing data
-    setDataToDisplay([...dataToDisplay, ...newData]);
-  }, [currentPage]); // Update data when page changes
-
-  //   useEffect(() => {
-  //     const fetchData = async () => {
-  //       const newData = await fetchItems(currentPage);
-  //       setData([...data, ...newData]); // Append new data
-  //     };
-  //     fetchData();
-  //   }, [currentPage]); 
-
-
-  const handleNextPage = async () => {
-    if (currentPage * 3 < MOCK_DATA.length && !isLoadingMore) {
-      setIsLoadingMore(true);
-      // Simulate delayed loading for demonstration purposes
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      setCurrentPage(currentPage + 1);
-      setIsLoadingMore(false);
+    const fetchItems = async () => {
+        setIsLoading(true);
+        setError("");
+        try {
+            const response = await axios.get(`https://abmscapstone2024.azurewebsites.net/api/v1/post/get-all?buildingId=${user.BuildingId}&type=1`,{
+                timeout:10000
+            });
+            setData(response.data.data); // Store all data
+            setDisplayData(response.data.data);
+            console.log(displayData)
+        } catch (error) {
+            if(axios.isAxiosError(error)){
+              setShowError(true);
+                setError("Failed to retrieve posts"+".");
+            }
+            setShowError(true);
+            setError(t('Failed to retrieve posts')+".");
+        } finally {
+            setIsLoading(false);
+        }
+    };
+    if(isFocused){
+        fetchItems();
     }
-  };
-  const renderFooter = () => {
-    if (isLoadingMore) {
-      return <ActivityIndicator size="small" color={theme.primary} />;
-    }
-    return null;
+}, [isFocused]);
 
-  };
-  const render = ({ item }: any) => (
-    <Pressable
+const PER_PAGE = 3;
+useEffect(() => {
+    const startIndex = (currentPage - 1) * PER_PAGE;
+    const endIndex = startIndex + PER_PAGE;
+    setDisplayData(data.slice(startIndex, endIndex));
+}, [currentPage, data]);
+
+
+const loadMoreItems = () => {
+    // Only attempt to load more items if there are more items to load
+    if (!isLoading && displayData.length < data.length) {
+        setCurrentPage(currentPage => currentPage + 1);
+    }
+};
+const renderFooter = () => {
+if (isLoading) {
+  return <ActivityIndicator size="small"  color={theme.primary}/>;
+}
+return null;
+};
+  const render = ({ item }: {item:Post}) => (
+    <TouchableOpacity
       style={[
         {
           flexDirection: "row",
@@ -79,6 +115,7 @@ const NotificationScreen = () => {
         },
         SHADOW,
       ]}
+      onPress={()=>router.push(`/(mobile)/(screens)/(post)/${item.id}`)}
     >
       <View
         style={{
@@ -91,22 +128,31 @@ const NotificationScreen = () => {
       <View style={{ padding: 10, justifyContent: 'space-between', flex: 1 }}>
         <View>
           <Text style={{ fontWeight: "bold", fontSize: 18, marginBottom: 5 }}>
-            Thông báo chung
+            {item?.title}
           </Text>
           <Text style={{ marginBottom: 5 }}>
-            lorem lorem lorem lorem lorem lorem lorem lorem lorem lorem
-            lorem loremloremloremlorem
+          {item?.content
+            ? truncateText(item.content, 30) // Truncate at 30 characters (adjust as needed)
+            : ''}
           </Text>
         </View>
+        <View style={{flexDirection:'row', alignItems:'center', marginTop:5}}>
+        <Clock color={'#9c9c9c'} size={20} style={{marginRight:5}}></Clock>
         <Text
           style={{ fontWeight: "300", color: "#9C9C9C" }}>
-          22 tháng 1, 2024
+          {moment.utc(item?.createTime).format("DD/MM/YYYY")}
         </Text>
+        </View>
       </View>
-    </Pressable>
+    </TouchableOpacity>
   )
   return (
     <>
+     <AlertWithButton 
+      title={t("Error")}
+      visible={showError}
+      content={error} onClose={() =>setShowError(false)}></AlertWithButton>
+        <LoadingComponent loading={isLoading}></LoadingComponent>
       <SafeAreaView style={{ backgroundColor: theme.background, flex: 1 }}>
         <View style={{ flex: 1 }}>
           <Text
@@ -116,11 +162,11 @@ const NotificationScreen = () => {
           </Text>
           <FlatList
             style={{ paddingHorizontal: 26 }}
-            data={dataToDisplay}
+            data={displayData}
             renderItem={render}
-            keyExtractor={(item) => item.id.toString()}
-            onEndReached={handleNextPage}
-            onEndReachedThreshold={0.5}
+            keyExtractor={(item) => item.id}
+            onEndReached={loadMoreItems}
+            onEndReachedThreshold={0.5} 
             ListFooterComponent={renderFooter}
           />
         </View>

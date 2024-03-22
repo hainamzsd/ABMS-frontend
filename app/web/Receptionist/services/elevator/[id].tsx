@@ -34,24 +34,26 @@ const page = () => {
   const [isLoading, setIsLoading] = useState(false);
   const navigation = useNavigation();
   const [status, setStatus] = useState();
+  const [response, setResponse] = useState("");
   const [elevator, setElevator] = useState<Elevator>();
   const {session} = useAuth();
-  const disableBtn = status===undefined;
+  const disableBtn = status===undefined || status==4 && response=="";
   console.log(status);
   useEffect(() => {
     const fetchData = async () => {
       setIsLoading(true); 
 
       try {
-        const response = await axios.get(`https://abmscapstone2024.azurewebsites.net/api/v1/elevator/get/${item.id}`, {
+        const responseAxios = await axios.get(`https://abmscapstone2024.azurewebsites.net/api/v1/elevator/get/${item.id}`, {
           timeout: 10000,
         });
-        console.log(response);
-        if (response.status === 200) {
-          setElevator(response.data.data)
+        if (responseAxios.status === 200) {
+          setElevator(responseAxios.data.data)
+          if(responseAxios.data.data.response){
+            setResponse(responseAxios.data.data.response);
+          }
         }
         else {
-          console.error(response);
           Toast.show({
             type: 'error',
             text1: 'Lỗi lấy thông tin phiếu đăng ký thang máy',
@@ -83,14 +85,17 @@ const page = () => {
     try {
       console.log(session);
         setIsLoading(true); // Set loading state to true
-        const response = await axios.put(`https://abmscapstone2024.azurewebsites.net/api/v1/elevator/manage/${elevator?.id}?status=${status}`,{}, {
+        const responseAxios = await axios.put(`https://abmscapstone2024.azurewebsites.net/api/v1/elevator/manage/${elevator?.id}`,{
+          status: status,
+          response: response
+        }, {
             timeout: 10000,
             headers:{
               'Authorization': `Bearer ${session}`
           }
         });
-        console.log(response);
-        if(response.data.statusCode == 409){
+        console.log(responseAxios);
+        if(responseAxios.data.statusCode == 409){
           Toast.show({
             type: 'error',
             text1: 'Không thể phê duyệt yêu cầu này',
@@ -99,7 +104,7 @@ const page = () => {
           })
           return;
         }
-        if (response.data.statusCode == 200) {
+        if (responseAxios.data.statusCode == 200) {
             Toast.show({
                 type: 'success',
                 text1: 'Phê duyệt phiếu đăng ký thành công',
@@ -108,7 +113,6 @@ const page = () => {
             router.replace('/web/Receptionist/services/elevator/');
         }
         else {
-          console.error(response);
             Toast.show({
                 type: 'error',
                 text1: 'Phê duyệt không thành công',
@@ -146,15 +150,14 @@ const handleDeleteElevator = async () => {
   }
   try {
     setIsLoading(true);
-    const response = await axios.delete(`https://abmscapstone2024.azurewebsites.net/api/v1/elevator/delete/${item.id}`, {
+    const responseAxios = await axios.delete(`https://abmscapstone2024.azurewebsites.net/api/v1/elevator/delete/${item.id}`, {
       timeout: 10000,
       withCredentials:true,
       headers:{
         'Authorization': `Bearer ${session}`
       }
   });
-    console.log(response);
-    if (response.data.statusCode == 200) {
+    if (responseAxios.data.statusCode == 200) {
       Toast.show({
         type:'success',
         text1:'Xóa yêu cầu thành công',
@@ -190,9 +193,9 @@ useEffect(() => {
   const fetchData = async () => {
     setIsLoading(true)
     try {
-      const response = await axios.get(`https://abmscapstone2024.azurewebsites.net/api/v1/resident-room/get/${elevator?.roomId}`, { timeout: 100000 })
-      if (response.data.statusCode === 200) {
-        setRoom(response.data.data)
+      const responseAxios = await axios.get(`https://abmscapstone2024.azurewebsites.net/api/v1/resident-room/get/${elevator?.roomId}`, { timeout: 100000 })
+      if (responseAxios.data.statusCode === 200) {
+        setRoom(responseAxios.data.data)
       } else {
         Toast.show({
           type: 'error',
@@ -334,13 +337,27 @@ useEffect(() => {
               }}
             ></Dropdown>
           </View>
+          {status==4 &&
+          <View>
+          <Text style={{ marginBottom: 10, fontWeight: "600", fontSize: 16 }}>
+            Phản hồi
+          </Text>
+          <Input
+            placeholderTextColor={'black'}
+            value={response}
+            onChangeText={setResponse}
+            placeholder="Nhập phản hồi" style={[{ width: "100%", backgroundColor: 'white' }]}
+          ></Input>
+        </View>
+          }
+          
           <View style={{ flexDirection: 'row', marginTop: 10 }}>
             <Button
             onPress={approveElevator}
             disabled={disableBtn}
             text="Phê duyệt" style={[{ width: 100, marginRight: 10,
             opacity:disableBtn?0.7:1}]}></Button>
-            <Button 
+            {/* <Button 
             onPress={()=>{
               Swal.fire({
                 title: 'Xác nhận',
@@ -355,7 +372,7 @@ useEffect(() => {
                 }
               })
             }}
-            text="Xóa" style={{ width: 100, backgroundColor: '#9b2c2c' }}></Button>
+            text="Xóa" style={{ width: 100, backgroundColor: '#9b2c2c' }}></Button> */}
           </View>
         </ScrollView>
       </SafeAreaView>
@@ -366,7 +383,7 @@ const styles = StyleSheet.create({
   comboBox: {
     backgroundColor: 'white',
     borderRadius: 10,
-    padding: 10,
+    padding: 5,
     borderWidth: 1,
     marginTop: 5
   },

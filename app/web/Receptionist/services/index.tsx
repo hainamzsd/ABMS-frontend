@@ -35,6 +35,11 @@ const data:Services[] = [
     footerText: 'Truy cập',
    imageUrl: require('../../../../assets/images/id-card.png'),
    href: '/web/Receptionist/services/visitor/' },
+   { id: '5', title: 'Theo dõi đơn phản hồi', 
+   description: 'Tiếp nhận các đơn phản hồi từ cư dân',
+    footerText: 'Truy cập',
+   imageUrl: require('../../../../assets/images/feedback.png'),
+   href: '/web/Receptionist/services/feedback/' },
   // Add more items...
 ];
 interface CardData {

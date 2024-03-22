@@ -23,6 +23,17 @@
       "typedRoutes": true
     },
     "name": "code",
-    "slug": "code"
+    "slug": "code",
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "ec3adc81-eb99-4d41-a4f3-54f6438d70ac"
+      }
+    },
+    "android": {
+      "package": "com.anonymous.code"
+    }
   }
 }

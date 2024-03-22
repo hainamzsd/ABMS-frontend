@@ -28,7 +28,7 @@ interface Construction{
     description:string;
     createTime:Date;
     status:number;
-   
+    response:string;
 }
 
 interface Room{
@@ -41,24 +41,28 @@ const page = () => {
   const [isLoading, setIsLoading] = useState(false);
   const navigation = useNavigation();
   const [status, setStatus] = useState();
+  const [response,setResponse] = useState("");
   const [construction, setConstruction] = useState<Construction>();
   const {session} = useAuth();
-  const disableBtn = status===undefined;
+  const disableBtn = status===undefined || status==4 && response=="";
   console.log(status);
   useEffect(() => {
     const fetchData = async () => {
       setIsLoading(true); 
 
       try {
-        const response = await axios.get(`https://abmscapstone2024.azurewebsites.net/api/v1/construction/get/${item.id}`, {
+        const responseAxios = await axios.get(`https://abmscapstone2024.azurewebsites.net/api/v1/construction/get/${item.id}`, {
           timeout: 10000,
         });
-        console.log(response);
-        if (response.status === 200) {
-          setConstruction(response.data.data)
+        console.log(responseAxios);
+        if (responseAxios.status === 200) {
+          setConstruction(responseAxios.data.data)
+          if(responseAxios.data.data.response){
+            setResponse(responseAxios.data.data.response);
+          }
         }
         else {
-          console.error(response);
+          console.error(responseAxios);
           Toast.show({
             type: 'error',
             text1: 'Lỗi lấy thông tin phiếu đăng ký thi công',
@@ -95,9 +99,9 @@ const page = () => {
     const fetchData = async () => {
       setIsLoading(true)
       try {
-        const response = await axios.get(`https://abmscapstone2024.azurewebsites.net/api/v1/resident-room/get/${construction?.roomId}`, { timeout: 100000 })
-        if (response.data.statusCode === 200) {
-          setRoom(response.data.data)
+        const responseAxios = await axios.get(`https://abmscapstone2024.azurewebsites.net/api/v1/resident-room/get/${construction?.roomId}`, { timeout: 100000 })
+        if (responseAxios.data.statusCode === 200) {
+          setRoom(responseAxios.data.data)
         } else {
           Toast.show({
             type: 'error',
@@ -131,15 +135,18 @@ const page = () => {
     try {
       console.log(session);
         setIsLoading(true); // Set loading state to true
-        const response = await axios.put(`https://abmscapstone2024.azurewebsites.net/api/v1/construction/manage/${construction?.id}?status=${status}`,{}, {
+        const responseAxios = await axios.put(`https://abmscapstone2024.azurewebsites.net/api/v1/construction/manage/${construction?.id}`,{
+          status: status,
+          response: response
+        }, {
             timeout: 10000,
             headers:{
               'Authorization': `Bearer ${session}`
           }
         });
-        console.log(response);
+        console.log(responseAxios);
        
-        if (response.data.statusCode == 200) {
+        if (responseAxios.data.statusCode == 200) {
             Toast.show({
                 type: 'success',
                 text1: 'Phê duyệt phiếu đăng ký thành công',
@@ -148,7 +155,7 @@ const page = () => {
             router.replace('/web/Receptionist/services/construction/');
         }
         else {
-          console.error(response);
+          console.error(responseAxios);
             Toast.show({
                 type: 'error',
                 text1: 'Phê duyệt yêu cầu không thành công',
@@ -186,15 +193,15 @@ const handleDeleteConstruction = async () => {
   }
   try {
     setIsLoading(true);
-    const response = await axios.delete(`https://abmscapstone2024.azurewebsites.net/api/v1/construction/delete/${item.id}`, {
+    const responseAxios = await axios.delete(`https://abmscapstone2024.azurewebsites.net/api/v1/construction/delete/${item.id}`, {
       timeout: 10000,
       withCredentials:true,
       headers:{
         'Authorization': `Bearer ${session}`
       }
   });
-    console.log(response);
-    if (response.data.statusCode == 200) {
+    console.log(responseAxios);
+    if (responseAxios.data.statusCode == 200) {
       Toast.show({
         type:'success',
         text1:'Xóa yêu cầu thành công',
@@ -353,6 +360,20 @@ const handleDeleteConstruction = async () => {
               }}
             ></Dropdown>
           </View>
+          {status==4 &&
+          <View>
+          <Text style={{ marginBottom: 10, fontWeight: "600", fontSize: 16 }}>
+            Phản hồi
+          </Text>
+          <Input
+            placeholderTextColor={'black'}
+            value={response}
+            onChangeText={setResponse}
+            placeholder="Nhập phản hồi" style={[{ width: "100%", backgroundColor: 'white' }]}
+          ></Input>
+        </View>
+          }
+          
           <View style={{ flexDirection: 'row', marginTop: 10 }}>
             <Button
             onPress={approveConstruction}

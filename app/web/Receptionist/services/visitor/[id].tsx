@@ -31,7 +31,8 @@ interface Visitor{
   identityNumber: string;
   identityCardImgUrl: string;
   description: string;
-  status: number,
+  status: number;
+  response:string;
 }
 interface Room{
   roomNumber:string;
@@ -42,25 +43,29 @@ const page = () => {
   const item = useLocalSearchParams();
   const [isLoading, setIsLoading] = useState(false);
   const navigation = useNavigation();
+  const [response, setResponse] = useState("");
   const [status, setStatus] = useState();
   const [visitor, setVisitor] = useState<Visitor>();
   const {session} = useAuth();
-  const disableBtn = status===undefined;
+  const disableBtn = status===undefined || status==4 && response=="";
   console.log(status);
   useEffect(() => {
     const fetchData = async () => {
       setIsLoading(true); 
 
       try {
-        const response = await axios.get(`https://abmscapstone2024.azurewebsites.net/api/v1/visitor/getVisitorbyId/${item.id}`, {
+        const responseAxios = await axios.get(`https://abmscapstone2024.azurewebsites.net/api/v1/visitor/getVisitorbyId/${item.id}`, {
           timeout: 10000,
         });
-        console.log(response);
-        if (response.status === 200) {
-          setVisitor(response.data.data)
+        console.log(responseAxios);
+        if (responseAxios.status === 200) {
+          setVisitor(responseAxios.data.data)
+          if(responseAxios.data.data.response){
+            setResponse(responseAxios.data.data.response);
+          }
         }
         else {
-          console.error(response);
+          console.error(responseAxios);
           Toast.show({
             type: 'error',
             text1: 'Lỗi lấy thông tin phiếu đăng ký khách thăm',
@@ -92,13 +97,16 @@ const page = () => {
     try {
       console.log(session);
         setIsLoading(true); // Set loading state to true
-        const response = await axios.put(`https://abmscapstone2024.azurewebsites.net/api/v1/visitor/manage/${visitor?.id}?status=${status}`,{}, {
+        const responseAxios = await axios.put(`https://abmscapstone2024.azurewebsites.net/api/v1/visitor/manage/${visitor?.id}`,{
+          status: status,
+          response: response
+        }, {
             timeout: 10000,
             headers:{
               'Authorization': `Bearer ${session}`
           }
         });
-        if (response.data.statusCode == 200) {
+        if (responseAxios.data.statusCode == 200) {
             Toast.show({
                 type: 'success',
                 text1: 'Phê duyệt phiếu đăng ký thành công',
@@ -107,7 +115,7 @@ const page = () => {
             router.replace('/web/Receptionist/services/visitor/');
         }
         else {
-          console.error(response);
+          console.error(responseAxios);
             Toast.show({
                 type: 'error',
                 text1: 'Phê duyệt không thành công',
@@ -145,15 +153,15 @@ const handleDeleteVisitor = async () => {
   }
   try {
     setIsLoading(true);
-    const response = await axios.delete(`https://abmscapstone2024.azurewebsites.net/api/v1/visitor/delete/${item.id}`, {
+    const responseAxios = await axios.delete(`https://abmscapstone2024.azurewebsites.net/api/v1/visitor/delete/${item.id}`, {
       timeout: 10000,
       withCredentials:true,
       headers:{
         'Authorization': `Bearer ${session}`
       }
   });
-    console.log(response);
-    if (response.data.statusCode == 200) {
+    console.log(responseAxios);
+    if (responseAxios.data.statusCode == 200) {
       Toast.show({
         type:'success',
         text1:'Xóa yêu cầu thành công',
@@ -189,9 +197,9 @@ useEffect(() => {
   const fetchData = async () => {
     setIsLoading(true)
     try {
-      const response = await axios.get(`https://abmscapstone2024.azurewebsites.net/api/v1/resident-room/get/${visitor?.roomId}`, { timeout: 100000 })
-      if (response.data.statusCode === 200) {
-        setRoom(response.data.data)
+      const responseAxios = await axios.get(`https://abmscapstone2024.azurewebsites.net/api/v1/resident-room/get/${visitor?.roomId}`, { timeout: 100000 })
+      if (responseAxios.data.statusCode === 200) {
+        setRoom(responseAxios.data.data)
       } else {
         Toast.show({
           type: 'error',
@@ -409,6 +417,19 @@ useEffect(() => {
               }}
             ></Dropdown>
           </View>
+          {status==4 &&
+          <View>
+          <Text style={{ marginBottom: 10, fontWeight: "600", fontSize: 16 }}>
+            Phản hồi
+          </Text>
+          <Input
+            placeholderTextColor={'black'}
+            value={response}
+            onChangeText={setResponse}
+            placeholder="Nhập phản hồi" style={[{ width: "100%", backgroundColor: 'white' }]}
+          ></Input>
+        </View>
+          }
           <View style={{ flexDirection: 'row', marginTop: 10 }}>
             <Button
             onPress={approveVisitor}

@@ -211,6 +211,17 @@
     "Thank you for giving feedback":"Cảm ơn bạn đã phản hồi",
     "Title":"Tiêu đề",
     "Do you want to send this request":"Bạn có muốn gửi yêu cầu này không",
-    "House owner":"Chủ nhà"
+    "House owner":"Chủ nhà",
+    "Update information":"Cập nhật thông tin",
+    "Full name must be at least 5 characters":"Họ và tên phải ít nhất 5 ký tự",
+    "Update house owner information successfully":"Cập nhật thông tin chủ nhà thành công",
+    "Request response":"Phản hồi yêu cầu",
+    "Manage parking card request":"Quản lý yêu cầu thẻ gửi xe",
+    "Construction requests":"Yêu cầu thi công",
+    "Parking card request you have sent":"Yêu cầu thẻ gửi xe bạn đã gửi",
+    "Active":"Đang sử dụng",
+    "Failed to retrieve posts":"Lỗi lấy bài viết",
+    "Failed to retrieve reservations":"Lỗi lấy phiếu đặt chỗ",
+    "Post detail":"Chi tiết bài viết"
   }
 }

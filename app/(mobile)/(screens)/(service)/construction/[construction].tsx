@@ -28,6 +28,7 @@ interface Construction{
     description:string;
     createTime:Date;
     status:number;
+    response:string;
   }
 
 const Page = () => {
@@ -164,6 +165,11 @@ const Page = () => {
                                     <Text>{t("Note")}:</Text>
                                     <Text style={{fontSize:16}}>{data?.description}</Text>
                                 </View>
+                                {data?.status==4 &&
+                                 <View style={styles.reservationinformation}>
+                                 <Text>{t("Request response")}:</Text>
+                                 <Text style={{fontSize:16}}>{data?.response}</Text>
+                             </View>}
                             </View>
                         </View>
                     </ScrollView>

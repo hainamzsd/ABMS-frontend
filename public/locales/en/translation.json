@@ -210,6 +210,17 @@
     "Thank you for giving feedback":"Thank you for giving feedback",
     "Title":"Title",
     "Do you want to send this request":"Do you want to send this request",
-    "House owner":"House owner"
+    "House owner":"House owner",
+    "Update information":"Update information",
+    "Full name must be at least 5 characters":"Full name must be at least 5 characters",
+    "Update house owner information successfully":"Update house owner information successfully",
+    "Request response":"Request response",
+    "Manage parking card request":"Manage parking card request",
+    "Construction requests":"Construction requests",
+    "Parking card request you have sent":"Parking card request you have sent",
+    "Active":"Active",
+    "Failed to retrieve posts":"Failed to retrieve posts",
+    "Failed to retrieve reservations":"Failed to retrieve reservations",
+    "Post detail":"Post detail"
   }
 }

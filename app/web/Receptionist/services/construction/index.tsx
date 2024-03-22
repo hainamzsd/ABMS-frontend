@@ -61,7 +61,7 @@ const index = () => {
         setError(null)
   
         try {
-          let url = `https://abmscapstone2024.azurewebsites.net/api/v1/construction/get?building_id=${User.BuildingId}`
+          let url = `https://abmscapstone2024.azurewebsites.net/api/v1/construction/get-all?building_id=${User.BuildingId}`
           if (status !== null) {
             url += `&status=${status}`
           }

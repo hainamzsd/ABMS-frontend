@@ -97,7 +97,7 @@ useEffect(() => {
       }
     
       try {
-        const response = await axios.get(`https://abmscapstone2024.azurewebsites.net/api/v1/construction/get?room_id=${room[0]?.id}&building_id=${user.BuildingId}`, {
+        const response = await axios.get(`https://abmscapstone2024.azurewebsites.net/api/v1/construction/get-all?room_id=${room[0]?.id}&building_id=${user.BuildingId}`, {
           timeout: 10000
         });
         if (response.data.statusCode == 200) {
@@ -182,7 +182,7 @@ const loadMoreItems = () => {
           <View style={{ marginHorizontal: 26 }}>
             <View style={{ marginTop: 20 }}>
               <Text style={{ marginBottom: 5, fontSize: 20, fontWeight: 'bold' }}>{t("Registered construction")}</Text>
-              <Text>{t("Visitor requests")}</Text>
+              <Text>{t("Construction requests")}</Text>
             </View>
           </View>
           <View style={{ flex:1,  }}>

@@ -99,10 +99,12 @@ const ReservationUtilityList = () => {
                 console.log(displayData)
             } catch (error) {
                 if(axios.isAxiosError(error)){
-                    setError("");
+                    setError(t("Failed to retrieve reservations")+".");
+                    setShowError(true);
                 }
                 console.error('Error fetching reservations:', error);
-                setError('Failed to fetch reservations.');
+                setError(t('Failed to retrieve reservations')+".");
+                setShowError(true);
             } finally {
                 setIsLoading(false);
             }

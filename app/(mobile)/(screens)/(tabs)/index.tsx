@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   View,
   Pressable,
+  FlatList,
 } from "react-native";
 import styles from "../../styles/indexStyles";
 import stylesHomeScreen from "../styles/homeScreenStyles";
@@ -30,6 +31,7 @@ import axios from "axios";
 import LoadingComponent from "../../../../components/resident/loading";
 import AlertWithButton from "../../../../components/resident/AlertWithButton";
 import { useIsFocused } from "@react-navigation/native";
+import moment from "moment";
 
 interface user{
   FullName:string;
@@ -56,6 +58,22 @@ interface UserDatabase {
   userName:string;
   
 }
+
+
+interface Post{
+  id: string;
+  title: string;
+  content: string;
+  image: string;
+  createUser: string;
+  createTime: Date,
+  modifyUser: string;
+  modifyTime: string;
+  status: number;
+  buildingId: string;
+  type: number;
+}
+
 const HomeScreen = () => {
   const { theme } = useTheme();
   const { t } = useTranslation();
@@ -130,6 +148,40 @@ useEffect(() => {
   };
     fetchItems();
 }, [session, isFocused]);
+//post
+  const [posts, setPosts] = useState<Post[]>([]);
+useEffect(() => {
+  const fetchItems = async () => {
+      setLoading(true);
+      setErrorText("");
+      try {
+          const response = await axios.get(`https://abmscapstone2024.azurewebsites.net/api/v1/post/get-all?buildingId=${user.BuildingId}&type=2`,{
+              timeout:10000
+          });
+          if(response.data.statusCode==200){
+          setPosts(response.data.data);
+          }
+          else{
+              setErrorText(t("System error please try again later"));
+              setError(true);
+          }
+      } catch (error) {
+          if(axios.isAxiosError(error)){
+              setErrorText(t("Failed to retrieve posts")+".");
+              setError(true);
+          }
+          setErrorText(t('Failed to retrieve posts')+".");
+          setError(true);
+      } finally {
+          setLoading(false);
+      }
+  };
+  if(isFocused){
+      fetchItems();
+  }
+}, [isFocused]);
+const firstTwoPosts = posts.slice(0, 2);
+
   return (
     <>
     <AlertWithButton content={errorText} title={t("Error")} 
@@ -153,7 +205,8 @@ useEffect(() => {
             }}
           />
         </View>
-        <ScrollView style={{ paddingHorizontal: 26 }}>
+        <ScrollView style={{  }}>
+          <View style={{paddingHorizontal: 26}}>
           <View
             style={{
               flex: 1,
@@ -307,54 +360,40 @@ useEffect(() => {
               {t("News")}
             </Text>
             <Link 
-            href={"/(mobile)/(screens)/postList"}
+            href={"/(mobile)/(screens)/(post)/postList"}
             style={{ color: "#9C9C9C" }}>{t("NewsSub")}</Link>
           </View>
-          <ScrollView
-            style={{
-              flexDirection: "row",
-              marginVertical: 30,
-              paddingBottom: 20,
-            }}
-            horizontal={true}
-          >
-            <View style={{ marginRight: 36 }}>
+         
+          </View>
+          <FlatList
+          horizontal
+          style={{paddingBottom:30, paddingHorizontal:26, paddingTop:20}}
+          data={firstTwoPosts}
+          renderItem={({item}:{item:Post})=>{
+            return(
+              <TouchableOpacity style={{ marginRight: 36 }}
+              onPress={()=>router.push(`/(mobile)/(screens)/(post)/${item?.id}`)}>
               <Image
                 style={stylesHomeScreen.newImage}
-                source={{
-                  uri: "https://media.istockphoto.com/id/868592684/vector/blue-and-purple-landscape-with-silhouettes-of-mountains-hills-and-forest-and-stars-in-the-sky.jpg?s=612x612&w=0&k=20&c=JmQZI8O2OHVfSeblJTf_73owa0913htm_ItABKYUCuE=",
-                }}
+                source={item?.image ? {uri: item.image} : 
+                require('../../../../assets/images/icon.png')}
               ></Image>
               <View style={stylesHomeScreen.newTitle}>
                 <Text 
                 numberOfLines={2}
-                style={{ fontWeight: "bold", marginBottom:5 }}>LoremLoremLoremLoremLoremLoremLoremLoremLoremLoremLorem</Text>
+                style={{ fontWeight: "bold", marginBottom:5 }}>{item.title}</Text>
                 <Text
                   style={{ fontWeight: "300", fontSize: 12, color: "#9C9C9C" }}
                 >
-                  13 tháng 2, 2024
+                  {moment.utc(item?.createTime).format("DD-MM-YYYY")}
                 </Text>
               </View>
-            </View>
-            <View style={{ marginRight: 36 }}>
-              <Image
-                style={stylesHomeScreen.newImage}
-                source={{
-                  uri: "https://c.pxhere.com/photos/f2/3d/street_road_horizon_endless_flatland_america_usa_road_trip-1243541.jpg!d",
-                }}
-              ></Image>
-              <View style={stylesHomeScreen.newTitle}>
-                <Text
-                numberOfLines={2}
-                style={{ fontWeight: "bold", marginBottom:5 }}>Lorem</Text>
-                <Text
-                  style={{ fontWeight: "300", fontSize: 12, color: "#9C9C9C" }}
-                >
-                  13 tháng 2, 2024
-                </Text>
-              </View>
-            </View>
-          </ScrollView>
+            </TouchableOpacity>
+            )
+          }}
+          keyExtractor={(item) => {return item.id}}
+          >
+          </FlatList>
         </ScrollView>
       </SafeAreaView>
     </>

@@ -4,6 +4,10 @@ type StatusUtility = {
 
 
 const statusUtility: StatusUtility = {
+  1: {
+    status: "Active",
+    color: "#AEBB81"
+  },
   2: {
     status: "Pending",
     color: "#E7E49C"
