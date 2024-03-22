@@ -4,6 +4,7 @@ import SHADOW from '../../constants/shadow';
 import { Link } from 'expo-router';
 import Button from './button';
 
+
 const { width } = Dimensions.get('window');
 
 interface PostItemProps {
@@ -11,22 +12,22 @@ interface PostItemProps {
   content: string;
   date: string;
   imageUrl: string;
-  href:any;
+  href: any;
 }
 
-const PostItem: React.FC<PostItemProps> = ({ title, content, date, imageUrl,href }) => {
+const PostItem: React.FC<PostItemProps> = ({ title, content, date, imageUrl, href }) => {
   return (
-    
+
     <View style={styles.container}>
       <Image source={{ uri: imageUrl }} style={styles.image} />
       <View style={styles.textContainer}>
         <View style={{}}>
-        <Text numberOfLines={1} style={styles.title}>{title}</Text>
-        <Text numberOfLines={2} style={styles.content}>{content}</Text>
-        <Text style={styles.date}>{date}</Text>
+          <Text numberOfLines={1} style={styles.title}>{title}</Text>
+          <Text numberOfLines={2} style={styles.content}>{content}</Text>
+          <Text style={styles.date}>{date}</Text>
         </View>
-        <Link href={href} style={{marginTop:10}}>
-            <Button text='Chi tiết' style={{width:100}}></Button>
+        <Link href={href} style={{ marginTop: 10 }}>
+          <Button text='Chi tiết' style={{ width: 100 }}></Button>
         </Link>
       </View>
     </View>
@@ -39,9 +40,9 @@ const styles = StyleSheet.create({
     padding: 10,
     borderBottomColor: '#cccccc',
     ...SHADOW,
-    backgroundColor:'white',
-    borderRadius:10,
-    marginBottom:10
+    backgroundColor: 'white',
+    borderRadius: 10,
+    marginBottom: 10
   },
   image: {
     width: 100,
@@ -51,9 +52,9 @@ const styles = StyleSheet.create({
   },
   textContainer: {
     flex: 1,
-    flexDirection:'row',
-    justifyContent:'space-between',
-    alignItems:'center'
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center'
   },
   title: {
     fontWeight: 'bold',
@@ -69,7 +70,7 @@ const styles = StyleSheet.create({
   },
   date: {
     fontSize: 12,
-    color: '#999999', 
+    color: '#999999',
   },
 });
 

@@ -1,18 +1,62 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Box, Text, FormControl, Input, Divider, TextArea, Image, Button as ButtonBase, Icon } from "native-base";
 import { View, SafeAreaView, ScrollView } from 'react-native';
 import { SIZES, icons } from '../../../../constants';
 import Button from '../../../../components/ui/button';
 import * as ImagePicker from "expo-image-picker"
-import { usePathname, useGlobalSearchParams } from 'expo-router';
-import { posts } from '../../../../constants/fakeData';
 import { Ionicons } from "@expo/vector-icons";
+import { useLocalSearchParams } from 'expo-router';
+import axios from 'axios';
+import Toast from 'react-native-toast-message';
 
 const PostDetail = () => {
-  const [content, setContent] = useState(posts[0].content);
-  const [title, setTitle] = useState(posts[0].title);
-  const [image, setImage] = useState(posts[0].imageUrl ? posts[0].imageUrl : null);
-  const { postDetail } = useGlobalSearchParams();
+  const [isLoading, setIsLoading] = useState(false);
+  const [content, setContent] = useState("");
+  const [title, setTitle] = useState("");
+  const [image, setImage] = useState("");
+  const [type, setType] = useState("");
+  const item = useLocalSearchParams();
+
+  const fetchPost = async () => {
+    setIsLoading(true);
+    try {
+      const response = await axios.get(`https://abmscapstone2024.azurewebsites.net/api/v1/post/getPostId/${item?.postDetail}`, {
+        timeout: 10000,
+      });
+      if (response.status === 200) {
+        setContent(response.data.data.content);
+        setTitle(response.data.data.title);
+        setImage(response.data.data.image);
+        setType(response.data.data.type);
+      } else {
+        Toast.show({
+          type: 'error',
+          text1: 'Lỗi lấy thông tin bài viết',
+          position: 'bottom'
+        })
+      }
+    } catch (error) {
+      if (axios.isCancel(error)) {
+        Toast.show({
+          type: 'error',
+          text1: 'Hệ thống lỗi! Vui lòng thử lại sau',
+          position: 'bottom'
+        })
+      }
+      console.error('Error fetching post data:', error);
+      Toast.show({
+        type: 'error',
+        text1: 'Lỗi lấy thông tin bài viết',
+        position: 'bottom'
+      })
+    } finally {
+      setIsLoading(false); // Set loading state to false regardless of success or failure
+    }
+  }
+
+  useEffect(() => {
+    fetchPost();
+  }, [])
 
   const handleChoosePhoto = () => {
     let result = ImagePicker.launchImageLibraryAsync({
@@ -21,8 +65,6 @@ const PostDetail = () => {
       aspect: [4, 3],
       quality: 1,
     })
-    console.log(result);
-    // console.log(postDetail)
   }
 
   return (
@@ -39,7 +81,7 @@ const PostDetail = () => {
             <Text style={{ fontWeight: "bold", fontSize: 30, marginBottom: 5 }}>
               Thông tin bài viết
             </Text>
-            <Text>Thông tin chi tiết về bài viết <Text fontSize="md" italic>{title}</Text></Text>
+            <Text>Thông tin chi tiết về bài viết <Text fontSize="md" italic>"{title}"</Text></Text>
             <Divider mt={2} />
           </View>
 
@@ -47,11 +89,11 @@ const PostDetail = () => {
           <View>
             <Box>
               <FormControl mb="3">
-                <FormControl.Label>Project Title</FormControl.Label>
+                <FormControl.Label>Tiêu đề bài viết</FormControl.Label>
                 <Input shadow={1} value={title} />
               </FormControl>
               <FormControl mb="3">
-                <FormControl.Label>Content</FormControl.Label>
+                <FormControl.Label>Nội dung bài viết</FormControl.Label>
                 <TextArea
                   shadow={1}
                   totalLines={5}
@@ -66,13 +108,18 @@ const PostDetail = () => {
                 <Image mt={2} source={{ uri: image }} size="md" /></> :
                 <FormControl mb="3">
                   <ButtonBase onPress={handleChoosePhoto} leftIcon={<Icon as={Ionicons} name="cloud-upload-outline" size="sm" />}>
-                    Upload
+                    Tải lên
                   </ButtonBase>
                 </FormControl>
               }
             </Box>
           </View>
 
+          <View style={{ borderWidth: 1, marginVertical: SIZES.medium, opacity: 0.5}}></View>
+          <View style={{ flexDirection: 'row', gap: SIZES.medium, justifyContent: 'center', alignItems: 'center' }}>
+            <ButtonBase colorScheme="success">Cập nhập bài viết</ButtonBase>
+            <ButtonBase colorScheme="danger">Huỷ bỏ</ButtonBase>
+          </View>
           {/* Footer */}
 
         </ScrollView>

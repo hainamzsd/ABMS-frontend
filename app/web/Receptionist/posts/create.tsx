@@ -9,7 +9,8 @@ import { Ionicons } from "@expo/vector-icons";
 const CreatePost = () => {
     const [content, setContent] = useState("");
     const [title, setTitle] = useState("");
-    const [image, setImage] = useState(null);
+    const [type, setType] = useState("2");
+    const [image, setImage] = useState('https://images.pexels.com/photos/1254736/pexels-photo-1254736.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1');
 
     const handleChoosePhoto = () => {
         let result = ImagePicker.launchImageLibraryAsync({
@@ -18,7 +19,6 @@ const CreatePost = () => {
             aspect: [4, 3],
             quality: 1,
         })
-        console.log(result);
     }
 
     return (
