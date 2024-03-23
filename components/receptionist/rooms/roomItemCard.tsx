@@ -21,47 +21,7 @@ interface Account {
   }
 
 const RoomItemCard = (props: any) => {
-    const { item } = props;
-    const [isLoading, setIsLoading] = useState(false);
-    const [data, setData] = useState<Account>();
-
-    useEffect(() => {
-        const fetchData = async () => {
-          setIsLoading(true);
-          try {
-            const response = await axios.get(`https://abmscapstone2024.azurewebsites.net/api/v1/account/get/${item.accountId}`, {
-              timeout: 10000,
-            });
-            console.log(response);
-            if (response.status === 200) {
-                setData(response.data.data);
-            } else {
-              Toast.show({
-                type: 'error',
-                text1: 'Lỗi lấy thông tin căn hộ',
-                position: 'bottom'
-              })
-            }
-          } catch (error) {
-            if (axios.isCancel(error)) {
-              Toast.show({
-                type: 'error',
-                text1: 'Hệ thống lỗi! Vui lòng thử lại sau',
-                position: 'bottom'
-              })
-            }
-            console.error('Error fetching room data:', error);
-            Toast.show({
-              type: 'error',
-              text1: 'Lỗi lấy thông tin căn hộ',
-              position: 'bottom'
-            })
-          } finally {
-            setIsLoading(false); // Set loading state to false regardless of success or failure
-          }
-        };
-        fetchData();
-      }, []);
+    const { item, button } = props;
 
     return (
         <TouchableOpacity
@@ -77,7 +37,7 @@ const RoomItemCard = (props: any) => {
                 />
             </TouchableOpacity>
             <Text style={styles.roomMaster} numberOfLines={1}>
-                {data?.fullName}
+                {item?.status === 0 ? "" : item?.fullName}
             </Text>
 
             <View style={styles.infoContainer}>
@@ -85,6 +45,7 @@ const RoomItemCard = (props: any) => {
                     {item?.roomNumber}
                 </Text>
             </View>
+            {button}
         </TouchableOpacity>
     )
 }

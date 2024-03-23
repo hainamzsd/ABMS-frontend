@@ -137,7 +137,7 @@ const ReservationUtility = () => {
                                             <Cell>
                                                 <Button text="Chi tiết"
                                                     onPress={() => router.push({
-                                                        pathname: `./reservation/${item?.utility_detail_id}`
+                                                        pathname: `./reservation/${item?.id}`
                                                     })} />
                                             </Cell>
                                         </TableRow>

@@ -20,7 +20,7 @@ const RoomList = () => {
   const { session } = useAuth();
   const user: user = jwtDecode(session as string);
 
-  
+
   useEffect(() => {
     const fetchData = async () => {
       setIsLoading(true);
@@ -106,7 +106,7 @@ const RoomList = () => {
         </View>
         <View>
           <Button title='Thêm căn hộ' onPress={() => router.push({
-              pathname: '/web/Receptionist/rooms/create'
+            pathname: '/web/Receptionist/rooms/create'
           })} />
         </View>
         <FlatList
@@ -116,11 +116,13 @@ const RoomList = () => {
               floor={1}
               data={item}
               isLoading={isLoading}
+              setIsLoading={setIsLoading}
             />
           )}
+          numColumns={9}
           keyExtractor={(item) => item?.id}
-          contentContainerStyle={{ columnGap: SIZES.medium }}
-          horizontal
+          columnWrapperStyle={{ gap: 30 }}
+        // contentContainerStyle={{ columnGap: SIZES.medium, justifyContent: 'space-between', flexDirection: 'row' }}
         />
 
       </SafeAreaView>

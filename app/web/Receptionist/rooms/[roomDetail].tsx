@@ -13,6 +13,7 @@ import { Building, Room, RoomMember } from '../../../../interface/roomType';
 import { RadioButton } from 'react-native-paper';
 import { AccountOwner, user } from '../../../../interface/accountType';
 import { jwtDecode } from 'jwt-decode';
+import moment from 'moment';
 
 const RoomDetail = () => {
     const navigation = useNavigation();
@@ -579,7 +580,7 @@ const RoomDetail = () => {
                     {isDetail && <View style={{ borderWidth: 1, alignSelf: 'flex-start', padding: SIZES.small, borderColor: COLORS.gray2, ...SHADOWS.small, borderRadius: SIZES.small, marginVertical: SIZES.xSmall - 2 }}>
                         <Text>Họ và tên: <Text style={{ fontWeight: 'bold' }}>{item.fullName}</Text></Text>
                         <Text>Số điện thoại: <Text style={{ fontWeight: 'bold' }}>{item.phone}</Text></Text>
-                        <Text>Ngày sinh: <Text style={{ fontWeight: 'bold' }}>{item.dateOfBirth}</Text></Text>
+                        <Text>Ngày sinh: <Text style={{ fontWeight: 'bold' }}>{moment.utc(item.dateOfBirth).format("DD/MM/YYYY")}</Text></Text>
                         <Text>Giới tính: <Text style={{ fontWeight: 'bold' }}>{item.gender ? 'Nam' : 'Nữ'}</Text></Text>
                         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4, paddingTop: 2 }}>
                             {item?.isHouseholder == false && <Button text="Xoá thành viên" onPress={() => handleDeleteMember(item.id)} color={COLORS.buttonRed} />}
