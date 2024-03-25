@@ -13,6 +13,8 @@ import moment from 'moment';
 import Button from '../../../../components/ui/button';
 import { actionController, API_BASE } from "../../../../constants/action"
 import { ToastFail } from '../../../../constants/toastMessage';
+import { SIZES } from '../../../../constants';
+import { Link, router } from 'expo-router';
 
 const PostList = () => {
   const { session } = useAuth();
@@ -59,8 +61,10 @@ const PostList = () => {
             <Input placeholder="Tìm tên bài viết" style={{ width: '100%', paddingVertical: 10 }} />
             {/* Filter */}
           </View>
-          <View>
-            <Button text="Thêm bài viết" />
+          <View style={{ marginBottom: SIZES.medium }}>
+            <Button text="Thêm bài viết" onPress={() => router.push({
+                pathname: `/web/Receptionist/posts/create`
+            })} />
           </View>
           <FlatList
             data={posts}

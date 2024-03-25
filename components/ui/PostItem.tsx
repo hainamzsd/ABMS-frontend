@@ -3,6 +3,7 @@ import { View, Text, Image, StyleSheet, Dimensions } from 'react-native';
 import SHADOW from '../../constants/shadow';
 import { Link } from 'expo-router';
 import Button from './button';
+import { ColorPalettes } from '../../constants';
 
 
 const { width } = Dimensions.get('window');
@@ -40,7 +41,7 @@ const styles = StyleSheet.create({
     padding: 10,
     borderBottomColor: '#cccccc',
     ...SHADOW,
-    backgroundColor: 'white',
+    backgroundColor: ColorPalettes.ocean.sub,
     borderRadius: 10,
     marginBottom: 10
   },
