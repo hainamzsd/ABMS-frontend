@@ -240,6 +240,7 @@ const handleDeleteCard = async (id:string) => {
 const styles = StyleSheet.create({
   cardContainer: {
     borderRadius: 20,
+    maxHeight:200,
     overflow: 'hidden',
     marginTop:10
   },

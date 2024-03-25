@@ -7,7 +7,7 @@
     "Bill": "Hóa đơn",
     "Feedback": "Phản ánh",
     "Hotline": "Hotline",
-    "HotlineText": "Hotline chăm sóc khách hàng",
+    "HotlineText": "Hotline",
     "Call": "Gọi",
     "News": "Bảng tin cư dân",
     "NewsSub": "Xem tất cả",
@@ -222,6 +222,12 @@
     "Active":"Đang sử dụng",
     "Failed to retrieve posts":"Lỗi lấy bài viết",
     "Failed to retrieve reservations":"Lỗi lấy phiếu đặt chỗ",
-    "Post detail":"Chi tiết bài viết"
+    "Post detail":"Chi tiết bài viết",
+    "Feedback type":"Loại phản hồi",
+    "Sent feedback":"Phản hồi đã gửi",
+    "Manage feedback":"Quản lý phản hồi",
+    "Feedback information":"Thông tin phản hồi",
+    "Response":"Phản hồi",
+    "Responded":"Đã phản hồi"
   }
 }

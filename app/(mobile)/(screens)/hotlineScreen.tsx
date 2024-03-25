@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import {
   Animated,
   Easing,
@@ -8,6 +8,7 @@ import {
   View,
   LayoutAnimation,
   Alert,
+  FlatList,
 } from "react-native";
 import Header from "../../../components/resident/header";
 import HotlineScreenStyles from "./styles/hotlineScreenStyles";
@@ -15,6 +16,25 @@ import { ChevronRight, Phone } from "lucide-react-native";
 import { useTheme } from "../context/ThemeContext";
 import { useTranslation } from "react-i18next";
 import { Linking } from "react-native";
+import axios from "axios";
+import { useSession } from "../context/AuthContext";
+import { jwtDecode } from "jwt-decode";
+import AlertWithButton from "../../../components/resident/AlertWithButton";
+import LoadingComponent from "../../../components/resident/loading";
+
+interface Hotline{
+  id: string;
+  buildingId: string;
+  phoneNumber: string;
+  name: string;
+  status: number;
+}
+interface user{
+  FullName:string;
+  PhoneNumber:string;
+  Id:string;
+  BuildingId:string;
+}
 
 export default function Hotline() {
   const { theme } = useTheme();
@@ -22,6 +42,40 @@ export default function Hotline() {
   const [expanded, setExpanded] = useState(false);
   const [animation] = useState(new Animated.Value(0));
   const [rotateAnimation] = useState(new Animated.Value(0));
+  const [data, setData] = useState<Hotline[]>([]);
+  const [error, setError] = useState<string>("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [showError, setShowError] = useState(false);
+  const{session } = useSession();
+  const user:user = jwtDecode(session as string);
+  useEffect(() => {
+    const fetchItems = async () => {
+        setIsLoading(true);
+        setError("");
+        try {
+            const response = await axios.get(`https://abmscapstone2024.azurewebsites.net/api/v1/hotline/get-all?buildingId=${user.BuildingId}`,{
+                timeout:10000
+            });
+            if(response.data.statusCode==200){
+
+            setData(response.data.data);
+            }else{
+              setShowError(true);
+              setError(t("System error please try again later")+".");
+            }
+        } catch (error) {
+            if(axios.isAxiosError(error)){
+              setShowError(true);
+                setError(t("System error please try again later")+".");
+            }
+            setShowError(true);
+            setError(t("System error please try again later")+".");
+        } finally {
+            setIsLoading(false);
+        }
+    };
+        fetchItems();
+}, []);
 
   const toggleExpand = () => {
     setExpanded(!expanded);
@@ -73,10 +127,19 @@ export default function Hotline() {
 
   return (
     <>
+      <AlertWithButton 
+      title={t("Error")}
+      visible={showError}
+      content={error} onClose={() =>setShowError(false)}></AlertWithButton>
+        <LoadingComponent loading={isLoading}></LoadingComponent>
       <Header headerTitle={t("Contact")} />
       <SafeAreaView style={{ backgroundColor: theme.background, flex: 1 }}>
-        <View style={{ marginHorizontal: 26 }}>
-          <TouchableOpacity onPress={toggleExpand}>
+        <View style={{ flex:1 }}>
+          <FlatList
+          style={{paddingHorizontal:26}}
+          data={data}
+          renderItem={({ item }:{item:Hotline}) => (
+            <TouchableOpacity onPress={toggleExpand}>
             <View style={HotlineScreenStyles.hotlineBox}>
               <View
                 style={{
@@ -84,7 +147,7 @@ export default function Hotline() {
                   flexDirection: "row",
                 }}
               >
-                <Text>Bảo vệ tòa nhà</Text>
+                <Text>{item?.name}</Text>
                 <Animated.View
                   style={{ transform: [{ rotate: rotateInterpolate }] }}
                 >
@@ -95,12 +158,12 @@ export default function Hotline() {
                 <View style={HotlineScreenStyles.hotlineDropdown}>
                   <View>
                     <Text style={{ fontWeight: "bold", marginBottom: 5 }}>
-                      Hotline
+                      {t("Contact phone number")}
                     </Text>
-                    <Text>0923124234</Text>
+                    <Text>{item?.phoneNumber}</Text>
                   </View>
                   <TouchableOpacity
-                    onPress={() => handleCallPress("0923124234")}
+                    onPress={() => handleCallPress(item?.phoneNumber)}
                   >
                     <View style={HotlineScreenStyles.callBox}>
                       <Phone
@@ -123,6 +186,12 @@ export default function Hotline() {
               </Animated.View>
             </View>
           </TouchableOpacity>
+          )}
+          keyExtractor={(item) => item.id}
+          >
+          
+          </FlatList>
+        
         </View>
       </SafeAreaView>
     </>

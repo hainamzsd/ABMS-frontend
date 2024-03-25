@@ -53,6 +53,7 @@ export default function FeedBack() {
   const user: user = jwtDecode(session as string);
   const [image, setImage] = useState<string>("");
   const [error, setError] = useState(false);
+  const [success,setSuccess]= useState(false);
   const [errorText, setErrorText] = useState("");
   const [downloadURL, setDownloadURL] = useState("");
 const [room, setRoom] = useState<Room[]>([]);
@@ -107,6 +108,9 @@ useEffect(() => {
   const [uploading, setUploading] = useState(false);
   const uploadImage = async (uri:string) => {
     setUploading(true);
+    if(image==""){
+      return;
+    }
     try {
       const response = await fetch(uri);
       const blob = await response.blob();
@@ -125,7 +129,6 @@ useEffect(() => {
 };
   const [isLoading, setIsLoading] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
-  const [success,setSuccess]= useState(false);
   const [serviceType, setServiceType] = useState<ServiceType[]>([]);
   useEffect(() => {
     
@@ -134,7 +137,7 @@ useEffect(() => {
     setIsLoading(true);
       try {
         const response = await axios.get(
-          `https://abmscapstone2024.azurewebsites.net/api/v1/service-type/get-all?buildingId=${user.BuildingId}&status=1`,{
+          `https://abmscapstone2024.azurewebsites.net/api/v1/service-type/get-all?buildingId=${user.BuildingId}`,{
             timeout:10000
           }
         );
@@ -190,11 +193,10 @@ const [disableBtn, setDisableBtn]=useState(false);
       });
       console.log(response)
       if (response.data.statusCode == 200) {
-        setSuccess(true);
         setTitle("");
         setDescription("");
         setImage("");
-        
+        setSuccess(true);
       }
       else {
         setError(true);
@@ -215,6 +217,9 @@ const [disableBtn, setDisableBtn]=useState(false);
   }
   return (
     <>
+      <AlertWithButton content={t("Thank you for giving feedback")+"!"} 
+     title={t("Success")} 
+    visible={success} onClose={() => setSuccess(false)}></AlertWithButton>
     <CustomAlert
                 visible={showConfirm}
                 title={t("Confirm")}
@@ -225,11 +230,9 @@ const [disableBtn, setDisableBtn]=useState(false);
             />
       <AlertWithButton content={errorText} title={t("Error")} 
     visible={error} onClose={() => setError(false)}></AlertWithButton>
-     <AlertWithButton content={t("Thank you for giving feedback")+"!"} 
-     title={t("Success")} 
-    visible={success} onClose={() => setSuccess(false)}></AlertWithButton>
+   
     <LoadingComponent loading={isLoading}></LoadingComponent>
-      <Header headerTitle={t("Feedback")}></Header>
+      <Header headerTitle={t("Feedback")} headerRight rightPath={'(feedback)/feedbackList'}></Header>
       <ScrollView style={{ backgroundColor: theme.background, flex: 1 }}>
         <View style={{ marginHorizontal: 26 }}>
           <View style={{ marginTop: 30 }}>

@@ -4,13 +4,16 @@ import Header from "../../../../components/resident/header";
 import { useTranslation } from "react-i18next";
 import { useTheme } from "../../context/ThemeContext";
 import SHADOW from "../../../../constants/shadow";
-import { CircleDotDashedIcon, Settings } from "lucide-react-native";
+import { CircleDotDashedIcon, FileTerminal, Settings } from "lucide-react-native";
 import { router } from "expo-router";
 import ICON_MAP from "../../../../constants/iconUtility";
 import { useEffect, useState } from "react";
 import axios from 'axios';
 import LoadingComponent from "../../../../components/resident/loading";
 import { calculateSlots } from "../../../../utils/convertSlot";
+import { useSession } from "../../context/AuthContext";
+import { jwtDecode } from "jwt-decode";
+import AlertWithButton from "../../../../components/resident/AlertWithButton";
 interface Utility {
   id: string;
   name: string;
@@ -27,26 +30,48 @@ interface Utility {
   status: number;
 }
 
+interface user{
+  FullName:string;
+  PhoneNumber:string;
+  Id:string;
+  Avatar:string;
+  BuildingId:string;
+}
 export default function UtilityList() {
   const { t } = useTranslation();
   const { theme } = useTheme();
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<string>("");
+  const [showError, setShowError] = useState(false);
   const [utilities, setUtilities] = useState<Utility[]>([]);
+  const{session } = useSession();
+  const user:user = jwtDecode(session as string);
+  
   useEffect(() => {
     const fetchData = async () => {
       setIsLoading(true);
-      setError(null);
 
       try {
         const response = await axios.get(
-          'https://abmscapstone2024.azurewebsites.net/api/v1/utility/get-all',
+          `https://abmscapstone2024.azurewebsites.net/api/v1/utility/get-all?buildingId=${user?.BuildingId}`,
         );
-        setUtilities(response?.data?.data);
         console.log(response?.data?.data);
+        if (response.data.statusCode == 200) {
+          const filteredData = response.data.data.filter((item: Utility) => item.status !== 0);
+          setUtilities(filteredData);
+        }
+        else{
+
+        }
       } catch (error) {
-        console.error('Error fetching data:', error);
-        setError(t("System error please try again later"));
+        if (axios.isAxiosError(error)) {
+          setShowError(true);
+          setError(t("System error please try again later") + ".");
+          return;
+        }
+        console.error('Error fetching reservations:', error);
+        setShowError(true);
+        setError(t('Failed to return requests') + ".");
       } finally {
         setIsLoading(false);
       }
@@ -84,7 +109,11 @@ export default function UtilityList() {
   )};
   return (
     <>
-    <LoadingComponent loading={isLoading}></LoadingComponent>
+      <AlertWithButton 
+      title={t("Error")}
+      visible={showError}
+      content={error} onClose={() =>setShowError(false)}></AlertWithButton>
+      <LoadingComponent loading={isLoading}></LoadingComponent>
       <Header headerTitle={t("Utility list")} headerRight
       rightPath={"reservationUtilityList"}></Header>
       <SafeAreaView style={{ backgroundColor: theme.background, flex: 1 }}>

@@ -9,6 +9,8 @@ import {
   View,
   Pressable,
   FlatList,
+  Linking,
+  Alert,
 } from "react-native";
 import styles from "../../styles/indexStyles";
 import stylesHomeScreen from "../styles/homeScreenStyles";
@@ -72,6 +74,14 @@ interface Post{
   status: number;
   buildingId: string;
   type: number;
+}
+
+interface Hotline{
+  id: string;
+  buildingId: string;
+  phoneNumber: string;
+  name: string;
+  status: number;
 }
 
 const HomeScreen = () => {
@@ -150,6 +160,7 @@ useEffect(() => {
 }, [session, isFocused]);
 //post
   const [posts, setPosts] = useState<Post[]>([]);
+  const [hotlineNumber,setHotlineNumber] = useState<Hotline>();
 useEffect(() => {
   const fetchItems = async () => {
       setLoading(true);
@@ -158,6 +169,10 @@ useEffect(() => {
           const response = await axios.get(`https://abmscapstone2024.azurewebsites.net/api/v1/post/get-all?buildingId=${user.BuildingId}&type=2`,{
               timeout:10000
           });
+          const hotline = await axios.get(`https://abmscapstone2024.azurewebsites.net/api/v1/hotline/get-all?buildingId=${user.BuildingId}`,{
+              timeout:10000
+          });
+          
           if(response.data.statusCode==200){
           setPosts(response.data.data);
           }
@@ -165,6 +180,14 @@ useEffect(() => {
               setErrorText(t("System error please try again later"));
               setError(true);
           }
+          if(hotline.data.statusCode==200){
+            const securityHotline = hotline.data.data.find((item:Hotline) => item.name === "Bảo vệ");
+            setHotlineNumber(securityHotline);
+            }
+            else{
+                setErrorText(t("System error please try again later"));
+                setError(true);
+            }
       } catch (error) {
           if(axios.isAxiosError(error)){
               setErrorText(t("Failed to retrieve posts")+".");
@@ -180,6 +203,24 @@ useEffect(() => {
       fetchItems();
   }
 }, [isFocused]);
+const handleCallPress = (phoneNumber: string) => {
+  // Check if the device supports phone calls
+  Linking.canOpenURL(`tel:${phoneNumber}`)
+    .then((supported) => {
+      if (!supported) {
+        Alert.alert(
+          "Phone call not supported",
+          "Your device does not support phone calls.",
+        );
+      } else {
+        // Open the phone dialer with the provided phone number
+        Linking.openURL(`tel:${phoneNumber}`);
+      }
+    })
+    .catch((error) => {
+      console.error("Error opening phone call:", error);
+    });
+};
 const firstTwoPosts = posts.slice(0, 2);
 
   return (
@@ -337,23 +378,24 @@ const firstTwoPosts = posts.slice(0, 2);
               </Link>
             </TouchableOpacity>
           </View>
-
-          <View style={stylesHomeScreen.room}>
-            <View style={{ flex: 0.8 }}>
-              <Text style={styles.normalText}>{t("HotlineText")}</Text>
-              <Text style={{ fontWeight: "bold" }}>0933 123 242</Text>
-            </View>
-            <View style={{ flex: 0.3 }}>
-              <View style={stylesHomeScreen.callBox}>
-                <Phone fill={"white"} color={"white"} strokeWidth={0}></Phone>
-                <Text
-                  style={{ fontWeight: "bold", color: "white", marginLeft: 3 }}
-                >
-                  {t("Call")}
-                </Text>
-              </View>
-            </View>
-          </View>
+            {hotlineNumber && 
+                <View style={stylesHomeScreen.room}>
+                <View style={{ flex: 0.8 }}>
+                  <Text style={styles.normalText}>{t("HotlineText")} {hotlineNumber?.name}</Text>
+                  <Text style={{ fontWeight: "bold" }}>{hotlineNumber?.phoneNumber}</Text>
+                </View>
+                <View style={{ flex: 0.3 }}>
+                  <TouchableOpacity style={stylesHomeScreen.callBox} onPress={() =>handleCallPress(hotlineNumber?.phoneNumber)}>
+                    <Phone fill={"white"} color={"white"} strokeWidth={0}></Phone>
+                    <Text
+                      style={{ fontWeight: "bold", color: "white", marginLeft: 3 }}
+                    >
+                      {t("Call")}
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+              </View>}
+      
 
           <View style={stylesHomeScreen.newContainer}>
             <Text style={{ fontWeight: "bold", fontSize: 16 }}>

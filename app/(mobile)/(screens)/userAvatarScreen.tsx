@@ -59,37 +59,36 @@ const UserAvatar = () => {
   const [error, setError] = useState<string>("");
   const [showError, setShowError] = useState(false);
   const [success,setSuccess]= useState(false);
-
-  useEffect(() => {
-    const fetchItems = async () => {
-      setError("");
-      if (userId.Id) {
-        setIsLoading(true);
-        try {
-          const response = await axios.get(`https://abmscapstone2024.azurewebsites.net/api/v1/account/get/${userId.Id}`, {
-            timeout: 10000
-          });
-          if (response.data.statusCode == 200) {
-            setUser(response.data.data);
-          }
-          else {
-            setShowError(true);
-            setError(t("Failed to return requests") + ".");
-          }
-        } catch (error) {
-          if (axios.isAxiosError(error)) {
-            setShowError(true);
-            setError(t("System error please try again later") + ".");
-            return;
-          }
-          console.error('Error fetching reservations:', error);
-          setShowError(true);
-          setError(t('Failed to return requests') + ".");
-        } finally {
-          setIsLoading(false);
+  const fetchItems = async () => {
+    setError("");
+    if (userId.Id) {
+      setIsLoading(true);
+      try {
+        const response = await axios.get(`https://abmscapstone2024.azurewebsites.net/api/v1/account/get/${userId.Id}`, {
+          timeout: 10000
+        });
+        if (response.data.statusCode == 200) {
+          setUser(response.data.data);
         }
+        else {
+          setShowError(true);
+          setError(t("Failed to return requests") + ".");
+        }
+      } catch (error) {
+        if (axios.isAxiosError(error)) {
+          setShowError(true);
+          setError(t("System error please try again later") + ".");
+          return;
+        }
+        console.error('Error fetching reservations:', error);
+        setShowError(true);
+        setError(t('Failed to return requests') + ".");
+      } finally {
+        setIsLoading(false);
       }
-    };
+    }
+  };
+  useEffect(() => {
     fetchItems();
   }, [session]);
 
@@ -131,6 +130,7 @@ const UserAvatar = () => {
         if (updateResponse.data.statusCode === 200) {
         setUser(updateResponse.data.data);
         setSuccess(true);
+        fetchItems();
       } else {
         setShowError(true);
         setError(t("System error please try again later") + ".");
@@ -176,15 +176,15 @@ const UserAvatar = () => {
             <Text style={userAvatarStyles.headerText}>Thông tin cá nhân</Text>
             <View style={userAvatarStyles.informationBox}>
               <View style={userAvatarStyles.informationContainer}>
-                <Text>Họ và tên</Text>
+                <Text>{t("Fullname")}</Text>
                 <Text style={userAvatarStyles.userName}>{user?.fullName}</Text>
               </View>
               <View style={userAvatarStyles.informationContainer}>
-                <Text>Ngày sinh</Text>
-                <Text style={userAvatarStyles.userName}>21/02/1992</Text>
+                <Text>{t("Email")}</Text>
+                <Text style={userAvatarStyles.userName}>{user?.email}</Text>
               </View>
               <View style={userAvatarStyles.informationContainer}>
-                <Text>Số điện thoại</Text>
+                <Text>{t("Phone")}</Text>
                 <Text style={userAvatarStyles.userName}>{user?.phoneNumber}</Text>
               </View>
             </View>

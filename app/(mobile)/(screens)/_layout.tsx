@@ -1,6 +1,5 @@
 import { Stack } from "expo-router";
 import { Text, View } from "react-native";
-import { useSession } from "../context/AuthContext";
 import { Redirect } from "expo-router";
 import styles from "../styles/indexStyles";
 import { useTheme } from "../context/ThemeContext";
@@ -9,8 +8,20 @@ import { StatusBar } from "react-native";
 import { useTranslation } from "react-i18next";
 import LoadingComponent from "../../../components/resident/loading";
 import { jwtDecode } from "jwt-decode";
+import { useEffect } from "react";
+import { useSession } from "../context/AuthContext";
+
+interface User{
+  FullName:string;
+  PhoneNumber:string;
+  Id:string;
+  Avatar:string;
+  BuildingId:string;
+  Status:string;
+  Role:string;
+}
+
 export default function AppLayout() {
-  const { session, isLoading, signOut } = useSession();
   const { theme } = useTheme();
   const { t } = useTranslation();
   // if(user.Role!=3){
@@ -19,9 +30,20 @@ export default function AppLayout() {
   // if (isLoading) {
   //   return <LoadingComponent loading={isLoading}></LoadingComponent>;
   // }
-  if (!session ) {
+  const {session, signOut} = useSession();
+  if(session){
+    const user: User = jwtDecode(session as string);
+    if (user.Status === "0" || user.Role !== "3") {
+      signOut();
+    }
+  }
+  
+
+  if (!session) {
     return <Redirect href="/login" />;
   }
+
+  
   return (
     <Stack initialRouteName="(tabs)" >
       <Stack.Screen name="(tabs)" options={{ headerShown: false }} />

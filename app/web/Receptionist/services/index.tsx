@@ -40,6 +40,11 @@ const data:Services[] = [
     footerText: 'Truy cập',
    imageUrl: require('../../../../assets/images/feedback.png'),
    href: '/web/Receptionist/services/feedback/' },
+   { id: '6', title: 'Quản lý số hotline', 
+   description: 'Thông tin danh sách đường dây nóng của tòa chung cư',
+    footerText: 'Truy cập',
+   imageUrl: require('../../../../assets/images/receiver.png'),
+   href: '/web/Receptionist/services/hotline/' },
   // Add more items...
 ];
 interface CardData {

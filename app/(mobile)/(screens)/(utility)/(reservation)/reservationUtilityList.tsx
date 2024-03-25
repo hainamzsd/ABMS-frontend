@@ -162,7 +162,7 @@ const ReservationUtilityList = () => {
                 </View>
                 <View style={{
                     padding: 10, borderRadius: 20, backgroundColor: statusText.color,
-                    justifyContent: 'center', height: 40
+                    justifyContent: 'center', height: 40,
                 }}>
                     <Text style={{ fontWeight: '600', color:'black' }}>{t(statusText.status)}</Text>
                 </View>

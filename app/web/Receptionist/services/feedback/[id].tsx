@@ -43,7 +43,6 @@ const page = () => {
   const _editor:any = React.createRef();
   const [isLoading, setIsLoading] = useState(false);
   const navigation = useNavigation();
-  const [status, setStatus] = useState();
   const [reply, setReply] = useState("");
   const [feedback, setFeedback] = useState<Feedback>();
   const {session} = useAuth();
@@ -96,7 +95,8 @@ const page = () => {
       console.log(session);
         setIsLoading(true); // Set loading state to true
         const replyAxios = await axios.put(`https://abmscapstone2024.azurewebsites.net/api/v1/feedback/manage/${item?.id}`,{
-          response: reply
+          response: reply,
+          status:7
         }, {
             timeout: 10000,
             headers:{
@@ -259,12 +259,13 @@ const handleDeleteFeedback = async () => {
             </Text>
             <Text>{feedback?.content}</Text>
           </View>
-          <View style={{ marginBottom: 10,}}>
+          {feedback?.image &&  <View style={{ marginBottom: 10,}}>
             <Text style={{ fontWeight: "600", fontSize: 16, marginRight:5 }}>
               Ảnh: 
             </Text>
             <Image source={{uri:feedback?.image}} style={{width:100, height:100}}></Image>
-          </View>
+          </View>}
+         
           <View>
           <Text style={{ marginBottom: 10, fontWeight: "600", fontSize: 16 }}>
             Phản hồi

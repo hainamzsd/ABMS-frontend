@@ -209,6 +209,7 @@ const closeModal = () => {
 const styles = StyleSheet.create({
   cardContainer: {
     borderRadius: 20,
+    maxHeight:200,
     overflow: 'hidden',
     marginTop:10
   },

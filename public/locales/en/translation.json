@@ -7,7 +7,7 @@
     "Bill": "Bill",
     "Feedback": "Feedback",
     "Hotline": "Hotline",
-    "HotlineText": "Hotline customer care",
+    "HotlineText": "Hotline",
     "Call": "Call",
     "News": "Resident news",
     "NewsSub": "Read more",
@@ -221,6 +221,13 @@
     "Active":"Active",
     "Failed to retrieve posts":"Failed to retrieve posts",
     "Failed to retrieve reservations":"Failed to retrieve reservations",
-    "Post detail":"Post detail"
+    "Post detail":"Post detail",
+    "Feedback type":"Feedback type",
+    "Sent feedback":"Sent feedback",
+    "Manage feedback":"Manage feedback",
+    "Feedback information":"Feedback information",
+    "Response":"Response",
+    "Responded":"Responded"
+    
   }
 }

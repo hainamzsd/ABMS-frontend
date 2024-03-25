@@ -20,7 +20,22 @@ const statusUtility: StatusUtility = {
     status: "Unsuccess",
     color: "#ED6666"
   },
+  7: {
+    status: "Responded",
+    color: "#AEBB81"
+  },
 };
+
+const accountStatus: StatusUtility = {
+  1: {
+    status: "Đang hoạt động",
+    color: "#276749"
+  },
+  0: {
+    status: "Không hoạt động",
+    color: "#9c9c9c"
+  },
+}
 
 const statusForReceptionist: StatusUtility = {
   1: {
@@ -39,5 +54,6 @@ const statusForReceptionist: StatusUtility = {
     status: "Không chấp nhận",
     color: "#9b2c2c"
   },
+ 
 };
-export  {statusUtility, statusForReceptionist}
+export  {statusUtility, statusForReceptionist, accountStatus}

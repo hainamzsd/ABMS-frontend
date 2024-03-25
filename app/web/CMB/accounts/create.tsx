@@ -21,14 +21,14 @@ const validationSchema = Yup.object().shape({
       max(20, 'Tên tài khoản không được nhiều hơn 20 kí tự'),
     full_name: Yup.string().required('Họ và tên không được trống').min(8, 'Họ và tên phải ít nhất 8 kí tự')
     .max(20, 'Họ và tên không được nhiều hơn 20 kí tự'),
-    password: Yup.string().required('Mật khẩu không được trống').test(
-        'validate-password',
-        'Mật khẩu cần có tối thiểu 8 kí tự bao gồm chữ thường, chữ viết hoa, chữ số và kí tự đặc biệt.',
-        validatePassword,
-      ),
-      re_password: Yup.string()
-      .required('Nhập lại mật khẩu không được trống')
-      .oneOf([Yup.ref('password')], 'Mật khẩu không khớp'),
+    // password: Yup.string().required('Mật khẩu không được trống').test(
+    //     'validate-password',
+    //     'Mật khẩu cần có tối thiểu 8 kí tự bao gồm chữ thường, chữ viết hoa, chữ số và kí tự đặc biệt.',
+    //     validatePassword,
+    //   ),
+    //   re_password: Yup.string()
+    //   .required('Nhập lại mật khẩu không được trống')
+    //   .oneOf([Yup.ref('password')], 'Mật khẩu không khớp'),
   });
   interface User{
     id: string;
@@ -40,8 +40,8 @@ const page = () => {
     const navigation = useNavigation();
     const {session} = useAuth();
     const user:User = jwtDecode(session as string);
-    const [password, setPassword] = useState("");
-    const [reEnterPassword, setReEnterPassword] = useState("");
+    // const [password, setPassword] = useState("");
+    // const [reEnterPassword, setReEnterPassword] = useState("");
     const [phoneNumber, setPhoneNumber] = useState("");
     const [email, setEmail] = useState("");
     const [username, setUsername] = useState("");
@@ -73,7 +73,7 @@ const page = () => {
             full_name:fullName,
             user_name:username,
             role:2,
-            password:password,
+            password:"String123@",
             email:email,
             avatar:""
         }
@@ -84,8 +84,8 @@ const page = () => {
                 phone:phoneNumber,
                 full_name:fullName,
                 user_name:username,
-                password:password,
-                re_password:reEnterPassword,
+                // password:password,
+                // re_password:reEnterPassword,
                 email:email,
             }, { abortEarly: false });
             const response = await axios.post('https://abmscapstone2024.azurewebsites.net/api/v1/account/register', bodyData, {
@@ -191,7 +191,7 @@ const page = () => {
                             <Text style={styles.errorText}>{validationErrors.user_name}</Text>
                         )}
                     </View>
-                    <View>
+                    {/* <View>
                         <Text style={{ fontWeight: "600", fontSize: 16 }}>
                             Mật khẩu
                         </Text>
@@ -217,7 +217,7 @@ const page = () => {
                      {validationErrors.re_password  && (
                             <Text style={styles.errorText}>{validationErrors.re_password}</Text>
                         )}
-                    </View>
+                    </View> */}
                     <View>
                         <Text style={{ marginBottom: 10, fontWeight: "600", fontSize: 16 }}>
                             Email

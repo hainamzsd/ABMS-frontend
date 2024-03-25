@@ -247,6 +247,57 @@ const handleDeleteAccount = async () => {
     setIsLoading(false);
   }
 };
+
+const handleActiveAccount = async () => {
+  if (!accountId.accountDetail) {
+    Toast.show({
+      type:'error',
+      text1:'Không tìm thấy tài khoản',
+      position:'bottom'
+    })
+    return;
+  }
+  setIsLoading(true);
+  setError(null); 
+
+  try {
+  
+    const response = await axios.put(`https://abmscapstone2024.azurewebsites.net/api/v1/account/active/${accountId.accountDetail}?status=1`,{}, {
+      timeout: 10000,
+      withCredentials:true,
+      headers:{
+        'Authorization': `Bearer ${session}`
+      }
+  });
+    console.log(response);
+    if (response.data.statusCode == 200) {
+      Toast.show({
+        type:'success',
+        text1:'Cập nhật tài khoản thành công',
+        position:'bottom'
+      })
+      router.replace('/web/CMB/accounts/');
+    } else {
+      Toast.show({
+        type:'error',
+        text1:'Cập nhật tài khoản không thành công' ,
+        position:'bottom'
+      })
+    }
+  } catch (error) {
+    if (axios.isCancel(error)) {
+      Toast.show({
+          type: 'error',
+          text1: 'Lỗi hệ thống! vui lòng thử lại sau',
+          position:'bottom'
+      })
+  }
+    console.error('Error update account:', error);
+    setError('An error occurred. Please try again.');
+  } finally {
+    setIsLoading(false);
+  }
+};
   return (
     <View
       style={{
@@ -340,9 +391,15 @@ const handleDeleteAccount = async () => {
             onPress={updateAccount}
             text="Cập nhật" style={[{ width: 100, marginRight: 10,
             }]}></Button>
+           {accountData?.status === 0 ? 
+             <Button 
+             onPress={handleActiveAccount}
+             text="Kích hoạt" style={{ width: 100, backgroundColor: '#276749' }}></Button>
+            : 
             <Button 
             onPress={handleDeleteAccount}
-            text="Xóa" style={{ width: 100, backgroundColor: '#9b2c2c' }}></Button>
+            text="Vô hiệu hóa" style={{ width: 100, backgroundColor: '#9b2c2c' }}></Button>
+            }
           </View>
         </ScrollView>
       </SafeAreaView>

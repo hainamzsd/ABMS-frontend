@@ -59,11 +59,12 @@ const index = () => {
               setDisplayData(response.data.data);
               console.log(displayData)
           } catch (error) {
-              if(axios.isAxiosError(error)){
-                  setError("");
+            if(axios.isAxiosError(error)){
+                setShowError(true);
+                  setError(t("System error please try again later")+".");
               }
-              console.error('Error fetching reservations:', error);
-              setError('Failed to fetch reservations.');
+              setShowError(true);
+              setError(t("System error please try again later")+".");
           } finally {
               setIsLoading(false);
           }

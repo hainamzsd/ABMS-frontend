@@ -26,14 +26,14 @@ const validationSchema = Yup.object().shape({
       max(20, 'Tên tài khoản không được nhiều hơn 20 kí tự'),
     full_name: Yup.string().required('Họ và tên không được trống').min(8, 'Họ và tên phải ít nhất 8 kí tự')
     .max(20, 'Họ và tên không được nhiều hơn 20 kí tự'),
-    password: Yup.string().required('Mật khẩu không được trống').test(
-        'validate-password',
-        'Mật khẩu cần có tối thiểu 8 kí tự bao gồm chữ thường, chữ viết hoa, chữ số và kí tự đặc biệt.',
-        validatePassword,
-      ),
-      re_password: Yup.string()
-      .required('Nhập lại mật khẩu không được trống')
-      .oneOf([Yup.ref('password')], 'Mật khẩu không khớp'),
+    // password: Yup.string().required('Mật khẩu không được trống').test(
+    //     'validate-password',
+    //     'Mật khẩu cần có tối thiểu 8 kí tự bao gồm chữ thường, chữ viết hoa, chữ số và kí tự đặc biệt.',
+    //     validatePassword,
+    //   ),
+    //   re_password: Yup.string()
+    //   .required('Nhập lại mật khẩu không được trống')
+    //   .oneOf([Yup.ref('password')], 'Mật khẩu không khớp'),
   });
   
   interface User{
@@ -43,8 +43,8 @@ const validationSchema = Yup.object().shape({
 const page = () => {
     const navigation = useNavigation();
     const { session } = useAuth();
-    const [password, setPassword] = useState("");
-    const [reEnterPassword, setReEnterPassword] = useState("");
+    // const [password, setPassword] = useState("");
+    // const [reEnterPassword, setReEnterPassword] = useState("");
     const [phoneNumber, setPhoneNumber] = useState("");
     const [email, setEmail] = useState("");
     const [username, setUsername] = useState("");
@@ -107,7 +107,7 @@ const page = () => {
             full_name:fullName,
             user_name:username,
             role:3,
-            password:password,
+            password:"String123@",
             email:email,
             avatar:""
         }
@@ -118,8 +118,8 @@ const page = () => {
                 phone:phoneNumber,
                 full_name:fullName,
                 user_name:username,
-                password:password,
-                re_password:reEnterPassword,
+                // password:password,
+                // re_password:reEnterPassword,
                 email:email,
                 gender:gender,
                 dob:dob
@@ -190,6 +190,11 @@ const page = () => {
                         text="Quay Lại"
                         onPress={() => router.back}
                     ></Button>
+                    {/* <Button
+                        style={{ width: 150, marginBottom: 20 }}
+                        text="Tạo tài khoản bằng file excel"
+                        onPress={() => router.push('/web/Receptionist/accounts/createExcel')}
+                    ></Button> */}
                     <View style={{ marginBottom: 20 }}>
                         <Text style={{ fontWeight: "bold", fontSize: 20, marginBottom: 5 }}>
                             Tạo thông tin tài khoản
@@ -228,7 +233,7 @@ const page = () => {
                             <Text style={styles.errorText}>{validationErrors.user_name}</Text>
                         )}
                     </View>
-                    <View>
+                    {/* <View>
                         <Text style={{ fontWeight: "600", fontSize: 16 }}>
                             Mật khẩu
                         </Text>
@@ -254,7 +259,7 @@ const page = () => {
                      {validationErrors.re_password  && (
                             <Text style={styles.errorText}>{validationErrors.re_password}</Text>
                         )}
-                    </View>
+                    </View> */}
                     {/* <View>
                         <Text style={{ marginBottom: 10, fontWeight: "600", fontSize: 16 }}>
                             Ngày, tháng, năm sinh

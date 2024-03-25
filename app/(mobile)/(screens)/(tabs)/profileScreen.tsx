@@ -28,6 +28,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import LoadingComponent from "../../../../components/resident/loading";
 import AlertWithButton from "../../../../components/resident/AlertWithButton";
+import { useIsFocused } from "@react-navigation/native";
 
 interface user{
   FullName:string;
@@ -60,7 +61,7 @@ const ProfileScreen = () => {
   const [confirm, setConfirm] = useState(false);
   const{session } = useSession();
   const user:user = jwtDecode(session as string);
-  
+  const isFocused = useIsFocused();
 const [error, setError] = useState(false);
 const [errorText, setErrorText] = useState("");
 const [room, setRoom] = useState<Room[]>([]);
@@ -93,7 +94,7 @@ useEffect(() => {
     };
 
     fetchData();
-  }, [session]);
+  }, [session,isFocused]);
   
 const [fetchUser,setFetchUser] = useState<UserDatabase>();
 const [loading,setLoading] = useState(false);

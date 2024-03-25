@@ -39,42 +39,33 @@ interface FeedbackType{
   id: string;
   name: string;
 }
+
+const StatusData = [
+  { label: "Phản ánh chưa phản hồi", value: 2 },
+  { label: "Phản ánh đã phản hồi", value: 7 },
+]
 const index = () => {
     const headers = ['Căn hộ', 'Loại phản ánh', 'Tiêu đề', 'Ngày tạo',''];
     const [request, setRequest] = useState<Feedback[]>([]);
-    const [feedbackType, setFeedbackType] = useState<FeedbackType[]>([]);
-    const [feedbackTypeChoose, setFeedbackTypeChoose] = useState("");
-    const [newItemName, setNewItemName] = useState('');
     const {session} = useAuth(); 
     const User:User = jwtDecode(session as string);
     const [isLoading, setIsLoading] = useState(false);
     const [currentPage, setCurrentPage] = useState(1)
     const itemsPerPage = 7
     const [overlaps, setOverlaps] = useState<any[]>([]);
+    const [status, setStatus] = useState<number | null>(2)
     useEffect(() => {
       const fetchData = async () => {
         setIsLoading(true)
   
         try {
-          let url = `https://abmscapstone2024.azurewebsites.net/api/v1/feedback/get-all?building_id=${User.BuildingId}&status=2`
+          let url = `https://abmscapstone2024.azurewebsites.net/api/v1/feedback/get-all?building_id=${User.BuildingId}`
+          if (status !== null) {
+            url += `&status=${status}`
+          }
           const response = await axios.get(url, { timeout: 100000 })
           if (response.data.statusCode === 200) {
             setRequest(response.data.data)
-            const overlappingPairs = checkOverlaps(response.data.data);
-            setOverlaps(overlappingPairs);
-            const feedbackTypes = await axios.get(`https://abmscapstone2024.azurewebsites.net/api/v1/service-type/get-all?buildingId=${User.BuildingId}`,
-              { timeout: 100000 })
-            if (feedbackTypes.data.statusCode === 200) {
-              setFeedbackType(feedbackTypes.data.data);
-            } else {
-              Toast.show({
-                type: 'error',
-                text1: 'Lỗi lấy danh sách các loại phản ánh',
-                position: 'bottom',
-              })
-            }
-
-
           } else {
             Toast.show({
               type: 'error',
@@ -101,7 +92,7 @@ const index = () => {
       }
   
       fetchData()
-    }, [session])
+    }, [session,status])
  
 
   //search box
@@ -148,7 +139,21 @@ const index = () => {
               onChangeText={(text) => setSearchQuery(text)}
             />
           </View>
-            
+          <Dropdown
+              style={styles.comboBox}
+              placeholderStyle={{ fontSize: 14, }}
+              placeholder={"Chọn trạng thái"}
+              itemContainerStyle={{ borderRadius: 10 }}
+              data={StatusData}
+              value={status}
+              search={false}
+              labelField="label"
+              valueField="value"
+              onChange={(item:any) => {
+                setStatus(item.value);
+              }}
+            ></Dropdown>
+           
             {isLoading && <ActivityIndicator size={'large'} color={'#171717'}></ActivityIndicator>}
             {!filteredRequests.length ? (
             <Text style={{ marginBottom: 10, fontSize: 18, fontWeight: '600' }}>Chưa có dữ liệu</Text>
@@ -160,10 +165,10 @@ const index = () => {
                   
                   return (
                     <TableRow >
-                      <Cell>{item.room.roomNumber}</Cell>
-                      <Cell>{item.serviceType.name}</Cell>
-                      <Cell>{item.title}</Cell>
-                      <Cell>{moment.utc(item.createTime).format('DD-MM-YYYY')}</Cell>
+                      <Cell>{item?.room.roomNumber}</Cell>
+                      <Cell>{item?.serviceType?.name}</Cell>
+                      <Cell>{item?.title}</Cell>
+                      <Cell>{moment.utc(item?.createTime).format('DD-MM-YYYY')}</Cell>
                       <Cell>
                         <Button
                           text="Chi tiết"

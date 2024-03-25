@@ -1,37 +1,40 @@
 import { View, Text, StyleSheet, SafeAreaView, ActivityIndicator } from 'react-native'
 import React, { useEffect, useState } from 'react'
-import Header from '../../../../../components/resident/header';
+import Header from '../../../../components/resident/header';
 import { useTranslation } from 'react-i18next';
-import { useTheme } from '../../../context/ThemeContext';
+import { useTheme } from '../../context/ThemeContext';
 import { Pressable } from 'react-native';
-import SHADOW from '../../../../../constants/shadow';
+import SHADOW from '../../../../constants/shadow';
 import { FlatList } from 'react-native';
 import { CircleUser } from 'lucide-react-native';
 import { router } from 'expo-router';
 import axios from 'axios';
 import { jwtDecode } from 'jwt-decode';
-import { useSession } from '../../../context/AuthContext';
+import { useSession } from '../../context/AuthContext';
 import moment from 'moment';
-import { statusUtility } from '../../../../../constants/status';
+import { statusUtility } from '../../../../constants/status';
 import { useIsFocused } from '@react-navigation/native';
-import AlertWithButton from '../../../../../components/resident/AlertWithButton';
-import LoadingComponent from '../../../../../components/resident/loading';
+import AlertWithButton from '../../../../components/resident/AlertWithButton';
+import LoadingComponent from '../../../../components/resident/loading';
 export const MOCK_DATA = [
   { id: 1, name: 'Xay nha', description: 'Description for item 1' },
   { id: 2, name: 'Hoa', description: 'Description for item 2Description for item 2Description for item 2Description for item 2' },
   { id: 3, name: 'Item 3', description: 'Description for item 3' },
 ];
-interface Construction{
-  id:string;
-  roomId:string;
-  name:string;
-  constructionOrganization:string;
-  phoneContact:string;
-  startTime:string;
-  endTime:string;
-  description:string;
-  createTime:Date;
-  status:number;
+interface Feedback{
+    id: string;
+    roomId: string;
+    serviceTypeId: string;
+    title: string;
+    content: string;
+    image: string;
+    createTime: Date,
+    status: number;
+    response: string;
+    serviceType:{
+        id: string;
+        name: string;
+    }
 }
 interface user{
   FullName:string;
@@ -44,13 +47,13 @@ interface Room{
   roomNumber:string;
   id:string;
 }
-const ConstructionList = () => {
+const feedbackList = () => {
  
     const { t } = useTranslation();
     const { theme } = useTheme();
     const [currentPage, setCurrentPage] = useState(1);
-    const [data, setData] = useState<Construction[]>([]); // Holds all fetched data
-    const [displayData, setDisplayData] = useState<Construction[]>([]); // Data to display
+    const [data, setData] = useState<Feedback[]>([]); // Holds all fetched data
+    const [displayData, setDisplayData] = useState<Feedback[]>([]); // Data to display
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string>("");
   const [showError, setShowError] = useState(false);
@@ -89,7 +92,7 @@ useEffect(() => {
     fetchData();
   }, [session, isFocused]);
   useEffect(() => {
-    const fetchConstructionData = async () => {
+    const fetchFeedbacks = async () => {
       setIsLoading(true);
       setError("");
       if (!room.length || !user.BuildingId) {
@@ -97,12 +100,12 @@ useEffect(() => {
       }
     
       try {
-        const response = await axios.get(`https://abmscapstone2024.azurewebsites.net/api/v1/construction/get-all?room_id=${room[0]?.id}&building_id=${user.BuildingId}`, {
+        const response = await axios.get(`https://abmscapstone2024.azurewebsites.net/api/v1/feedback/get-all?roomId=${room[0]?.id}`, {
           timeout: 10000
         });
         if (response.data.statusCode == 200) {
-          const filteredData = response.data.data.filter((item: Construction) => item.status !== 0);
-
+          const filteredData = response.data.data.filter((item: Feedback) => item.status !== 0);
+            console.log(response);
           // Set the filtered data
           setData(filteredData);
           setDisplayData(filteredData);
@@ -114,7 +117,6 @@ useEffect(() => {
                 setError(t("System error please try again later")+".");
                 return;
             }
-            console.error('Error fetching reservations:', error);
             setShowError(true);
             setError(t('Failed to return requests')+".");
         } finally {
@@ -122,7 +124,7 @@ useEffect(() => {
         }
     };
     if(isFocused){
-      fetchConstructionData();
+        fetchFeedbacks();
     }
 }, [room, isFocused]); 
   useEffect(() => {
@@ -143,11 +145,11 @@ const loadMoreItems = () => {
     }
     return null;
   };
-    const render = ({ item }:{item:Construction}) => (
+    const render = ({ item }:{item:Feedback}) => (
         <Pressable style={[SHADOW, { backgroundColor: 'white', borderRadius:10, marginTop:10 }]}
         onPress={() => {
           router.push({
-            pathname: `/(mobile)/(screens)/(service)/construction/${item.id}`,
+            pathname: `/(mobile)/(screens)/(feedback)/${item.id}`,
           })
         }}
         >
@@ -155,10 +157,10 @@ const loadMoreItems = () => {
            <View style={{padding:20, flexDirection:'row', justifyContent:'space-between'}}>
                 <View style={{justifyContent:'space-between',flex:1}}>
                     <View style={{flex:0.6}}>
-                    <Text style={{fontWeight:'bold', fontSize:20}}>{item.name}</Text>
-                    <Text>{item.description}</Text>
+                    <Text style={{fontWeight:'bold', fontSize:20}}>{item?.title}</Text>
+                    <Text>{t("Feedback type")+":"} {item?.serviceType.name}</Text>
                     </View>
-                    <Text style={{color:"#9c9c9c"}}>{t("Create date")}: {moment.utc(item.createTime).format("DD-MM-YYYY")}</Text>
+                    <Text style={{color:"#9c9c9c"}}>{t("Create date")}: {moment.utc(item?.createTime).format("DD-MM-YYYY")}</Text>
                 </View>
                 <View style={{
                     padding: 10, borderRadius: 20, backgroundColor: statusUtility[item?.status]?.color,
@@ -177,12 +179,11 @@ const loadMoreItems = () => {
       visible={showError}
       content={error} onClose={() =>setShowError(false)}></AlertWithButton>
       <LoadingComponent loading={isLoading}></LoadingComponent>
-        <Header headerTitle={t("Manage construction request")} />
+        <Header headerTitle={t("Manage feedback")} />
         <SafeAreaView style={{ backgroundColor: theme.background, flex: 1 }}>
           <View style={{ marginHorizontal: 26 }}>
             <View style={{ marginTop: 20 }}>
-              <Text style={{ marginBottom: 5, fontSize: 20, fontWeight: 'bold' }}>{t("Registered construction")}</Text>
-              <Text>{t("Construction requests")}</Text>
+              <Text style={{ marginBottom: 5, fontSize: 20, fontWeight: 'bold' }}>{t("Sent feedback")}</Text>
             </View>
           </View>
           <View style={{ flex:1,  }}>
@@ -217,4 +218,4 @@ const loadMoreItems = () => {
     },
   })
   
-export default ConstructionList
+export default feedbackList

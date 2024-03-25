@@ -11,6 +11,9 @@ import { useSession } from "../../(mobile)/context/AuthContext";
 import { paginate } from "../../../utils/pagination";
 import { Building } from "../../../interface/roomType";
 import { SIZES } from "../../../constants";
+import { useAuth } from "../context/AuthContext";
+import { jwtDecode } from "jwt-decode";
+import { accountStatus } from "../../../constants/status";
 
 interface Account {
     id: string;
@@ -29,13 +32,48 @@ interface Account {
     modifyTime: string | null; // Optional field to allow null values
     status: number;
 }
-
+interface User{
+    id: string;
+    BuildingId:string;
+  }
 export default function AccountManagement() {
-    const headers = ['Họ và tên', 'Số điện thoại', 'Email', ''];
+    const headers = ['Họ và tên', 'Số điện thoại', 'Email','Trạng thái', ''];
     const [accountData, setAccountData] = useState<Account[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const {session} = useAuth();
+    const user:User = jwtDecode(session as string);
+    useEffect(() => {
+        const fetchData = async () => {
+            setIsLoading(true); // Set loading state to true
+            setError(null); // Clear any previous errors
+            if(!user.BuildingId) {
+                Toast.show({type:'danger',position:"top",text1:"Lỗi hệ thống",text2:"Không tìm thấy thông tin tòa nhà"})
+               return;
+               }
+            try {
+                const response = await axios.get(`https://abmscapstone2024.azurewebsites.net/api/v1/account/get?role=1`, {
+                    timeout:100000
+                });
+                setAccountData(response.data.data); // Set account data
+            } catch (error) {
+                if (axios.isCancel(error)) {
+                    Toast.show({
+                        type: 'error',
+                        text1: 'Lỗi hệ thống! vui lòng thử lại sau',
+                        position: 'bottom'
+                    })
+                }
+                console.error('Error fetching account data:', error);
+                setError('Failed to fetch account data.'); // Set error message
+            } finally {
+                setIsLoading(false); // Set loading state to false regardless of success or failure
+            }
+        };
 
+        fetchData();
+    }, []);
+    
         //search box
   const [searchQuery, setSearchQuery] = useState('');
   const [filteredRequests, setFilteredRequests] = useState<Account[]>([]);
@@ -91,12 +129,14 @@ export default function AccountManagement() {
                             <FlatList data={currentItems}
                             renderItem={({ item }) =>
                             {
-                                console.log(item);
                                 return(
-                            <TableRow >
+                            <TableRow>
                                 <Cell>{item.fullName}</Cell>
                                 <Cell>{item.phoneNumber}</Cell>
                                 <Cell>{item.email}</Cell>
+                                <Cell><Button text={accountStatus[item?.status].status}
+                                style={{backgroundColor:accountStatus[item?.status].color, width:100}}
+                                ></Button> {}</Cell>
                                 <Cell>
                                     <Link href={`/web/Admin/${item.id}`}
                                     >

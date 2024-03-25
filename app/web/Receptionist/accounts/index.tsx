@@ -1,5 +1,5 @@
 import { Link, Redirect, router, useNavigation } from "expo-router";
-import { SafeAreaView, Text, View, ScrollView, TextInput, TouchableOpacity, Image, FlatList, ActivityIndicator } from "react-native";
+import { SafeAreaView, Text, View, ScrollView, TextInput, TouchableOpacity, Image, FlatList, ActivityIndicator, Platform } from "react-native";
 import Button from "../../../../components/ui/button";
 import { Cell, TableComponent, TableRow } from "../../../../components/ui/table";
 import Input from "../../../../components/ui/input";
@@ -10,7 +10,10 @@ import Toast from "react-native-toast-message";
 import { paginate } from "../../../../utils/pagination";
 import { useAuth } from "../../context/AuthContext";
 import { jwtDecode } from "jwt-decode";
-
+import { accountStatus } from "../../../../constants/status";
+import { HStack } from "native-base";
+import { Download } from "lucide-react-native";
+import * as FileSystem from 'expo-file-system';
 interface Account {
     id: string;
     buildingId?: string | null; // Optional field to allow null values
@@ -33,7 +36,7 @@ interface User{
     BuildingId:string;
   }
 export default function AccountManagement() {
-    const headers = ['Họ và tên', 'Số điện thoại', 'Email', ''];
+    const headers = ['Họ và tên', 'Số điện thoại', 'Email','Trạng thái',''];
     const [accountData, setAccountData] = useState<Account[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -69,6 +72,28 @@ export default function AccountManagement() {
 
         fetchData();
     }, []);
+
+    const [downloading, setDownloading] = useState(false);
+    const handleDownload = async () => {
+          try {
+            const apiUrl = `https://abmscapstone2024.azurewebsites.net/api/v1/account/export-data/${user.BuildingId}`;
+            if (Platform.OS === 'web') {
+              window.open(apiUrl, '_self');
+            } else {
+              const fileInfo = await FileSystem.downloadAsync(
+                apiUrl,
+                FileSystem.documentDirectory + 'accounts.xlsx',
+                {
+                  headers: {
+                  },
+                }
+              );}
+          } catch (error) {
+            console.error('Failed to download the file:', error);
+          }
+    };
+
+
     const itemsPerPage = 7 
     //search box
   const [searchQuery, setSearchQuery] = useState('');
@@ -117,6 +142,14 @@ export default function AccountManagement() {
                                 style={styles.searchBtnIcon}
                             ></Image>
                         </TouchableOpacity> */}
+                         <TouchableOpacity onPress={handleDownload}>
+                            <HStack space={2} alignItems={'center'}
+                                backgroundColor={'#191919'} width={150} borderRadius={10}
+                                padding={2}>
+                                <Download color="white" />
+                                <Text style={{ color: 'white' }}>Tải xuống file template</Text>
+                            </HStack>
+                        </TouchableOpacity>
                     </View>
                     {isLoading && <ActivityIndicator size={'large'} color={'#171717'}></ActivityIndicator>}
                     {!filteredRequests.length ? <Text style={{marginBottom:10, fontSize:18,fontWeight:'600'}}>Chưa có dữ liệu</Text>:
@@ -126,6 +159,9 @@ export default function AccountManagement() {
                                 <Cell>{item.fullName}</Cell>
                                 <Cell>{item.phoneNumber}</Cell>
                                 <Cell>{item.email}</Cell>
+                                <Cell><Button text={accountStatus[item?.status].status}
+                                style={{backgroundColor:accountStatus[item?.status].color, width:100}}
+                                ></Button> {}</Cell>
                                 <Cell>
                                         <Button onPress={() => {
                                             router.push(`/web/Receptionist/accounts/${item.id}`);

@@ -1,4 +1,4 @@
-import { Link, Redirect, useNavigation } from "expo-router";
+import { Link, Redirect, router, useNavigation } from "expo-router";
 import { SafeAreaView, Text, View, ScrollView, TextInput, TouchableOpacity, Image, FlatList, ActivityIndicator } from "react-native";
 import Button from "../../../../components/ui/button";
 import { Cell, TableComponent, TableRow } from "../../../../components/ui/table";
@@ -10,6 +10,7 @@ import Toast from "react-native-toast-message";
 import { paginate } from "../../../../utils/pagination";
 import { useAuth } from "../../context/AuthContext";
 import { jwtDecode } from "jwt-decode";
+import { accountStatus } from "../../../../constants/status";
 
 interface Account {
     id: string;
@@ -33,7 +34,7 @@ interface User{
     BuildingId:string;
   }
 export default function AccountManagement() {
-    const headers = ['Họ và tên', 'Số điện thoại', 'Email', ''];
+    const headers = ['Họ và tên', 'Số điện thoại', 'Email','Trạng thái', ''];
     const [accountData, setAccountData] = useState<Account[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -127,11 +128,11 @@ export default function AccountManagement() {
                                     <Cell>{item.fullName}</Cell>
                                     <Cell>{item.phoneNumber}</Cell>
                                     <Cell>{item.email}</Cell>
+                                    <Cell><Button text={accountStatus[item?.status].status}
+                                style={{backgroundColor:accountStatus[item?.status].color, width:100}}
+                                ></Button> {}</Cell>
                                     <Cell>
-                                        <Link href={`/web/CMB/accounts/${item.id}`}
-                                        >
-                                            <Button text="Chi tiết" />
-                                        </Link>
+                                            <Button onPress={()=>router.push(`/web/CMB/accounts/${item.id}`)} text="Chi tiết" />
                                     </Cell>
                                 </TableRow>
                                 }
