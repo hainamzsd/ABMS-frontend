@@ -12,7 +12,8 @@ import { user } from '../../../../interface/accountType'
 import { jwtDecode } from 'jwt-decode'
 import { SHADOWS } from '../../../../constants'
 import Button from '../../../../components/ui/button'
-import { Modal, Button as ButtonNative, Input, VStack, Text as TextNative, FormControl, Center, TextArea } from "native-base";
+import { Modal, Button as ButtonNative, Input, VStack, Text as TextNative, FormControl } from "native-base";
+import { ToastFail } from '../../../../constants/toastMessage'
 
 const Utilities = () => {
   const { theme } = useTheme();
@@ -21,7 +22,8 @@ const Utilities = () => {
 
   // STATE
   const [isLoading, setIsLoading] = useState(false);
-  const [utilities, setUtilities] = useState<Utility[]>();
+  const [utilities, setUtilities] = useState<Utility[]>([]);
+  const [utilitiesTrash, setUtilitiesTrash] = useState<Utility[]>([]);
   const [isUpdate, setIsUpdate] = useState(false);
   const [utilityId, setUtilityId] = useState("");
   const [name, setName] = useState("");
@@ -33,9 +35,11 @@ const Utilities = () => {
   const [isCreateModal, setIsCreateModal] = useState(false);
   const [isUpdateModal, setIsUpdateModal] = useState(false);
   const [isDeleteModal, setIsDeleteModal] = useState(false);
+  const [isTrash, setIsTrash] = useState(false);
 
   useEffect(() => {
     fetchUtilities();
+    fetchUtilitiesTrash();
   }, [])
 
   const fetchUtilities = async () => {
@@ -67,6 +71,28 @@ const Utilities = () => {
         text1: 'Lỗi lấy thông tin tiện ích',
         position: 'bottom'
       })
+    } finally {
+      setIsLoading(false); // Set loading state to false regardless of success or failure
+    }
+  }
+
+  const fetchUtilitiesTrash = async () => {
+    setIsLoading(true);
+    try {
+      const response = await axios.get(`https://abmscapstone2024.azurewebsites.net/api/v1/utility/get-all?buildingId=${user?.BuildingId}&status=0`, {
+        timeout: 10000,
+      });
+      if (response.status === 200) {
+        setUtilitiesTrash(response.data.data);
+      } else {
+        ToastFail('Lỗi lấy thông tin thùng rác')
+      }
+    } catch (error) {
+      if (axios.isCancel(error)) {
+        ToastFail('Hệ thống lỗi! Vui lòng thử lại sau')
+      }
+      console.error('Error fetching utilities trash data:', error);
+      ToastFail('Lỗi lấy thông tin thùng rác')
     } finally {
       setIsLoading(false); // Set loading state to false regardless of success or failure
     }
@@ -220,6 +246,50 @@ const Utilities = () => {
     }
   }
 
+  // RESTORE - NOT FINISHED
+  const restoreUtility = async () => {
+    setIsLoading(true);
+    try {
+      const response = await axios.put(`https://abmscapstone2024.azurewebsites.net/api/v1/utility/restore/${utilityId}`, {
+        timeout: 10000,
+        headers: {
+          'Authorization': `Bearer ${session}`
+        }
+      })
+      if (response.status === 200) {
+        Toast.show({
+          type: 'success',
+          text1: 'Xoá tiện ích thành công',
+          position: 'bottom'
+        })
+        fetchUtilities();
+      } else {
+        Toast.show({
+          type: 'error',
+          text1: 'Lỗi xoá tiện ích',
+          position: 'bottom'
+        })
+      }
+    } catch (error) {
+      if (axios.isCancel(error)) {
+        Toast.show({
+          type: 'error',
+          text1: 'Hệ thống lỗi! Vui lòng thử lại sau',
+          position: 'bottom'
+        })
+      }
+      console.error('Error updating utility:', error);
+      Toast.show({
+        type: 'error',
+        text1: 'Lỗi xoá tiện ích',
+        position: 'bottom'
+      })
+    } finally {
+      setIsLoading(false); // Set loading state to false regardless of success or failure
+    }
+  }
+  
+
   //Toggle
   const toggleUpdateMode = () => {
     setIsUpdate(!isUpdate);
@@ -236,6 +306,11 @@ const Utilities = () => {
     setUtilityId(item?.id);
   }
 
+  const handleRestoreUtility = (item: any) => {
+    setUtilityId(item?.id);
+    restoreUtility();
+  }
+
   const handleDeleteUtility = (item: any) => {
     setIsDeleteModal(true);
     setName(item?.name);
@@ -245,6 +320,10 @@ const Utilities = () => {
     setPrice(item?.pricePerSlot);
     setDescription(item?.description);
     setUtilityId(item?.id);
+  }
+
+  const handleChangeToTrash = () => {
+    setIsTrash(!isTrash);
   }
 
   const renderItem = ({ item }: { item: Utility }) => {
@@ -268,16 +347,21 @@ const Utilities = () => {
               <Image source={icon} style={{ width: 48, height: 48 }} />
             </View>
             <Text style={{ fontSize: SIZES.large, marginTop: 4 }}>{item.name}</Text>
-            {isUpdate &&
+            {isUpdate && isTrash === false &&
               <View style={{ flexDirection: 'row', gap: 8, paddingVertical: SIZES.small }}>
                 <Button style={{ backgroundColor: ColorPalettes.ocean.primary }} text="Chỉnh sửa tiện ích" onPress={() => handleUpdateUtility(item)} />
                 <Button style={{ backgroundColor: ColorPalettes.ocean.primary }} text='Xoá tiện ích' onPress={() => handleDeleteUtility(item)} />
               </View>
             }
+            {isUpdate && isTrash &&
+              <View style={{ flexDirection: 'row', gap: 8, paddingVertical: SIZES.small }}>
+                <Button style={{ backgroundColor: ColorPalettes.ocean.primary }} text="Khôi phục tiện ích" onPress={() => handleRestoreUtility(item)} />
+                <Button style={{ backgroundColor: ColorPalettes.ocean.primary }} text='Xoá vĩnh viễn' />
+              </View>
+            }
           </View>
         </Pressable>
       </TouchableOpacity>
-
     )
   }
 
@@ -288,17 +372,25 @@ const Utilities = () => {
           <View style={{ marginBottom: 20, flexDirection: 'row', justifyContent: 'space-between' }}>
             <Text style={{ fontWeight: 'bold', fontSize: 20 }}>Quản lý tiện ích</Text>
             <View style={{ flexDirection: 'row', gap: 12 }}>
-              <Button text="Thêm tiện ích" onPress={() => setIsCreateModal(true)} />
-              <Button text={isUpdate ? "Huỷ bỏ" : "Chỉnh sửa"} onPress={toggleUpdateMode} />
+              {isTrash === false && <>
+                <Button text="Thêm tiện ích" onPress={() => setIsCreateModal(true)} />
+                <Button text={isUpdate ? "Huỷ bỏ" : "Chỉnh sửa"} onPress={toggleUpdateMode} /> </>
+              }
+              {isTrash && <Button text={isUpdate ? "Huỷ bỏ" : "Chỉnh sửa"} onPress={toggleUpdateMode} />}
+              <Button text={isTrash ? "Thoát chế độ thùng rác" : "Thùng rác"} style={{ backgroundColor: COLORS.buttonRed }} onPress={handleChangeToTrash} />
             </View>
           </View>
+          {/* {isTrash && utilitiesTrash.length === 0 ? <View><Text style={{fontSize: SIZES.medium, color: COLORS.gray, fontStyle: 'italic'}}>Thùng rác trống.</Text></View> : isTrash === false && utilities?.length === 0 ? <View><Text style={{fontSize: SIZES.medium, color: COLORS.gray, fontStyle: 'italic'}}>Thùng rác trống.</Text></View>} */}
+          {isTrash && utilitiesTrash.length === 0 && <View><Text style={{ fontSize: SIZES.medium, color: COLORS.gray, fontStyle: 'italic', textAlign: 'center' }}>Thùng rác trống.</Text></View>}
+          {isTrash === false && utilities.length === 0 && <View><Text style={{ fontSize: SIZES.medium, color: COLORS.gray, fontStyle: 'italic', textAlign: 'center' }}>Hiện chưa có tiện ích nào.</Text></View>}
           <FlatList
-            data={utilities}
+            data={isTrash ? utilitiesTrash : utilities}
             renderItem={renderItem}
             keyExtractor={(item) => item.id}
             numColumns={4}
             columnWrapperStyle={{ gap: 20 }}
           />
+
         </ScrollView>
       </SafeAreaView>
 

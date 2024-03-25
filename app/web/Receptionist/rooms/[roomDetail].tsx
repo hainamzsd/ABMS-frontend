@@ -43,7 +43,6 @@ const RoomDetail = () => {
     const { session } = useAuth();
     // const user: user = jwtDecode(session as string);
 
-
     useEffect(() => {
         fetchRoom();
         fetchRoomMember();
@@ -51,7 +50,6 @@ const RoomDetail = () => {
     }, []); // Chỉ gọi fetchRoom và fetchRoomMember khi component mount
 
     useEffect(() => {
-        // fetchOwnerRoom();
         fetchBuilding(); // Gọi fetchBuilding mỗi khi buildingId thay đổi
     }, [buildingId]);
 
@@ -65,26 +63,15 @@ const RoomDetail = () => {
             if (response.status === 200) {
                 setOwner(response.data.data);
             } else {
-                Toast.show({
-                    type: 'error',
-                    text1: 'Lỗi lấy thông tin chủ căn hộ',
-                    position: 'bottom'
-                })
+                ToastFail('Lỗi lấy thông tin chủ căn hộ')
+                
             }
         } catch (error) {
             if (axios.isCancel(error)) {
-                Toast.show({
-                    type: 'error',
-                    text1: 'Hệ thống lỗi! Vui lòng thử lại sau',
-                    position: 'bottom'
-                })
+                ToastFail('Hệ thống lỗi! Vui lòng thử lại sau')
             }
             console.error('Error fetching owner room data:', error);
-            Toast.show({
-                type: 'error',
-                text1: 'Lỗi lấy thông tin chủ căn hộ',
-                position: 'bottom'
-            })
+            ToastFail('Lỗi lấy thông tin chủ căn hộ')
         } finally {
             setIsLoading(false); // Set loading state to false regardless of success or failure
         }
@@ -165,6 +152,7 @@ const RoomDetail = () => {
             setIsLoading(false); // Set loading state to false regardless of success or failure
         }
     };
+    
     // GET: All Room Member
     const fetchRoomMember = async () => {
         setIsLoading(true);

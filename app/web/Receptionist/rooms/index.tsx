@@ -104,7 +104,7 @@ const RoomList = () => {
           </View>
           <SearchWithButton placeholder="Tìm kiếm số căn" />
         </View>
-        
+
         <FlatList
           data={data}
           renderItem={({ item }: { item: any }) => (
@@ -118,11 +118,8 @@ const RoomList = () => {
           numColumns={9}
           keyExtractor={(item) => item?.id}
           columnWrapperStyle={{ gap: 30 }}
-        // contentContainerStyle={{ columnGap: SIZES.medium, justifyContent: 'space-between', flexDirection: 'row' }}
         />
-
       </SafeAreaView>
-      <View><Text>Pagination</Text></View>
       {/* Paging */}
     </View>
   )
