@@ -11,6 +11,8 @@ import axios from 'axios';
 import Toast from 'react-native-toast-message';
 import moment from 'moment';
 import Button from '../../../../components/ui/button';
+import { actionController, API_BASE } from "../../../../constants/action"
+import { ToastFail } from '../../../../constants/toastMessage';
 
 const PostList = () => {
   const { session } = useAuth();
@@ -22,32 +24,20 @@ const PostList = () => {
   const fetchPosts = async () => {
     setIsLoading(true);
     try {
-      const response = await axios.get(`https://abmscapstone2024.azurewebsites.net/api/v1/post/get-all?buildingId=${user?.BuildingId}`, {
+      const response = await axios.get(`${API_BASE}/${actionController.POST}/get-all?buildingId=${user?.BuildingId}`, {
         timeout: 10000,
       });
       if (response.status === 200) {
         setPosts(response.data.data);
       } else {
-        Toast.show({
-          type: 'error',
-          text1: 'Lỗi lấy thông tin các bài viết',
-          position: 'bottom'
-        })
+        ToastFail('Lỗi lấy thông tin các bài viết');
       }
     } catch (error) {
       if (axios.isCancel(error)) {
-        Toast.show({
-          type: 'error',
-          text1: 'Hệ thống lỗi! Vui lòng thử lại sau',
-          position: 'bottom'
-        })
+        ToastFail('Hệ thống lỗi! Vui lòng thử lại sau')
       }
       console.error('Error fetching posts data:', error);
-      Toast.show({
-        type: 'error',
-        text1: 'Lỗi lấy thông tin các bài viết',
-        position: 'bottom'
-      })
+      ToastFail('Lỗi lấy thông tin các bài viết')
     } finally {
       setIsLoading(false); // Set loading state to false regardless of success or failure
     }
@@ -66,26 +56,25 @@ const PostList = () => {
             <Text>Thông tin các bài viết</Text>
           </View>
           <View style={{ marginBottom: 10 }}>
-            <Input placeholder="Tìm tên tài khoản" style={{ width: '100%', paddingVertical: 10 }} />
+            <Input placeholder="Tìm tên bài viết" style={{ width: '100%', paddingVertical: 10 }} />
             {/* Filter */}
           </View>
-        </View>
-        <FlatList
-          style={{ paddingHorizontal: 30, paddingVertical: 10 }}
-          data={posts}
-          renderItem={({ item }) => (
-            <PostItem
-              title={item.title}
-              content={item.content}
-              imageUrl={item.image}
-              href={`/web/Receptionist/posts/${item.id}`}
-              date={moment.utc(item?.createTime).format("DD-MM-YYYY")}
+          <View>
+            <Button text="Thêm bài viết" />
+          </View>
+          <FlatList
+            data={posts}
+            renderItem={({ item }) => (
+              <PostItem
+                title={item.title}
+                content={item.content}
+                imageUrl={item.image}
+                href={`/web/Receptionist/posts/${item.id}`}
+                date={moment.utc(item?.createTime).format("DD-MM-YYYY")}
+              />
+            )}
+            keyExtractor={item => item.id} />
 
-            />
-          )}
-          keyExtractor={item => item.id} />
-        <View style={{flex: 1}}>
-          <Button text="Thêm bài viết" />
         </View>
       </SafeAreaView>
       {/* Paging */}

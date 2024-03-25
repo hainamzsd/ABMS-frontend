@@ -104,11 +104,7 @@ const RoomList = () => {
           </View>
           <SearchWithButton placeholder="Tìm kiếm số căn" />
         </View>
-        <View>
-          <Button title='Thêm căn hộ' onPress={() => router.push({
-            pathname: '/web/Receptionist/rooms/create'
-          })} />
-        </View>
+        
         <FlatList
           data={data}
           renderItem={({ item }: { item: any }) => (

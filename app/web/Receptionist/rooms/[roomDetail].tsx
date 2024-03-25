@@ -14,6 +14,7 @@ import { RadioButton } from 'react-native-paper';
 import { AccountOwner, user } from '../../../../interface/accountType';
 import { jwtDecode } from 'jwt-decode';
 import moment from 'moment';
+import { ToastFail, ToastSuccess } from "../../../../constants/toastMessage"
 
 const RoomDetail = () => {
     const navigation = useNavigation();
@@ -26,7 +27,7 @@ const RoomDetail = () => {
     const [roomNumber, setRoomNumber] = useState("");
     const [buildingId, setBuildingId] = useState("");
     const [roomArea, setRoomArea] = useState("");
-    const [numberOfResident, setNumberOfResident] = useState("");
+    const [numberOfResident, setNumberOfResident] = useState(0);
     const [addMember, setAddMember] = useState(false);
     const [isDetail, setIsDetail] = useState(false);
     const [roomMembers, setRoomMembers] = useState<RoomMember[]>([]);
@@ -40,7 +41,7 @@ const RoomDetail = () => {
 
     // SESSION
     const { session } = useAuth();
-    const user: user = jwtDecode(session as string);
+    // const user: user = jwtDecode(session as string);
 
 
     useEffect(() => {
@@ -54,6 +55,7 @@ const RoomDetail = () => {
         fetchBuilding(); // Gọi fetchBuilding mỗi khi buildingId thay đổi
     }, [buildingId]);
 
+    // GET: Account - Owner Room
     const fetchOwnerRoom = async (accountId: string) => {
         setIsLoading(true);
         try {
@@ -88,6 +90,7 @@ const RoomDetail = () => {
         }
     }
 
+    // GET: Room Information
     const fetchRoom = async () => {
         setIsLoading(true);
         try {
@@ -127,7 +130,7 @@ const RoomDetail = () => {
         }
     };
 
-    // GET: building
+    // GET: Building
     const fetchBuilding = async () => {
         setIsLoading(true);
         try {
@@ -162,7 +165,7 @@ const RoomDetail = () => {
             setIsLoading(false); // Set loading state to false regardless of success or failure
         }
     };
-    // GET: RoomMember
+    // GET: All Room Member
     const fetchRoomMember = async () => {
         setIsLoading(true);
         try {
@@ -218,20 +221,11 @@ const RoomDetail = () => {
                     'Authorization': `Bearer ${session}`
                 }
             });
-            if (response.data.statusCode == 200) {
-                Toast.show({
-                    type: 'success',
-                    text1: 'Cập nhật thông tin căn hộ thành công',
-                    position: 'bottom'
-                })
-
+            if (response.data.statusCode === 200) {
+                ToastSuccess('Cập nhật thông tin căn hộ thành công');
             }
             else {
-                Toast.show({
-                    type: 'error',
-                    text1: 'Cập nhật thông tin căn hộ không thành công',
-                    position: 'bottom'
-                })
+                ToastFail('Cập nhật thông tin căn hộ không thành công');
             }
         } catch (error: any) {
             if (error.name === 'ValidationError') {
@@ -242,19 +236,11 @@ const RoomDetail = () => {
                 //   setValidationErrors(errors);
             }
             if (axios.isCancel(error)) {
-                Toast.show({
-                    type: 'error',
-                    text1: 'Lỗi hệ thống! vui lòng thử lại sau',
-                    position: 'bottom'
-                })
+                ToastFail('Lỗi hệ thống! vui lòng thử lại sau')
             }
             else {
                 console.error('Error updating room information:', error);
-                Toast.show({
-                    type: 'error',
-                    text1: 'Lỗi cập nhật thông tin căn hộ',
-                    position: 'bottom'
-                })
+                ToastFail('Lỗi cập nhật thông tin căn hộ')
             }
         } finally {
             setIsLoading(false);
@@ -282,12 +268,9 @@ const RoomDetail = () => {
                     'Authorization': `Bearer ${session}`
                 }
             });
-            if (response.data.statusCode == 200) {
-                Toast.show({
-                    type: 'success',
-                    text1: 'Cập nhật thành viên thành công',
-                    position: 'bottom'
-                })
+            if (response.data.statusCode === 200) {
+                ToastSuccess('Cập nhật thành viên thành công')
+                console.log("response 200", response)
             }
             else {
                 Toast.show({
@@ -346,7 +329,7 @@ const RoomDetail = () => {
                     'Authorization': `Bearer ${session}`
                 }
             });
-            if (response.data.statusCode == 200) {
+            if (response.data.statusCode === 200) {
                 Toast.show({
                     type: 'success',
                     text1: 'Cập nhật chủ căn hộ thành công',
@@ -416,12 +399,8 @@ const RoomDetail = () => {
                     'Authorization': `Bearer ${session}`
                 }
             });
-            if (response.data.statusCode == 200) {
-                Toast.show({
-                    type: 'success',
-                    text1: 'Xóa thành viên thành công',
-                    position: 'bottom'
-                })
+            if (response.data.statusCode === 200) {
+                ToastSuccess('Xóa thành viên thành công');
                 fetchRoomMember();
             } else {
                 Toast.show({
@@ -465,7 +444,7 @@ const RoomDetail = () => {
                     'Authorization': `Bearer ${session}`
                 }
             });
-            if (response.data.statusCode == 200) {
+            if (response.data.statusCode === 200) {
                 Toast.show({
                     type: 'success',
                     text1: 'Cập nhật thành viên thành công',
@@ -667,7 +646,7 @@ const RoomDetail = () => {
                                 <Text style={{ marginBottom: 10, fontWeight: "600", fontSize: 16 }}>
                                     Toà nhà
                                 </Text>
-                                <Text style={{ color: '#9c9c9c', fontSize: 12, marginBottom: 6, }}>Số căn hộ không được trống.</Text>
+                                <Text style={{ color: '#9c9c9c', fontSize: 12, marginBottom: 6, }}>Tòa nhà không thể thay đổi.</Text>
                                 <Input
                                     value={building?.name}
                                     style={[{ width: "100%", backgroundColor: COLORS.buttonDisable }]}
@@ -680,6 +659,7 @@ const RoomDetail = () => {
                             <Text style={{ marginBottom: 10, fontWeight: "600", fontSize: 16 }}>
                                 Diện tích căn hộ
                             </Text>
+                            <Text style={{ color: '#9c9c9c', fontSize: 12, marginBottom: 6, }}>Diện tích căn hộ không được trống.</Text>
                             <Input style={[{ width: "100%" }]}
                                 value={roomArea}
                                 onChangeText={(text) => {
@@ -700,7 +680,7 @@ const RoomDetail = () => {
 
                         {/* Member Card */}
                         <View id='member' style={{ width: '100%', flexDirection: 'row', gap: SIZES.small, marginVertical: SIZES.xSmall - 2, justifyContent: 'space-between' }}>
-                            {roomMembers.length === 0 ? <Owner /> :
+                            {numberOfResident === 0 ? <Owner /> :
                                 <FlatList
                                     data={roomMembers}
                                     renderItem={renderItem}
@@ -802,27 +782,7 @@ const RoomDetail = () => {
                                     onChangeText={(text) => {
                                         setPhone(text)
                                     }}></Input>
-
-                                {/* <Text style={{ marginTop: SIZES.small, fontWeight: "600", fontSize: 16 }}>
-                                    Chủ căn hộ
-                                </Text>
-                                <View style={{ marginBottom: SIZES.xSmall, flexDirection: 'row', alignItems: 'center' }}>
-                                    <Text style={{ fontSize: SIZES.medium }}>Yes</Text>
-                                    <RadioButton
-                                        value="Yes"
-                                        status={isHouseholder === "Yes" ? 'checked' : 'unchecked'}
-                                        onPress={() => setIsHouseholder('Yes')}
-                                        color='green'
-                                    />
-                                    <Text style={{ fontSize: SIZES.medium }}>No</Text>
-                                    <RadioButton
-                                        value="No"
-                                        status={isHouseholder === "No" ? 'checked' : 'unchecked'}
-                                        onPress={() => setIsHouseholder('No')}
-                                        color='red'
-                                    />
-                                </View> */}
-                                <Button text="Cập nhập thông tin" onPress={roomMembers.length === 0 ? handleAddOwner : handleUpdateMember} color="green" />
+                                <Button text="Cập nhập thông tin" onPress={numberOfResident === 0 ? handleAddOwner : handleUpdateMember} color="green" />
                                 <Button style={{ marginTop: 4 }} text="Huỷ" onPress={closeUpdate} color={COLORS.buttonRed} />
                             </View>}
                         </View>
@@ -834,9 +794,9 @@ const RoomDetail = () => {
                                 text="Cập nhật" style={[{
                                     width: 100, marginRight: 10,
                                 }]}></Button>
-                            <Button
+                            {/* <Button
                                 // onPress={handleDeleteAccount}
-                                text="Xóa" style={{ width: 100, backgroundColor: '#9b2c2c' }}></Button>
+                                text="Xóa" style={{ width: 100, backgroundColor: '#9b2c2c' }}></Button> */}
                         </View>
                     </ScrollView>
                 </SafeAreaView>

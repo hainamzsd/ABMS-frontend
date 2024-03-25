@@ -80,7 +80,8 @@ const RoomItem = (props: any) => {
         ) : account?.status !== 0 ? (
           <Link href={`./rooms/${data?.id}`}>
             <RoomItemCard
-              item={account}
+              item={data}
+              account={account}
             />
           </Link>
         ) : <View><RoomItemCard item={account} button={<Button text='Thêm chủ căn hộ' onPress={() => setAddOwner(true)} />} /></View>}

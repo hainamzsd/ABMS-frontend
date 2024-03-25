@@ -21,7 +21,7 @@ interface Account {
   }
 
 const RoomItemCard = (props: any) => {
-    const { item, button } = props;
+    const { item, button, account } = props;
 
     return (
         <TouchableOpacity
@@ -37,7 +37,7 @@ const RoomItemCard = (props: any) => {
                 />
             </TouchableOpacity>
             <Text style={styles.roomMaster} numberOfLines={1}>
-                {item?.status === 0 ? "" : item?.fullName}
+                {account?.status === 0 ? "" : account?.fullName}
             </Text>
 
             <View style={styles.infoContainer}>
