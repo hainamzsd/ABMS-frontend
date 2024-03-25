@@ -1,39 +1,85 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { View, SafeAreaView, Text, FlatList } from 'react-native'
 import Input from '../../../../components/ui/input';
 import PostItem from '../../../../components/ui/PostItem';
 import { posts } from "../../../../constants/fakeData"
+import { user } from '../../../../interface/accountType';
+import { jwtDecode } from 'jwt-decode';
+import { useAuth } from '../../context/AuthContext';
+import { Post } from '../../../../interface/postType';
+import axios from 'axios';
+import Toast from 'react-native-toast-message';
+import moment from 'moment';
+import Button from '../../../../components/ui/button';
+import { actionController, API_BASE } from "../../../../constants/action"
+import { ToastFail } from '../../../../constants/toastMessage';
+import { SIZES } from '../../../../constants';
+import { Link, router } from 'expo-router';
 
 const PostList = () => {
+  const { session } = useAuth();
+  const user: user = jwtDecode(session as string);
+
+  const [isLoading, setIsLoading] = useState(false);
+  const [posts, setPosts] = useState<Post[]>();
+
+  const fetchPosts = async () => {
+    setIsLoading(true);
+    try {
+      const response = await axios.get(`${API_BASE}/${actionController.POST}/get-all?buildingId=${user?.BuildingId}`, {
+        timeout: 10000,
+      });
+      if (response.status === 200) {
+        setPosts(response.data.data);
+      } else {
+        ToastFail('Lỗi lấy thông tin các bài viết');
+      }
+    } catch (error) {
+      if (axios.isCancel(error)) {
+        ToastFail('Hệ thống lỗi! Vui lòng thử lại sau')
+      }
+      console.error('Error fetching posts data:', error);
+      ToastFail('Lỗi lấy thông tin các bài viết')
+    } finally {
+      setIsLoading(false); // Set loading state to false regardless of success or failure
+    }
+  }
+
   useEffect(() => {
+    fetchPosts();
   }, [])
 
   return (
     <View style={{ flex: 1, backgroundColor: '#F9FAFB' }}>
-      <SafeAreaView style={{flex:1}}>
+      <SafeAreaView style={{ flex: 1 }}>
         <View style={{ paddingHorizontal: 30, paddingTop: 30 }}>
           <View style={{ marginBottom: 20 }}>
             <Text style={{ fontWeight: 'bold', fontSize: 20, marginBottom: 5 }}>Danh sách bài viết</Text>
             <Text>Thông tin các bài viết</Text>
           </View>
           <View style={{ marginBottom: 10 }}>
-            <Input placeholder="Tìm tên tài khoản" style={{ width: '100%', paddingVertical: 10 }} />
+            <Input placeholder="Tìm tên bài viết" style={{ width: '100%', paddingVertical: 10 }} />
             {/* Filter */}
           </View>
+          <View style={{ marginBottom: SIZES.medium }}>
+            <Button text="Thêm bài viết" onPress={() => router.push({
+                pathname: `/web/Receptionist/posts/create`
+            })} />
+          </View>
+          <FlatList
+            data={posts}
+            renderItem={({ item }) => (
+              <PostItem
+                title={item.title}
+                content={item.content}
+                imageUrl={item.image}
+                href={`/web/Receptionist/posts/${item.id}`}
+                date={moment.utc(item?.createTime).format("DD-MM-YYYY")}
+              />
+            )}
+            keyExtractor={item => item.id} />
+
         </View>
-        <FlatList
-          style={{ paddingHorizontal: 30, paddingVertical: 10 }}
-          data={posts}
-          renderItem={({ item }) => (
-            <PostItem
-              title={item.title}
-              content={item.content}
-              date={item.date}
-              imageUrl={item.imageUrl}
-              href={`/web/Receptionist/posts/${item.id}`}
-            />
-          )}
-          keyExtractor={item => item.id} />
       </SafeAreaView>
       {/* Paging */}
     </View>

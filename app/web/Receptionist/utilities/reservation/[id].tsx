@@ -36,11 +36,11 @@ const UtilityDetail = () => {
     const fetchData = async () => {
         setIsLoading(true);
         try {
-            const response = await axios.get(`https://abmscapstone2024.azurewebsites.net/api/v1/reservation/get?utilityDetailId=${item?.id}`, {
+            const response = await axios.get(`https://abmscapstone2024.azurewebsites.net/api/v1/reservation/get/${item?.id}`, {
                 timeout: 10000,
             });
             if (response.status === 200) {
-                setUtility(response.data.data[0]);
+                setUtility(response.data.data);
             } else {
                 Toast.show({
                     type: 'error',

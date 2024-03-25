@@ -11,12 +11,14 @@ import Toast from 'react-native-toast-message'
 import { useAuth } from '../../context/AuthContext';
 import { Building, Room, RoomMember } from '../../../../interface/roomType';
 import { RadioButton } from 'react-native-paper';
-import { AccountOwner } from '../../../../interface/accountType';
+import { AccountOwner, user } from '../../../../interface/accountType';
+import { jwtDecode } from 'jwt-decode';
+import moment from 'moment';
+import { ToastFail, ToastSuccess } from "../../../../constants/toastMessage"
 
 const RoomDetail = () => {
     const navigation = useNavigation();
     const item = useLocalSearchParams();
-
     // STATE
     const [isLoading, setIsLoading] = useState(false);
     const [roomData, setRoomData] = useState<Room>();
@@ -24,12 +26,12 @@ const RoomDetail = () => {
     const [owner, setOwner] = useState<AccountOwner>();
     const [roomNumber, setRoomNumber] = useState("");
     const [buildingId, setBuildingId] = useState("");
-    const [accountId, setAccountId] = useState("");
     const [roomArea, setRoomArea] = useState("");
-    const [numberOfResident, setNumberOfResident] = useState("");
+    const [numberOfResident, setNumberOfResident] = useState(0);
     const [addMember, setAddMember] = useState(false);
     const [isDetail, setIsDetail] = useState(false);
     const [roomMembers, setRoomMembers] = useState<RoomMember[]>([]);
+    const [roomMemberId, setRoomMemberId] = useState("");
     const [fullName, setFullName] = useState("");
     const [dob, setDob] = useState("");
     const [gender, setGender] = useState("male");
@@ -39,6 +41,7 @@ const RoomDetail = () => {
 
     // SESSION
     const { session } = useAuth();
+    // const user: user = jwtDecode(session as string);
 
     useEffect(() => {
         fetchRoom();
@@ -47,11 +50,11 @@ const RoomDetail = () => {
     }, []); // Chỉ gọi fetchRoom và fetchRoomMember khi component mount
 
     useEffect(() => {
-        fetchOwnerRoom();
         fetchBuilding(); // Gọi fetchBuilding mỗi khi buildingId thay đổi
     }, [buildingId]);
 
-    const fetchOwnerRoom = async () => {
+    // GET: Account - Owner Room
+    const fetchOwnerRoom = async (accountId: string) => {
         setIsLoading(true);
         try {
             const response = await axios.get(`https://abmscapstone2024.azurewebsites.net/api/v1/account/get/${accountId}`, {
@@ -60,45 +63,34 @@ const RoomDetail = () => {
             if (response.status === 200) {
                 setOwner(response.data.data);
             } else {
-                Toast.show({
-                    type: 'error',
-                    text1: 'Lỗi lấy thông tin chủ căn hộ',
-                    position: 'bottom'
-                })
+                ToastFail('Lỗi lấy thông tin chủ căn hộ')
+                
             }
         } catch (error) {
             if (axios.isCancel(error)) {
-                Toast.show({
-                    type: 'error',
-                    text1: 'Hệ thống lỗi! Vui lòng thử lại sau',
-                    position: 'bottom'
-                })
+                ToastFail('Hệ thống lỗi! Vui lòng thử lại sau')
             }
             console.error('Error fetching owner room data:', error);
-            Toast.show({
-                type: 'error',
-                text1: 'Lỗi lấy thông tin chủ căn hộ',
-                position: 'bottom'
-            })
+            ToastFail('Lỗi lấy thông tin chủ căn hộ')
         } finally {
             setIsLoading(false); // Set loading state to false regardless of success or failure
         }
     }
 
+    // GET: Room Information
     const fetchRoom = async () => {
         setIsLoading(true);
         try {
             const response = await axios.get(`https://abmscapstone2024.azurewebsites.net/api/v1/resident-room/get/${item?.roomDetail}`, {
                 timeout: 10000,
             });
-            console.log("responseFetchRoom", response)
             if (response.status === 200) {
-                setAccountId(response.data.data.accountId);
                 setRoomNumber(response.data.data.roomNumber);
                 setBuildingId(response.data.data.buildingId);
                 setRoomArea(response.data.data.roomArea);
                 setNumberOfResident(response.data.data.numberOfResident);
                 setRoomData(response.data.data);
+                fetchOwnerRoom(response.data.data.accountId);
             } else {
                 Toast.show({
                     type: 'error',
@@ -125,7 +117,7 @@ const RoomDetail = () => {
         }
     };
 
-    // GET: building
+    // GET: Building
     const fetchBuilding = async () => {
         setIsLoading(true);
         try {
@@ -160,7 +152,8 @@ const RoomDetail = () => {
             setIsLoading(false); // Set loading state to false regardless of success or failure
         }
     };
-    // GET: RoomMember
+    
+    // GET: All Room Member
     const fetchRoomMember = async () => {
         setIsLoading(true);
         try {
@@ -168,11 +161,7 @@ const RoomDetail = () => {
                 timeout: 10000,
             });
             if (response.status === 200) {
-                // if (response.data.data.length() === 0) {
-                //     await fetchOwnerRoom();
-                // } else {
                 setRoomMembers(response.data.data);
-                // }
             } else {
                 Toast.show({
                     type: 'error',
@@ -220,20 +209,11 @@ const RoomDetail = () => {
                     'Authorization': `Bearer ${session}`
                 }
             });
-            if (response.data.statusCode == 200) {
-                Toast.show({
-                    type: 'success',
-                    text1: 'Cập nhật thông tin căn hộ thành công',
-                    position: 'bottom'
-                })
-
+            if (response.data.statusCode === 200) {
+                ToastSuccess('Cập nhật thông tin căn hộ thành công');
             }
             else {
-                Toast.show({
-                    type: 'error',
-                    text1: 'Cập nhật thông tin căn hộ không thành công',
-                    position: 'bottom'
-                })
+                ToastFail('Cập nhật thông tin căn hộ không thành công');
             }
         } catch (error: any) {
             if (error.name === 'ValidationError') {
@@ -244,19 +224,11 @@ const RoomDetail = () => {
                 //   setValidationErrors(errors);
             }
             if (axios.isCancel(error)) {
-                Toast.show({
-                    type: 'error',
-                    text1: 'Lỗi hệ thống! vui lòng thử lại sau',
-                    position: 'bottom'
-                })
+                ToastFail('Lỗi hệ thống! vui lòng thử lại sau')
             }
             else {
                 console.error('Error updating room information:', error);
-                Toast.show({
-                    type: 'error',
-                    text1: 'Lỗi cập nhật thông tin căn hộ',
-                    position: 'bottom'
-                })
+                ToastFail('Lỗi cập nhật thông tin căn hộ')
             }
         } finally {
             setIsLoading(false);
@@ -268,7 +240,7 @@ const RoomDetail = () => {
         // setError(null);
         // setValidationErrors({});
         const bodyData = {
-            roomId: roomData?.id,
+            roomId: item?.roomDetail,
             fullName: fullName,
             dob: dob,
             gender: gender == "male" ? true : false,
@@ -284,12 +256,9 @@ const RoomDetail = () => {
                     'Authorization': `Bearer ${session}`
                 }
             });
-            if (response.data.statusCode == 200) {
-                Toast.show({
-                    type: 'success',
-                    text1: 'Cập nhật thành viên thành công',
-                    position: 'bottom'
-                })
+            if (response.data.statusCode === 200) {
+                ToastSuccess('Cập nhật thành viên thành công')
+                console.log("response 200", response)
             }
             else {
                 Toast.show({
@@ -337,7 +306,7 @@ const RoomDetail = () => {
             dob: dob,
             gender: gender == "male" ? true : false,
             phone: phone,
-            isHouseHolder: isHouseholder == "Yes" ? true : false
+            isHouseHolder: true
         }
         try {
             setIsLoading(true); // Set loading state to true
@@ -348,7 +317,7 @@ const RoomDetail = () => {
                     'Authorization': `Bearer ${session}`
                 }
             });
-            if (response.data.statusCode == 200) {
+            if (response.data.statusCode === 200) {
                 Toast.show({
                     type: 'success',
                     text1: 'Cập nhật chủ căn hộ thành công',
@@ -418,12 +387,8 @@ const RoomDetail = () => {
                     'Authorization': `Bearer ${session}`
                 }
             });
-            if (response.data.statusCode == 200) {
-                Toast.show({
-                    type: 'success',
-                    text1: 'Xóa thành viên thành công',
-                    position: 'bottom'
-                })
+            if (response.data.statusCode === 200) {
+                ToastSuccess('Xóa thành viên thành công');
                 fetchRoomMember();
             } else {
                 Toast.show({
@@ -460,14 +425,14 @@ const RoomDetail = () => {
         try {
             setIsLoading(true); // Set loading state to true
             //   await validationSchema.validate(bodyData, { abortEarly: false });
-            const response = await axios.put(`https://abmscapstone2024.azurewebsites.net/api/v1/resident-room-member/update/${item?.roomDetail}`, bodyData, {
+            const response = await axios.put(`https://abmscapstone2024.azurewebsites.net/api/v1/resident-room-member/update/${roomMemberId}`, bodyData, {
                 timeout: 10000,
                 withCredentials: true,
                 headers: {
                     'Authorization': `Bearer ${session}`
                 }
             });
-            if (response.data.statusCode == 200) {
+            if (response.data.statusCode === 200) {
                 Toast.show({
                     type: 'success',
                     text1: 'Cập nhật thành viên thành công',
@@ -535,7 +500,7 @@ const RoomDetail = () => {
         setFullName("");
         setDob("");
         setPhone("");
-        fetchRoomMember();
+        // fetchRoomMember();
     }
 
     const openUpdate = (item: any) => {
@@ -546,6 +511,7 @@ const RoomDetail = () => {
         setFullName(item?.fullName);
         setDob(item?.dateOfBirth);
         setPhone(item?.phone);
+        setRoomMemberId(item?.id);
         setIsDetail(false);
     }
 
@@ -581,10 +547,10 @@ const RoomDetail = () => {
                     {isDetail && <View style={{ borderWidth: 1, alignSelf: 'flex-start', padding: SIZES.small, borderColor: COLORS.gray2, ...SHADOWS.small, borderRadius: SIZES.small, marginVertical: SIZES.xSmall - 2 }}>
                         <Text>Họ và tên: <Text style={{ fontWeight: 'bold' }}>{item.fullName}</Text></Text>
                         <Text>Số điện thoại: <Text style={{ fontWeight: 'bold' }}>{item.phone}</Text></Text>
-                        <Text>Ngày sinh: <Text style={{ fontWeight: 'bold' }}>{item.dateOfBirth}</Text></Text>
+                        <Text>Ngày sinh: <Text style={{ fontWeight: 'bold' }}>{moment.utc(item.dateOfBirth).format("DD/MM/YYYY")}</Text></Text>
                         <Text>Giới tính: <Text style={{ fontWeight: 'bold' }}>{item.gender ? 'Nam' : 'Nữ'}</Text></Text>
-                        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
-                            <Button text="Xoá thành viên" onPress={() => handleDeleteMember(item.id)} color={COLORS.buttonRed} />
+                        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4, paddingTop: 2 }}>
+                            {item?.isHouseholder == false && <Button text="Xoá thành viên" onPress={() => handleDeleteMember(item.id)} color={COLORS.buttonRed} />}
                             <Button text="Cập nhập" onPress={() => openUpdate(item)} color={COLORS.buttonYellow} />
                         </View>
                     </View>}
@@ -668,26 +634,7 @@ const RoomDetail = () => {
                                 <Text style={{ marginBottom: 10, fontWeight: "600", fontSize: 16 }}>
                                     Toà nhà
                                 </Text>
-                                <Text style={{ color: '#9c9c9c', fontSize: 12, marginBottom: 6, }}>Số căn hộ không được trống.</Text>
-                                {/* <Box>
-                                    <Select
-                                        selectedValue={buildingId}
-                                        minWidth="100%"
-                                        height='36px'
-                                        accessibilityLabel="Chọn toà nhà"
-                                        placeholder="Chọn toà nhà"
-                                        _selectedItem={{
-                                            bg: "teal.600",
-                                            endIcon: <CheckIcon size="5" />
-                                        }}
-                                        mt={1}
-                                        onValueChange={itemValue => setBuildingId(itemValue)}
-                                    >
-                                        {buildings?.map((item) => (
-                                            <Select.Item key={item?.id} label={item?.name} value={item?.id} />
-                                        ))}
-                                    </Select>
-                                </Box> */}
+                                <Text style={{ color: '#9c9c9c', fontSize: 12, marginBottom: 6, }}>Tòa nhà không thể thay đổi.</Text>
                                 <Input
                                     value={building?.name}
                                     style={[{ width: "100%", backgroundColor: COLORS.buttonDisable }]}
@@ -700,6 +647,7 @@ const RoomDetail = () => {
                             <Text style={{ marginBottom: 10, fontWeight: "600", fontSize: 16 }}>
                                 Diện tích căn hộ
                             </Text>
+                            <Text style={{ color: '#9c9c9c', fontSize: 12, marginBottom: 6, }}>Diện tích căn hộ không được trống.</Text>
                             <Input style={[{ width: "100%" }]}
                                 value={roomArea}
                                 onChangeText={(text) => {
@@ -720,13 +668,13 @@ const RoomDetail = () => {
 
                         {/* Member Card */}
                         <View id='member' style={{ width: '100%', flexDirection: 'row', gap: SIZES.small, marginVertical: SIZES.xSmall - 2, justifyContent: 'space-between' }}>
-                            {roomMembers.length === 0 ? <Owner /> :
-                            <FlatList
-                                data={roomMembers}
-                                renderItem={renderItem}
-                                keyExtractor={(item) => item?.id}
-                                contentContainerStyle={{ columnGap: SIZES.medium }}
-                            />
+                            {numberOfResident === 0 ? <Owner /> :
+                                <FlatList
+                                    data={roomMembers}
+                                    renderItem={renderItem}
+                                    keyExtractor={(item) => item?.id}
+                                    contentContainerStyle={{ columnGap: SIZES.medium }}
+                                />
                             }
                             {addMember && <View style={{ borderWidth: 1, width: '60%', padding: SIZES.small, borderColor: COLORS.gray2, ...SHADOWS.small, borderRadius: SIZES.small }}>
                                 <Text style={{ marginBottom: 10, fontWeight: "600", fontSize: 16 }}>
@@ -757,7 +705,7 @@ const RoomDetail = () => {
                                     />
                                 </View>
                                 <Text style={{ marginBottom: 10, fontWeight: "600", fontSize: 16 }}>
-                                    Ngày sinh (yyyy/dd/mm)
+                                    Ngày sinh (mm/dd/yyyy)
                                 </Text>
                                 <Input placeholder="Ngày sinh" style={[{ width: "100%" }]}
                                     value={dob}
@@ -806,7 +754,7 @@ const RoomDetail = () => {
                                     />
                                 </View>
                                 <Text style={{ marginBottom: 10, fontWeight: "600", fontSize: 16 }}>
-                                    Ngày sinh
+                                    Ngày sinh (mm/dd/yyyy)
                                 </Text>
                                 <Input placeholder="Ngày sinh" style={[{ width: "100%" }]}
                                     value={dob}
@@ -822,27 +770,7 @@ const RoomDetail = () => {
                                     onChangeText={(text) => {
                                         setPhone(text)
                                     }}></Input>
-
-                                {/* <Text style={{ marginTop: SIZES.small, fontWeight: "600", fontSize: 16 }}>
-                                    Chủ căn hộ
-                                </Text>
-                                <View style={{ marginBottom: SIZES.xSmall, flexDirection: 'row', alignItems: 'center' }}>
-                                    <Text style={{ fontSize: SIZES.medium }}>Yes</Text>
-                                    <RadioButton
-                                        value="Yes"
-                                        status={isHouseholder === "Yes" ? 'checked' : 'unchecked'}
-                                        onPress={() => setIsHouseholder('Yes')}
-                                        color='green'
-                                    />
-                                    <Text style={{ fontSize: SIZES.medium }}>No</Text>
-                                    <RadioButton
-                                        value="No"
-                                        status={isHouseholder === "No" ? 'checked' : 'unchecked'}
-                                        onPress={() => setIsHouseholder('No')}
-                                        color='red'
-                                    />
-                                </View> */}
-                                <Button text="Cập nhập thông tin" onPress={roomMembers.length === 0 ? handleAddOwner : handleUpdateMember} color="green" />
+                                <Button text="Cập nhập thông tin" onPress={numberOfResident === 0 ? handleAddOwner : handleUpdateMember} color="green" />
                                 <Button style={{ marginTop: 4 }} text="Huỷ" onPress={closeUpdate} color={COLORS.buttonRed} />
                             </View>}
                         </View>
@@ -854,9 +782,9 @@ const RoomDetail = () => {
                                 text="Cập nhật" style={[{
                                     width: 100, marginRight: 10,
                                 }]}></Button>
-                            <Button
+                            {/* <Button
                                 // onPress={handleDeleteAccount}
-                                text="Xóa" style={{ width: 100, backgroundColor: '#9b2c2c' }}></Button>
+                                text="Xóa" style={{ width: 100, backgroundColor: '#9b2c2c' }}></Button> */}
                         </View>
                     </ScrollView>
                 </SafeAreaView>
