@@ -8,7 +8,7 @@ import SHADOW from '../../../../../constants/shadow';
 import { Image } from 'react-native';
 import { MapPin } from 'lucide-react-native';
 import { router, useLocalSearchParams } from 'expo-router';
-import { ColorPalettes, SIZES } from '../../../../../constants';
+import { COLORS, ColorPalettes, SIZES } from '../../../../../constants';
 import Button from '../../../../../components/ui/button';
 import { Modal, Button as ButtonNative, Input, VStack, Text as TextNative, FormControl, Center } from "native-base";
 import { useAuth } from '../../../context/AuthContext';
@@ -23,6 +23,9 @@ const Place = () => {
     const [modalUpdate, setModalUpdate] = useState(false);
     const [modalDelete, setModalDelete] = useState(false);
     const [newPlace, setNewPlace] = useState("");
+    const [utilityDetailId, setUtilityDetailId] = useState("");
+
+    console.log(session)
 
 
     useEffect(() => {
@@ -63,6 +66,77 @@ const Place = () => {
             })
         } finally {
             fetchUtilityDetail();
+            setIsLoading(false); // Set loading state to false regardless of success or failure
+        }
+    }
+
+    const updateUtilityDetail = async () => {
+        setIsLoading(true);
+        try {
+            const response = await axios.put(`https://abmscapstone2024.azurewebsites.net/api/v1/utility/update-utility-detail/${utilityDetailId}?name=S%C3%A2n%20%C4%90%C3%A0%20N%E1%BA%B5ng`, {
+                timeout: 10000,
+                headers: {
+                    'Authorization': `Bearer ${session}`
+                }
+            });
+            if (response.status === 200) {
+                Toast.show({
+                    type: 'success',
+                    text1: 'Cập nhập địa điểm tiện ích thành công',
+                    position: 'bottom'
+                })
+                setNewPlace("");
+                fetchUtilityDetail();
+            } else {
+                Toast.show({
+                    type: 'error',
+                    text1: 'Cập nhập địa điểm tiện ích thất bại',
+                    position: 'bottom'
+                })
+            }
+        } catch (error) {
+            Toast.show({
+                type: 'error',
+                text1: 'Lỗi cập nhập địa điểm tiện ích mới, vui lòng thử lại sau!',
+                position: 'bottom'
+            })
+        } finally {
+            
+            setIsLoading(false); // Set loading state to false regardless of success or failure
+        }
+    }
+
+    const deleteUtilityDetail = async () => {
+        setIsLoading(true);
+        try {
+            const response = await axios.delete(`https://abmscapstone2024.azurewebsites.net/api/v1/utility/delete-utility-detail/${utilityDetailId}`, {
+                timeout: 10000,
+                headers: {
+                    'Authorization': `Bearer ${session}`
+                }
+            });
+            if (response.status === 200) {
+                Toast.show({
+                    type: 'success',
+                    text1: 'Xóa địa điểm tiện ích thành công',
+                    position: 'bottom'
+                })
+                setNewPlace("");
+                fetchUtilityDetail();
+            } else {
+                Toast.show({
+                    type: 'error',
+                    text1: 'Xóa địa điểm tiện ích thất bại',
+                    position: 'bottom'
+                })
+            }
+        } catch (error) {
+            Toast.show({
+                type: 'error',
+                text1: 'Lỗi xóa địa điểm tiện ích mới, vui lòng thử lại sau!',
+                position: 'bottom'
+            })
+        } finally {
             setIsLoading(false); // Set loading state to false regardless of success or failure
         }
     }
@@ -117,9 +191,17 @@ const Place = () => {
                             <Text numberOfLines={1} style={styles.title}>{item?.name}</Text>
                             <Text numberOfLines={2} style={styles.content}>{params?.location}</Text>
                         </View>
-                        <View style={{flexDirection: 'row', gap: SIZES.small}}>
-                            <Button text="Chỉnh sửa" />
-                            <Button text="Xoá" />
+                        <View style={{ flexDirection: 'row', gap: SIZES.small }}>
+                            <Button text="Chỉnh sửa" onPress={() => {
+                                setUtilityDetailId(item?.id)
+                                setNewPlace(item?.name)
+                                setModalUpdate(!modalUpdate)
+                            }} />
+                            <Button text="Xoá" onPress={() => {
+                                setUtilityDetailId(item?.id)
+                                setNewPlace(item?.name)
+                                setModalDelete(!modalDelete)
+                            }} />
                         </View>
                     </View>
                 </View >
@@ -149,6 +231,7 @@ const Place = () => {
                     keyExtractor={item => item?.id}
                 />
             </SafeAreaView>
+
             {/* Create */}
             <Modal isOpen={modalVisible} onClose={() => setModalVisible(false)} avoidKeyboard justifyContent="center" bottom="4" size="lg">
                 <Modal.Content>
@@ -184,8 +267,8 @@ const Place = () => {
                     </Modal.Body>
                     <Modal.Footer>
                         <ButtonNative flex="1" onPress={() => {
-                            createUtilityDetail();
-                            setModalVisible(false);
+                            updateUtilityDetail();
+                            setModalUpdate(false);
                         }}>
                             Cập nhập
                         </ButtonNative>
@@ -197,20 +280,26 @@ const Place = () => {
             <Modal isOpen={modalDelete} onClose={() => setModalDelete(false)} avoidKeyboard justifyContent="center" bottom="4" size="lg">
                 <Modal.Content>
                     <Modal.CloseButton />
-                    <Modal.Header>Xoá địa điểm tiện ích</Modal.Header>
+                    <Modal.Header>Xác nhận xóa địa điểm tiện ích</Modal.Header>
                     <Modal.Body>
-                        <FormControl mt="3">
-                            <FormControl.Label>Tên địa điểm</FormControl.Label>
-                            <Input value={newPlace} onChangeText={(text) => setNewPlace(text)} />
-                        </FormControl>
+                        <Text style={{ fontSize: SIZES.large, color: COLORS.primary, fontWeight: 'bold' }}>{newPlace}</Text>
                     </Modal.Body>
                     <Modal.Footer>
-                        <ButtonNative flex="1" onPress={() => {
-                            createUtilityDetail();
-                            setModalVisible(false);
-                        }}>
-                            Xoá
-                        </ButtonNative>
+                        <ButtonNative.Group space={2}>
+                            <ButtonNative variant="ghost" colorScheme="blueGray" onPress={() => {
+                                setModalDelete(false);
+                                setNewPlace("");
+                            }}>
+                                Hủy bỏ
+                            </ButtonNative>
+                            <ButtonNative onPress={() => {
+                                deleteUtilityDetail();
+                                setModalDelete(false);
+
+                            }}>
+                                Xóa
+                            </ButtonNative>
+                        </ButtonNative.Group>
                     </Modal.Footer>
                 </Modal.Content>
             </Modal>

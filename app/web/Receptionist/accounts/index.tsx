@@ -51,7 +51,7 @@ export default function AccountManagement() {
                 return;
                 }
             try {
-                const response = await axios.get(`https://abmscapstone2024.azurewebsites.net/api/v1/account/get?role=3&buildingId=${user.BuildingId}`, {
+                const response = await axios.get(`https://abmscapstone2024.azurewebsites.net/api/v1/account/get?role=3&buildingId=${user.BuildingId}&status=1`, {
                     timeout:100000
                 });
                 setAccountData(response.data.data); // Set account data

@@ -20,7 +20,7 @@ const RoomList = () => {
   const { session } = useAuth();
   const user: user = jwtDecode(session as string);
 
-  
+
   useEffect(() => {
     const fetchData = async () => {
       setIsLoading(true);
@@ -104,11 +104,7 @@ const RoomList = () => {
           </View>
           <SearchWithButton placeholder="Tìm kiếm số căn" />
         </View>
-        <View>
-          <Button title='Thêm căn hộ' onPress={() => router.push({
-              pathname: '/web/Receptionist/rooms/create'
-          })} />
-        </View>
+
         <FlatList
           data={data}
           renderItem={({ item }: { item: any }) => (
@@ -116,15 +112,14 @@ const RoomList = () => {
               floor={1}
               data={item}
               isLoading={isLoading}
+              setIsLoading={setIsLoading}
             />
           )}
+          numColumns={9}
           keyExtractor={(item) => item?.id}
-          contentContainerStyle={{ columnGap: SIZES.medium }}
-          horizontal
+          columnWrapperStyle={{ gap: 30 }}
         />
-
       </SafeAreaView>
-      <View><Text>Pagination</Text></View>
       {/* Paging */}
     </View>
   )
