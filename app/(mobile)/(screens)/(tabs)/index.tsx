@@ -257,7 +257,7 @@ const firstTwoPosts = posts.slice(0, 2);
             }}
           >
             <View style={{ flex: 1 }}>
-              <Text style={styles.headerText}>{t("Greet")}, {user.FullName}</Text>
+              <Text style={styles.headerText}>{t("Greet")}, {fetchUser?.fullName}</Text>
               <Text style={styles.normalText}>{t("SubGreet")}</Text>
             </View>
             <Pressable onPress={()=>{

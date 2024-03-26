@@ -94,7 +94,7 @@ useEffect(() => {
     };
 
     fetchData();
-  }, [session,isFocused]);
+  }, [session]);
   
 const [fetchUser,setFetchUser] = useState<UserDatabase>();
 const [loading,setLoading] = useState(false);
@@ -128,13 +128,15 @@ useEffect(() => {
       }
     }
   };
-  fetchItems();
-}, [session]);
+  if(isFocused){
+    fetchItems();
+  }
+}, [session,isFocused]);
   return (
     <>
       <AlertWithButton content={errorText} title={t("Error")} 
     visible={error} onClose={() => setError(false)}></AlertWithButton>
-    <LoadingComponent loading={loading}></LoadingComponent>
+    {/* <LoadingComponent loading={loading}></LoadingComponent> */}
       <SafeAreaView style={{ backgroundColor: theme.background, flex: 1 }}>
         <StatusBar barStyle="dark-content"></StatusBar>
         <View style={styles.gradientContainer}>
@@ -183,12 +185,12 @@ useEffect(() => {
               <Text
                 style={{ marginLeft: 5, fontWeight: "bold", marginBottom: 5 }}
               >
-                {user.FullName}
+                {fetchUser?.fullName}
               </Text>
             </View>
             <View style={{ flexDirection: "row" }}>
               <Text>{t("Phone")}:</Text>
-              <Text style={{ marginLeft: 5 }}>{user.PhoneNumber}</Text>
+              <Text style={{ marginLeft: 5 }}>{fetchUser?.phoneNumber}</Text>
             </View>
           </View>
 

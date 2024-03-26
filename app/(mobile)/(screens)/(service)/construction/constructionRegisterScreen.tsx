@@ -142,6 +142,19 @@ const [errors, setErrors] = useState<any>({});
 
       console.log(response);
       if (response.data.statusCode == 200) {
+        const createPost = await axios.post('https://abmscapstone2024.azurewebsites.net/api/v1/post/createReceptionist',{
+          title: `Phòng ${room[0].roomNumber} đăng ký thi công`,
+          buildingId: user.BuildingId,
+          content:  `Phòng ${room[0].roomNumber} đăng ký thi công`,
+          image: "",
+          type: 7
+      },
+      {
+          timeout: 10000, 
+          headers:{
+              'Authorization': `Bearer ${session}`
+          }
+        },)
         setAlertConfirmVisible(true);
         setStartDate(new Date());
         setProjectName("");

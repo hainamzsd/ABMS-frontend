@@ -20,6 +20,7 @@ interface user{
     PhoneNumber:string;
     Id:string;
     Avatar:string;
+    BuildingId:string;
   }
   
 interface Room{
@@ -90,7 +91,6 @@ const Checkout = () => {
             description:item.note
           };
       
-          console.log('Body:', body);
           
           const response = await axios.post('https://abmscapstone2024.azurewebsites.net/api/v1/reservation/create', body, {
             timeout: 10000, 
@@ -101,6 +101,20 @@ const Checkout = () => {
           );
       
           if(response.data.statusCode==200){
+            const createPost = await axios.post('https://abmscapstone2024.azurewebsites.net/api/v1/post/createReceptionist',{
+                title: `Phòng ${room[0].roomNumber} đăng ký sử dụng tiện ích ${item.utilityName} - ${item.utilityDetail} đã được tạo bởi ${user.FullName}`,
+                buildingId: user.BuildingId,
+                content: `Phòng ${room[0].roomNumber} đăng ký sử dụng tiện ích ${item.utilityName} - ${item.utilityDetail} đã được tạo bởi ${user.FullName}`,
+                image: "",
+                type: 7
+            },
+            {
+                timeout: 10000, 
+                headers:{
+                    'Authorization': `Bearer ${session}`
+                }
+              },)
+            console.log(createPost);
             setAlertConfirmVisible(true);
             setTimeout(() => {
               setAlertConfirmVisible(false);

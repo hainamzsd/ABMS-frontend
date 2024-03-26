@@ -35,13 +35,14 @@ function convertTime(timeString: string): number {
     const slots: string[] = [];
     const increment = totalTime / numberOfSlots;
     let currentTime = openTimeDate;
-  
+    const currentDateTime = new Date();
     for (let i = 0; i < numberOfSlots; i++) {
       const endDateTime = new Date(currentTime.getTime() + increment * 60 * 60 * 1000);
       // Check if the end time exceeds the closing time
       if (endDateTime > closeTimeDate) {
         break; // Do not add the slot if it exceeds the closing time
       }
+   
       const startHour = currentTime.getHours();
       const endHour = endDateTime.getHours();
       const slotString = `${startHour < 10 ? '0' + startHour : startHour}:00 - ${endHour < 10 ? '0' + endHour : endHour}:00`;

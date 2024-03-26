@@ -67,7 +67,8 @@ export default function UtilityPlace() {
             price:utility.price,
             utilityName:utility.utilityName,
             location:utility.location,
-            utitlityDetailId:item.id
+            utitlityDetailId:item.id,
+            utilityDetail:item.name
             // utilityDetailId:item.id
           },
         })

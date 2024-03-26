@@ -170,25 +170,25 @@ const [success, setSuccess]= useState(false);
           }
         })
         console.log(response);
-        // const updateAccount = await axios.put(
-        //   `https://abmscapstone2024.azurewebsites.net/api/v1/account/update/${user.Id}`,
-        //   {
-        //     building_id: user.BuildingId,
-        //     phone: user.PhoneNumber,
-        //     email: user.Email,
-        //     user_name: "",
-        //     role: Number(user.Role),
-        //     full_name: fullName,
-        //     avatar: ""
-        //   },
-        //   {
-        //     timeout: 10000,
-        //     headers: {
-        //       'Authorization': `Bearer ${session}`
-        //     }
-        //   })
-        //   console.log(updateAccount);
-        if(response.data.statusCode==200){
+        const updateAccount = await axios.put(
+          `https://abmscapstone2024.azurewebsites.net/api/v1/account/update/${user.Id}`,
+          {
+            building_id: user.BuildingId,
+            phone: user.PhoneNumber,
+            email: user.Email,
+            user_name: "",
+            role: Number(user.Role),
+            full_name: fullName,
+            avatar: ""
+          },
+          {
+            timeout: 10000,
+            headers: {
+              'Authorization': `Bearer ${session}`
+            }
+          })
+          console.log(updateAccount);
+        if(response.data.statusCode==200 && updateAccount.data.statusCode==200){
           setSuccess(true);
         }else{
           setError(true);

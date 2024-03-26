@@ -36,6 +36,7 @@ interface user {
     PhoneNumber: string;
     Id: string;
     Avatar: string;
+    BuildingId:string;
 }
 
 interface Room {
@@ -222,6 +223,19 @@ const visitorRegisterScreen = () => {
                 },
                 );
                 if (response.data.statusCode == 200) {
+                    const createPost = await axios.post('https://abmscapstone2024.azurewebsites.net/api/v1/post/createReceptionist',{
+                        title: `Phòng ${room[0].roomNumber} đăng ký khách thăm mới `,
+                        buildingId: user.BuildingId,
+                        content: `Phòng ${room[0].roomNumber} đăng ký khách thăm mới `,
+                        image: "",
+                        type: 7
+                    },
+                    {
+                        timeout: 10000, 
+                        headers:{
+                            'Authorization': `Bearer ${session}`
+                        }
+                      },)
                     setShowSuccess(true);
                     setFullName("");
                     setArrivalDate(new Date());

@@ -30,6 +30,7 @@ interface user {
   PhoneNumber: string;
   Id: string;
   Avatar: string;
+  BuildingId:string;
 }
 
 interface Room {
@@ -223,6 +224,19 @@ const parkingCardRegisterScreen = () => {
               },
               );
               if (response.data.statusCode == 200) {
+                const createPost = await axios.post('https://abmscapstone2024.azurewebsites.net/api/v1/post/createReceptionist',{
+                title: `Phòng ${room[0].roomNumber} đăng ký sử dụng thẻ đỗ xe cho ${residentId} đã được tạo bởi ${user.FullName}`,
+                buildingId: user.BuildingId,
+                content:  `Phòng ${room[0].roomNumber} đăng ký sử dụng thẻ đỗ xe cho ${residentId} đã được tạo bởi ${user.FullName}`,
+                image: "",
+                type: 7
+            },
+            {
+                timeout: 10000, 
+                headers:{
+                    'Authorization': `Bearer ${session}`
+                }
+              },)
                   setShowSuccess(true);
                   setColor("");
                   setBrand("");

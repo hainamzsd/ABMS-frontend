@@ -8,6 +8,7 @@ import { Minus, Plus } from "lucide-react-native";
 import { useState } from "react";
 import { moneyFormat } from "../../../../../../utils/moneyFormat";
 import Label from "../../../../../../components/resident/lable";
+import UtilityDetail from "../../../../../web/Receptionist/utilities/reservation/[id]";
 
 
 export default function UtilityTicket() {
@@ -96,7 +97,8 @@ export default function UtilityTicket() {
                 slot:item.slot,
                 utilityId:item.utilityId,
                 location:item.location,
-                utitlityDetailId:item.utitlityDetailId
+                utitlityDetailId:item.utitlityDetailId,
+                utilityDetail:item.utilityDetail
               }
             })}
           style={[

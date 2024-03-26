@@ -9,6 +9,7 @@ import { Link, Stack, useNavigation, usePathname } from "expo-router";
 import { Menu as PaperMenu } from "react-native-paper";
 import React, { useEffect, useState } from "react";
 import { useAuth } from "../../../app/web/context/AuthContext";
+import NotificationButton from "../../ui/notifications";
 interface NavigationItem {
     name: string;
     href: any;
@@ -79,6 +80,8 @@ interface NavigationItem {
                         ))}
                     </View>
                 </View>
+                <View style={{flexDirection:'row', alignItems:'center',justifyContent:'center'}}>
+                    <NotificationButton></NotificationButton>
                 <PaperMenu
                     style={{ padding: 8, marginTop: 20 }}
                     visible={visible}
@@ -96,6 +99,7 @@ interface NavigationItem {
                 >
                     <PaperMenu.Item onPress={signOut} title="Đăng xuất" />
                 </PaperMenu>
+                </View>
             </View>
         </View>
     )

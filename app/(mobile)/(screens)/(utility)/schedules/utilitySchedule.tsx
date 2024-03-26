@@ -308,7 +308,8 @@ export default function Schedule() {
                   price:utility.price,
                   utilityName:utility.utilityName,
                   location:utility.location,
-                  utitlityDetailId: utility.utitlityDetailId
+                  utitlityDetailId: utility.utitlityDetailId,
+                  utilityDetail: utility.utilityDetail,
                 },
               })
             }
