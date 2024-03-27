@@ -72,7 +72,11 @@ const _layout = () => {
         <>
             {/* <Stack.Screen options={{ headerShown: false }}></Stack.Screen> */}
             {!isMobile && (
-                <Navbar navigation={navigation} />
+                <Navbar navigation={navigation} 
+                notification={true}
+                profile={true}
+                profilePath="/web/Receptionist/profile"
+                />
             )}
             <View style={styles.container}>
                 <Stack screenOptions={{ headerShown: false }}>

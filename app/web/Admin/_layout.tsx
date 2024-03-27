@@ -51,7 +51,10 @@ const Layout = () => {
                 <Navbar navigation={[ {
                     name: "Quản lý tài khoản",
                     href: "/web/Admin"
-                }]} />
+                }]}
+                notification={false}
+                profile={false}
+                />
             )}
             <View style={{flex:1}}>
                 <Stack screenOptions={{ headerShown: false }} initialRouteName="index">
