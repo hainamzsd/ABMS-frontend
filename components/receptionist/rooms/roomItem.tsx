@@ -12,8 +12,7 @@ import Toast from 'react-native-toast-message';
 import { Account } from '../../../interface/accountType';
 
 const RoomItem = (props: any) => {
-  const { floor, data, isLoading, setIsLoading } = props;
-  console.log("data", data);
+  const { data, isLoading, setIsLoading } = props;
   const [addOwner, setAddOwner] = useState(false);
   const [password, setPassword] = useState("Mật khẩu");
   const [reEnterPassword, setReEnterPassword] = useState("");

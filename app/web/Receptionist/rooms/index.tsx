@@ -109,15 +109,14 @@ const RoomList = () => {
           data={data}
           renderItem={({ item }: { item: any }) => (
             <RoomItem
-              floor={1}
               data={item}
               isLoading={isLoading}
               setIsLoading={setIsLoading}
             />
           )}
-          numColumns={7}
+          numColumns={9}
           keyExtractor={(item) => item?.id}
-          columnWrapperStyle={{ gap: 30 }}
+          columnWrapperStyle={{ gap: 30, flexWrap: 'wrap'}}
         />
       </SafeAreaView>
       {/* Paging */}

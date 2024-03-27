@@ -6,7 +6,7 @@ import { router } from 'expo-router'
 import { MapPin } from 'lucide-react-native'
 import { Fee } from '../../../../interface/feeType'
 import { COLORS, ColorPalettes, SIZES } from '../../../../constants'
-import { Modal, Button as ButtonNative, Input, VStack, Text as TextNative, FormControl, Divider } from "native-base";
+import { Modal, Button as ButtonNative, Input, VStack, Text as TextNative, FormControl, Divider, HStack } from "native-base";
 import axios from 'axios'
 import { ToastFail, ToastSuccess } from '../../../../constants/toastMessage'
 import { API_BASE, actionController } from '../../../../constants/action'
@@ -15,11 +15,12 @@ import { user } from '../../../../interface/accountType'
 import { jwtDecode } from 'jwt-decode'
 import { SHADOW, SHADOWS } from '../../../../constants'
 import { Bike } from 'lucide-react-native'
+import moment from 'moment'
 
 const FeeDashboard = () => {
     const { session } = useAuth();
     const user: user = jwtDecode(session as string);
-
+    // STATE
     const [isLoading, setIsLoading] = useState(false);
     const [isUpdate, setIsUpdate] = useState(false);
     const [fees, setFees] = useState<Fee[]>([]);
@@ -31,7 +32,9 @@ const FeeDashboard = () => {
     const [description, setDescription] = useState("");
     const [feeId, setFeeId] = useState("");
     const [isUpdateModal, setIsUpdateModal] = useState(false);
+    const [isViewModal, setIsViewModal] = useState(false)
 
+    // GET: get-all fee information
     const fetchFee = async () => {
         setIsLoading(true);
         try {
@@ -54,6 +57,7 @@ const FeeDashboard = () => {
         }
     }
 
+    // PUT: update fee
     const updateFee = async () => {
         setIsLoading(true);
         const bodyData = {
@@ -104,32 +108,41 @@ const FeeDashboard = () => {
         setFeeId(item?.id);
     }
 
+    const handleOpenViewModal = (item: Fee) => {
+        setIsViewModal(true);
+        setName(item?.serviceName);
+        setPrice(`${item?.price}`);
+        setUnit(item?.unit);
+        setEffectiveDate(item?.effectiveDate);
+        setExpireDate(item?.expireDate ?? "");
+        setDescription(item?.description ?? "");
+    }
+
     useEffect(() => {
         fetchFee();
     }, [])
 
     const renderItem = ({ item }: { item: Fee }) => {
-        
+
         return (
             <TouchableOpacity style={{ marginBottom: 20, padding: 10, width: '23%', alignSelf: 'flex-start', borderRadius: 15, alignItems: 'center', flexDirection: 'column', ...SHADOWS.small, backgroundColor: ColorPalettes.ocean.sub }}>
                 <Pressable
                     onPress={() =>
-                        router.push({
-                            pathname: `./fees/${item?.id}`,
-                        })}
+                        handleOpenViewModal(item)
+                    }
                 >
                     <View style={{ flexDirection: 'column', alignItems: 'center' }}>
                         <View style={{ padding: 20, backgroundColor: ColorPalettes.ocean.primary, justifyContent: 'center', flexDirection: 'column', alignItems: 'center', borderRadius: 50 }}>
                             {/* <Image source={icon} style={{ width: 48, height: 48 }} /> */}
-                            <Bike color='white' strokeWidth={1} style={{width: 60, height: 60}}/>
+                            <Bike color='white' strokeWidth={1} style={{ width: 60, height: 60 }} />
 
                         </View>
                         <Text style={{ fontSize: SIZES.large, marginTop: 8 }}>{item?.serviceName.toUpperCase()}</Text>
                         {/* <Divider /> */}
                         {isUpdate &&
                             <View style={{ flexDirection: 'row', gap: 8, paddingVertical: SIZES.small }}>
-                                <Button style={{ backgroundColor: ColorPalettes.summer.primary }} text="Chỉnh sửa khoản phí" onPress={() => handleUpdateFee(item)} />
-                                <Button style={{ backgroundColor: COLORS.buttonDisable }} disabled text='Xoá khoản phí' />
+                                <Button text="Chỉnh sửa khoản phí" onPress={() => handleUpdateFee(item)} />
+                                {/* <Button  style={{ backgroundColor: COLORS.buttonDisable }} text='Xoá khoản phí' /> */}
                             </View>
                         }
                     </View>
@@ -154,55 +167,53 @@ const FeeDashboard = () => {
                         keyExtractor={(item) => item.id}
                         numColumns={4}
                         columnWrapperStyle={{ gap: 20 }}
+                        scrollEnabled
                     />
 
                 </ScrollView>
             </SafeAreaView>
 
-            {/* Create
-            <Modal isOpen={isCreateModal} onClose={() => setIsCreateModal(false)} avoidKeyboard justifyContent="center" bottom="4" size="lg">
+            {/* VIEW */}
+            <Modal isOpen={isViewModal} onClose={() => setIsViewModal(false)} avoidKeyboard justifyContent="center" bottom="4" size="lg">
                 <Modal.Content>
                     <Modal.CloseButton />
-                    <Modal.Header>Tạo địa điểm tiện ích</Modal.Header>
+                    <Modal.Header>Thông tin khoản phí</Modal.Header>
                     <Modal.Body>
-                        <FormControl mt="3">
-                            <FormControl.Label>Tên tiện ích</FormControl.Label>
-                            <Input value={name} onChangeText={(text) => setName(text)} />
-                        </FormControl>
-                        <FormControl mt="3">
-                            <FormControl.Label>Thời gian bắt đầu (h:mm AM/PM)</FormControl.Label>
-                            <Input value={openTime} onChangeText={(text) => setOpenTime(text)} />
-                        </FormControl>
-                        <FormControl mt="3">
-                            <FormControl.Label>Thời gian kết thúc (h: mm AM/PM)</FormControl.Label>
-                            <Input value={closeTime} onChangeText={(text) => setCloseTime(text)} />
-                        </FormControl>
-                        <FormControl mt="3">
-                            <FormControl.Label>Số lượng khung giờ</FormControl.Label>
-                            <Input value={slots} onChangeText={(text) => setSlots(text)} />
-                        </FormControl>
-                        <FormControl mt="3">
-                            <FormControl.Label>Giá thuê (mỗi khung giờ)</FormControl.Label>
-                            <Input value={price} onChangeText={(text) => setPrice(text)} />
-                        </FormControl>
-                        <FormControl mt="3">
-                            <FormControl.Label>Mô tả tiện ích</FormControl.Label>
-                            <Input value={description} onChangeText={(text) => setDescription(text)} />
-                        </FormControl>
+                        <VStack space={3}>
+                            <HStack alignItems="center" justifyContent="space-between">
+                                <TextNative fontWeight="medium">Tên khoản phí</TextNative>
+                                <TextNative color="blueGray.400">{name}</TextNative>
+                            </HStack>
+                            <HStack alignItems="center" justifyContent="space-between">
+                                <TextNative fontWeight="medium">Chi phí (vnd)</TextNative>
+                                <TextNative color="blueGray.400">{price}</TextNative>
+                            </HStack>
+                            <HStack alignItems="center" justifyContent="space-between">
+                                <TextNative fontWeight="medium">Ngày có hiệu lực</TextNative>
+                                <TextNative color="blueGray.400">{moment.utc(effectiveDate).format("DD-MM-YYYY")}</TextNative>
+                            </HStack>
+                            <HStack alignItems="center" justifyContent="space-between">
+                                <TextNative fontWeight="medium">Ngày hết hiệu lực</TextNative>
+                                <TextNative color="blueGray.400">{expireDate === "" ? "..." : moment.utc(expireDate).format("DD-MM-YYYY")}</TextNative>
+                            </HStack>
+                            <HStack alignItems="center" justifyContent="space-between">
+                                <TextNative fontWeight="medium">Mô tả</TextNative>
+                                <TextNative color="blueGray.400">{description === "" ? "..." : description}</TextNative>
+                            </HStack>
+                        </VStack>
                     </Modal.Body>
                     <Modal.Footer>
                         <ButtonNative flex="1" onPress={() => {
-                            createUtility();
-                            setIsCreateModal(false);
+                            setIsViewModal(false)
                         }}>
-                            Create
+                            Xong
                         </ButtonNative>
                     </Modal.Footer>
                 </Modal.Content>
-            </Modal> */}
+            </Modal>
 
             {/* Update */}
-            <Modal isOpen={isUpdateModal} onClose={() => setIsUpdateModal(false)} avoidKeyboard justifyContent="center" bottom="4" size="lg">
+            <Modal isOpen={isUpdateModal} onClose={() => setIsUpdateModal(false)} justifyContent="center" top="4" size="lg">
                 <Modal.Content>
                     <Modal.CloseButton />
                     <Modal.Header>Cập nhập thông tin khoản phí</Modal.Header>
@@ -220,16 +231,16 @@ const FeeDashboard = () => {
                             <Input value={unit} onChangeText={(text) => setUnit(text)} />
                         </FormControl>
                         <FormControl mt="3">
-                            <FormControl.Label>Ngày có hiệu lực (h: mm AM/PM)</FormControl.Label>
+                            <FormControl.Label>Ngày có hiệu lực (mm/dd/yyyy)</FormControl.Label>
                             <Input value={effectiveDate} onChangeText={(text) => setEffectiveDate(text)} />
                         </FormControl>
                         <FormControl mt="3">
-                            <FormControl.Label>Ngày hết hiệu lực ()</FormControl.Label>
-                            <Input value={expireDate} onChangeText={(text) => setExpireDate(text)} />
+                            <FormControl.Label>Ngày hết hiệu lực (mm/dd/yyyy)</FormControl.Label>
+                            <Input value={expireDate} onChangeText={(text) => setExpireDate(text)} placeholder={expireDate === "" ? "Nhập ngày hết hiệu lực" : ""} />
                         </FormControl>
                         <FormControl mt="3">
                             <FormControl.Label>Mô tả</FormControl.Label>
-                            <Input value={description} onChangeText={(text) => setDescription(text)} />
+                            <Input value={description} onChangeText={(text) => setDescription(text)} placeholder={description === "" ? "Nhập mô tả" : ""} />
                         </FormControl>
                     </Modal.Body>
                     <Modal.Footer>
