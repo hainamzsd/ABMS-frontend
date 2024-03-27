@@ -64,7 +64,7 @@ const RoomDetail = () => {
                 setOwner(response.data.data);
             } else {
                 ToastFail('Lỗi lấy thông tin chủ căn hộ')
-                
+
             }
         } catch (error) {
             if (axios.isCancel(error)) {
@@ -152,7 +152,7 @@ const RoomDetail = () => {
             setIsLoading(false); // Set loading state to false regardless of success or failure
         }
     };
-    
+
     // GET: All Room Member
     const fetchRoomMember = async () => {
         setIsLoading(true);
@@ -328,7 +328,9 @@ const RoomDetail = () => {
                 setFullName("");
                 setDob("");
                 setPhone("");
+                fetchRoom();
                 fetchRoomMember();
+
             }
             else {
                 Toast.show({

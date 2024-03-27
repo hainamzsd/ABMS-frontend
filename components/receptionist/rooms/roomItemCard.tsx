@@ -53,7 +53,7 @@ const RoomItemCard = (props: any) => {
 const styles = StyleSheet.create({
     container: ({
         marginTop: 15,
-        width: 150,
+        width: 200,
         padding: SIZES.large,
         backgroundColor: "#FFF",
         borderRadius: SIZES.medium,

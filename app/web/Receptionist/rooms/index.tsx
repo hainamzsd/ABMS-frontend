@@ -115,7 +115,7 @@ const RoomList = () => {
               setIsLoading={setIsLoading}
             />
           )}
-          numColumns={9}
+          numColumns={7}
           keyExtractor={(item) => item?.id}
           columnWrapperStyle={{ gap: 30 }}
         />
