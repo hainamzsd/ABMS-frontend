@@ -144,10 +144,10 @@ export default function AccountManagement() {
                         </TouchableOpacity> */}
                          <TouchableOpacity onPress={handleDownload}>
                             <HStack space={2} alignItems={'center'}
-                                backgroundColor={'#191919'} width={150} borderRadius={10}
+                                backgroundColor={'#191919'} borderRadius={10}
                                 padding={2}>
                                 <Download color="white" />
-                                <Text style={{ color: 'white' }}>Tải xuống file template</Text>
+                                <Text style={{ color: 'white' }}>Xuất dữ liệu</Text>
                             </HStack>
                         </TouchableOpacity>
                     </View>

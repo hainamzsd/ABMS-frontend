@@ -7,7 +7,7 @@ import { useAuth } from '../../app/web/context/AuthContext';
 import { jwtDecode } from 'jwt-decode';
 import moment from 'moment';
 import 'moment/locale/vi'; // without this line it didn't work
-import { calculateHoursAgo } from '../../utils/fromNow';
+import { calculateTimeAgo } from '../../utils/fromNow';
 
 // Sample data for notifications. Replace it with your actual data source
 
@@ -86,7 +86,7 @@ const NotificationButton = () => {
     onClose={() => setShowPopover(false)}
     trigger={(triggerProps) => (
       <Button variant="unstyled" {...triggerProps} onPress={handlePopoverOpen} >
-        <Bell size={30} color={'#191919'}></Bell>
+        <Bell size={25} color={showPopover?"#333":'#6B7280' }></Bell>
         {unreadCount > 0 && (
           <Badge
             colorScheme="danger"
@@ -107,10 +107,14 @@ const NotificationButton = () => {
       </Button>
     )}
   >
-    <Popover.Content accessibilityLabel="Notifications" maxHeight={500} overflowY={'scroll'}>
+    <Popover.Content accessibilityLabel="Notifications" 
+    maxHeight={500} overflowY={'scroll'}>
       <Popover.Arrow />
       <Popover.CloseButton />
-      <Popover.Header>Thông báo</Popover.Header>
+      <Popover.Header bgColor={"#191919"}>
+        <Text color={'white'} fontWeight={'bold'} fontSize={18}
+        >Thông báo</Text>
+      </Popover.Header>
       <Popover.Body>
         <VStack space={4}>
           <FlatList
@@ -138,7 +142,7 @@ const NotificationButton = () => {
                       {item?.post.title}
                     </Text>
                     <Text color="coolGray.600" _dark={{ color: "warmGray.200", }}>
-                      {calculateHoursAgo(item?.post.createTime)}
+                      {calculateTimeAgo(item?.post.createTime)}
                     </Text>
                   </VStack>
                 </View>
