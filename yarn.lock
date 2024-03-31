@@ -2491,6 +2491,11 @@
   dependencies:
     "@hapi/hoek" "^9.0.0"
 
+"@hookform/resolvers@^3.3.4":
+  version "3.3.4"
+  resolved "https://registry.npmjs.org/@hookform/resolvers/-/resolvers-3.3.4.tgz"
+  integrity sha512-o5cgpGOuJYrd+iMKvkttOclgwRW86EsWJZZRC23prf0uU2i48Htq4PuT73AVb9ionFyZrwYEITuOFGF+BydEtQ==
+
 "@ide/backoff@^1.0.0":
   version "1.0.0"
   resolved "https://registry.npmjs.org/@ide/backoff/-/backoff-1.0.0.tgz"
@@ -5092,6 +5097,11 @@ async-limiter@~1.0.0:
   resolved "https://registry.npmjs.org/async-limiter/-/async-limiter-1.0.1.tgz"
   integrity sha512-csOlWGAcRFJaI6m+F2WKdnMKr4HhdhFVBk0H/QbJFMCr+uO2kwohwXQPxw/9OCxp05r5ghVBFSyioixx3gfkNQ==
 
+async@^3.2.4:
+  version "3.2.5"
+  resolved "https://registry.npmjs.org/async/-/async-3.2.5.tgz"
+  integrity sha512-baNZyqaaLhyLVKm/DlvdW051MSgO6b8eVfIezl9E5PqWxFgzLm/wQntEW4zOytVburDEr0JlALEpdOFwvErLsg==
+
 asynckit@^0.4.0:
   version "0.4.0"
   resolved "https://registry.npmjs.org/asynckit/-/asynckit-0.4.0.tgz"
@@ -5815,6 +5825,13 @@ cli-spinners@^2.0.0, cli-spinners@^2.5.0:
   resolved "https://registry.npmjs.org/cli-spinners/-/cli-spinners-2.9.2.tgz"
   integrity sha512-ywqV+5MmyL4E7ybXgKys4DugZbX0FC6LnwrhjuykIjnK9k8OQacQ7axGKnjDXWNhns0xot3bZI5h55H8yo9cJg==
 
+cli-table@^0.3.11:
+  version "0.3.11"
+  resolved "https://registry.npmjs.org/cli-table/-/cli-table-0.3.11.tgz"
+  integrity sha512-IqLQi4lO0nIB4tcdTpN4LCB9FI3uqrJZK7RC515EnhZ6qBaglkIgICb1wjeAqpdoOabm1+SuQtkXIPdYC93jhQ==
+  dependencies:
+    colors "1.0.3"
+
 cliui@^6.0.0:
   version "6.0.0"
   resolved "https://registry.npmjs.org/cliui/-/cliui-6.0.0.tgz"
@@ -5839,6 +5856,11 @@ cliui@^8.0.1:
     string-width "^4.2.0"
     strip-ansi "^6.0.1"
     wrap-ansi "^7.0.0"
+
+cloc@^2.0.0-cloc:
+  version "2.0.0-cloc"
+  resolved "https://registry.npmjs.org/cloc/-/cloc-2.0.0-cloc.tgz"
+  integrity sha512-hy6aS/5QbKlxyasequhfAOHOBzV1QpBeA01P8hnjnlV++OaRXazX3YLv5Mpqw0+Vh4FV4kiFhKYSV2x6CAKlpQ==
 
 clone-deep@^2.0.1:
   version "2.0.2"
@@ -5956,6 +5978,11 @@ colorette@^2.0.14:
   resolved "https://registry.npmjs.org/colorette/-/colorette-2.0.20.tgz"
   integrity sha512-IfEDxwoWIjkeXL1eXcDiow4UbKjhLdq6/EuSVR9GMN7KVH3r9gQ83e73hsz1Nd1T3ijd5xv1wcWRYO+D6kCI2w==
 
+colors@1.0.3:
+  version "1.0.3"
+  resolved "https://registry.npmjs.org/colors/-/colors-1.0.3.tgz"
+  integrity sha512-pFGrxThWcWQ2MsAz6RtgeWe4NK2kUE1WfsrvvlctdII745EW9I0yflqhe7++M5LEc7bV2c/9/5zc8sFcpL0Drw==
+
 combined-stream@^1.0.8:
   version "1.0.8"
   resolved "https://registry.npmjs.org/combined-stream/-/combined-stream-1.0.8.tgz"
@@ -5972,6 +5999,11 @@ commander@^10.0.1:
   version "10.0.1"
   resolved "https://registry.npmjs.org/commander/-/commander-10.0.1.tgz"
   integrity sha512-y4Mg2tXshplEbSGzx7amzPwKKOCGuoSRP/CjEdwwk0FOGlUbq6lKuoyDZTNZkmxHdJtp54hdfY/JUrdL7Xfdug==
+
+commander@^11.0.0:
+  version "11.1.0"
+  resolved "https://registry.npmjs.org/commander/-/commander-11.1.0.tgz"
+  integrity sha512-yPVavfyCcRhmorC7rWlkHn15b4wDVgVmBA7kV4QVBsF7kv/9TKJAbAXVTxvTnwP8HHKjRCJDClKbciiYS7p0DQ==
 
 commander@^2.20.0:
   version "2.20.3"
@@ -6986,7 +7018,7 @@ expo-keep-awake@~12.8.2:
   resolved "https://registry.npmjs.org/expo-keep-awake/-/expo-keep-awake-12.8.2.tgz"
   integrity sha512-uiQdGbSX24Pt8nGbnmBtrKq6xL/Tm3+DuDRGBk/3ZE/HlizzNosGRIufIMJ/4B4FRw4dw8KU81h2RLuTjbay6g==
 
-expo-linear-gradient@~12.7.1:
+expo-linear-gradient@*, expo-linear-gradient@~12.7.1:
   version "12.7.2"
   resolved "https://registry.npmjs.org/expo-linear-gradient/-/expo-linear-gradient-12.7.2.tgz"
   integrity sha512-Wwb2EF18ywgrlTodcXJ6Yt/UEcKitRMdXPNyP/IokmeKh4emoq9DxZJpZdkXm3HUTLlbRpi6/t32jrFVqXB9AQ==
@@ -7571,6 +7603,11 @@ getenv@^1.0.0:
   version "1.0.0"
   resolved "https://registry.npmjs.org/getenv/-/getenv-1.0.0.tgz"
   integrity sha512-7yetJWqbS9sbn0vIfliPsFgoXMKn/YMF+Wuiog97x+urnSRRRZ7xB+uVkwGKzRgq9CDFfMQnE9ruL5DHv9c6Xg==
+
+gifted-charts-core@^0.1.1:
+  version "0.1.1"
+  resolved "https://registry.npmjs.org/gifted-charts-core/-/gifted-charts-core-0.1.1.tgz"
+  integrity sha512-qI4iE/zf4KA6nLAvWIdY42Cn4hATtfoRm0uO7zKEyHH68wMC7BurAbXgqLfg8u9YUsz9X/vo0NjGkmCVDbNlxw==
 
 glob-parent@^3.1.0:
   version "3.1.0"
@@ -10518,6 +10555,11 @@ react-helmet-async@^1.3.0:
     react-fast-compare "^3.2.0"
     shallowequal "^1.1.0"
 
+react-hook-form@^7.0.0, react-hook-form@^7.51.2:
+  version "7.51.2"
+  resolved "https://registry.npmjs.org/react-hook-form/-/react-hook-form-7.51.2.tgz"
+  integrity sha512-y++lwaWjtzDt/XNnyGDQy6goHskFualmDlf+jzEZvjvz6KWDf7EboL7pUvRCzPTJd0EOPpdekYaQLEvvG6m6HA==
+
 react-i18next@^14.0.5:
   version "14.1.0"
   resolved "https://registry.npmjs.org/react-i18next/-/react-i18next-14.1.0.tgz"
@@ -10644,6 +10686,13 @@ react-native-fs@^2.20.0:
     invariant "^2.2.4"
     lodash "^4.17.21"
     prop-types "^15.7.2"
+
+react-native-gifted-charts@^1.4.8:
+  version "1.4.8"
+  resolved "https://registry.npmjs.org/react-native-gifted-charts/-/react-native-gifted-charts-1.4.8.tgz"
+  integrity sha512-c4ntaNRDy+w3nZQD/Gz1KEmlls5geeaqTZ+iR1jYLORV+//6T2JrdJGRPsiZp/tVdgug4UeTJLVwfx0xVMoIjQ==
+  dependencies:
+    gifted-charts-core "^0.1.1"
 
 react-native-image-picker@^7.1.0:
   version "7.1.0"
@@ -10863,7 +10912,7 @@ react-stately@^3.21.0:
     "@react-stately/tree" "^3.7.6"
     "@react-types/shared" "^3.22.1"
 
-react@*, "react@^15.5.x || ^16.x || ^17.x || ^18.x", "react@^16.0.0 || ^17.0.0 || ^18.0.0", "react@^16.5.1 || ^17.0.0 || ^18.0.0", "react@^16.6.0 || ^17.0.0 || ^18.0.0", "react@^16.8 || ^17.0 || ^18.0", "react@^16.8.0 || ^17.0.0 || ^18.0.0", "react@^16.8.0 || ^17.0.0-rc.1", "react@^16.8.0 || ^17.0.0-rc.1 || ^18.0.0", "react@^16.9.0 || ^17 || ^18", react@^18.0.0, react@^18.2.0, "react@> 16.7.0", "react@>= 15.2.1", "react@>= 16.8.0", "react@>= 17.0.1", react@>=16, react@>=16.3.0, react@>=16.8, react@>=16.8.0, react@>=17.0.0, react@>=18, react@18.2.0:
+react@*, "react@^15.5.x || ^16.x || ^17.x || ^18.x", "react@^16.0.0 || ^17.0.0 || ^18.0.0", "react@^16.5.1 || ^17.0.0 || ^18.0.0", "react@^16.6.0 || ^17.0.0 || ^18.0.0", "react@^16.8 || ^17.0 || ^18.0", "react@^16.8.0 || ^17 || ^18", "react@^16.8.0 || ^17.0.0 || ^18.0.0", "react@^16.8.0 || ^17.0.0-rc.1", "react@^16.8.0 || ^17.0.0-rc.1 || ^18.0.0", "react@^16.9.0 || ^17 || ^18", react@^18.0.0, react@^18.2.0, "react@> 16.7.0", "react@>= 15.2.1", "react@>= 16.8.0", "react@>= 17.0.1", react@>=16, react@>=16.3.0, react@>=16.8, react@>=16.8.0, react@>=17.0.0, react@>=18, react@18.2.0:
   version "18.2.0"
   resolved "https://registry.npmjs.org/react/-/react-18.2.0.tgz"
   integrity sha512-/3IjMdb2L9QbBdWiW5e3P2/npwMBaU9mHCSCUzNln0ZCYbcfTsGbTJrU/kGemdH2IWmB2ioZ+zkxtmq6g09fGQ==
@@ -10917,7 +10966,7 @@ readdirp@^2.2.1:
     micromatch "^3.1.10"
     readable-stream "^2.0.2"
 
-readdirp@~3.6.0:
+readdirp@^3.3.0, readdirp@~3.6.0:
   version "3.6.0"
   resolved "https://registry.npmjs.org/readdirp/-/readdirp-3.6.0.tgz"
   integrity sha512-hOS089on8RduqdbhvQ5Z37A0ESjsqz6qnRcffsMU3495FuTdqSm+7bhJ29JvIOsBDEEnan5DPu9t3To9VRlMzA==
@@ -11519,6 +11568,16 @@ slice-ansi@^2.0.0:
     ansi-styles "^3.2.0"
     astral-regex "^1.0.0"
     is-fullwidth-code-point "^2.0.0"
+
+sloc@^0.3.2:
+  version "0.3.2"
+  resolved "https://registry.npmjs.org/sloc/-/sloc-0.3.2.tgz"
+  integrity sha512-tnB+gi6TiFpt3qmCGfaV+78dfKwLiH5HRohkW+PnJYHNAcEdk408uxWG+F/3pu4w1eyCO2NC5CpZKuiyMac5GQ==
+  dependencies:
+    async "^3.2.4"
+    cli-table "^0.3.11"
+    commander "^11.0.0"
+    readdirp "^3.3.0"
 
 slugify@^1.3.4, slugify@^1.6.6:
   version "1.6.6"
@@ -13003,7 +13062,7 @@ yocto-queue@^0.1.0:
   resolved "https://registry.npmjs.org/yocto-queue/-/yocto-queue-0.1.0.tgz"
   integrity sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==
 
-yup@^1.3.3:
+yup@^1.4.0:
   version "1.4.0"
   resolved "https://registry.npmjs.org/yup/-/yup-1.4.0.tgz"
   integrity sha512-wPbgkJRCqIf+OHyiTBQoJiP5PFuAXaWiJK6AmYkzQAh5/c2K9hzSApBZG5wV9KoKSePF7sAxmNSvh/13YHkFDg==

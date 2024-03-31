@@ -108,7 +108,8 @@ const NotificationButton = () => {
     )}
   >
     <Popover.Content accessibilityLabel="Notifications" 
-    maxHeight={500} overflowY={'scroll'}>
+    maxHeight={500} overflowY={'scroll'}
+    top={5}>
       <Popover.Arrow />
       <Popover.CloseButton />
       <Popover.Header bgColor={"#191919"}>
