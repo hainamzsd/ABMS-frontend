@@ -47,6 +47,10 @@ const _layout = () => {
       name: "Quản lý bài viết",
       href: "/web/CMB/posts",
     },
+    {
+      name: "Quản lý thu chi",
+      href: "/web/CMB/fundexpenses/expense",
+    },
   ];
   const user = {
     name: "John Doe",

@@ -25,27 +25,27 @@ const ReservationUtility = () => {
     const headers = ['Căn hộ', 'Tên sân', 'Khung giờ', 'Ghi chú', 'Ngày đặt', 'Tổng tiền', 'Trạng thái', ''];
     //   STATE
     const [isLoading, setIsLoading] = useState(false);
-    const [utilityReservation, setUtilityReservation] = useState<Reservation[]>();
+    const [utilityReservation, setUtilityReservation] = useState<Reservation[]>([]);
     const [currentPage, setCurrentPage] = useState(1)
     const [status, setStatus] = useState<number | null>(2);
     const navigate = useNavigation();
     const [searchQuery, setSearchQuery] = useState('');
-    // const { currentItems, totalPages } = paginate(request, currentPage, itemsPerPage)
+    const { currentItems, totalPages } = paginate(utilityReservation, currentPage, 7)
 
-    // const [filteredRequests, setFilteredRequests] = useState<Construction[]>([]);
+    // const [filteredRequests, setFilteredRequests] = useState<Reservation[]>([]);
     // useEffect(() => {
     //   if (searchQuery.trim() !== '') {
-    //     const filtered = request.filter(item =>
-    //       item.room.roomNumber.toLowerCase().includes(searchQuery.toLowerCase())
+    //     const filtered = utilityReservation.filter(item =>
+    //       item.ro.toLowerCase().includes(searchQuery.toLowerCase())
     //     );
     //     setFilteredRequests(filtered);
     //   } else {
     //     setFilteredRequests(request);
     //   }
     // }, [searchQuery, request]);
-    useEffect(() => {
-        fetchData();
-    }, [status])
+    // useEffect(() => {
+    //     fetchData();
+    // }, [status])
 
 
 

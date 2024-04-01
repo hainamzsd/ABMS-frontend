@@ -241,6 +241,7 @@ useEffect(() => {
         const images = snapshot.val();
         const urls = Object.values(images); 
         setImageUrls(urls as any);
+        console.log(urls);
       } catch (error) {
         console.error(error);
       }

@@ -1,5 +1,4 @@
 import moment from "moment";
-
 export const calculateTimeAgo = (createTime: Date) => {
   const createTimeMoment = moment.utc(createTime).local();
   const now = moment();

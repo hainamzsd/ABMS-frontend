@@ -1,119 +1,196 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Image, ScrollView, Text } from 'react-native';
+import { Image, ScrollView, SafeAreaView, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
 import { firebase } from '../../../config'
-import { Popover, Button, Input, FormControl, Icon } from "native-base";
-import { PhoneIcon } from 'lucide-react-native';
+import { Popover, Button, Input, FormControl, Icon, VStack, Text, HStack, Container, Row, Column, Center, Box, Divider, View } from "native-base";
+import { ArrowRight, BarChart, FileText, Home, Layers, PhoneIcon, Settings, UserCircle } from 'lucide-react-native';
 import axios from 'axios';
 import { API_BASE, actionController } from '../../../constants/action';
 import { ToastFail, ToastSuccess } from '../../../constants/toastMessage';
+import { LinearGradient } from 'expo-linear-gradient';
+import { router } from 'expo-router';
+import { LineChart } from 'react-native-chart-kit';
+const Dashboard = () => {
 
-
-const ImageList = () => {
-  const [imageUrls, setImageUrls] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState(null);
-
-  const initialFocusRef = useRef(null);
-  const [hotlineNumber, setHotlineNumber] = useState("");
-  const [hotlineName, setHotlineName] = useState("");
-
-  useEffect(() => {
-    const fetchData = async () => {
-      const reference = firebase.database().ref('/imageFolders/visitors/aAbCiIs9-GmY1-BjQz-dEKp-pAlxfJXDls0Uu5Pa/images');
-
-      try {
-        const snapshot = await reference.once('value');
-        const images = snapshot.val();
-        // Adjust here to directly use the values since they are already URLs
-        const urls = Object.values(images); // Directly use Object.values to extract URLs
-        setImageUrls(urls as any);
-        console.log(urls + " oi doi oi");
-      } catch (error) {
-        console.error(error);
+  const data = {
+    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+    datasets: [
+      {
+        data: [20, 45, 28, 80, 99, 43]
       }
-    };
+    ]
+  };
 
-    fetchData();
-  }, []);
-
-  // PUT: Save changes -> HOTLINE
-  const handleSaveHotline = async () => {
-    setIsLoading(true);
-    try {
-      const response = await axios.put(`${API_BASE}/${actionController.HOTLINE}/...`);
-      if (response.status === 200) {
-        ToastSuccess('Cập nhập hotline thành công');
-      } else {
-        ToastFail('Cập nhập thông tin thất bại')
-      }
-    } catch (error) {
-      ToastFail(error)
-    }
-  }
-
+  const screenWidth = Dimensions.get('window').width;
+  const chartWidth = screenWidth * 0.4;
   return (
-    <ScrollView>
-      {/* {isLoading && <Text>Loading images...</Text>}
-      {error && <Text>Error: {error}</Text>}
-      {imageUrls.length > 0 && (
-        <View>
-          {imageUrls.map((url, index) => (
-            <Image
-              key={index}
-              style={{ width: 400, height: 400 }}
-              source={{ uri: url }}
-              onError={() => console.warn(`Error loading image: ${url}`)} // Handle loading errors (optional)
-            />
-          ))}
-        </View>
-      )}
-      {imageUrls.length === 0 && !isLoading && <Text>No images found.</Text>} */}
-      <View style={{ flex: 1, padding: 20 }}>
-        <View style={{ flex: 1, flexDirection: 'row' }}>
+    <>
+      <SafeAreaView style={{ flex: 1 }}>
+        <ScrollView style={{ flex: 1, }} >
+          <VStack space={3} style={{ paddingVertical: 30, paddingHorizontal: 30 }}>
+            <HStack space={2} style={{ alignItems: 'center' }}>
+              <Home size={20}></Home>
+              <Text>/ Trang chủ</Text>
+            </HStack>
+            <Text fontSize={24}
+              fontWeight={'bold'}>Trang chủ</Text>
+            <HStack space={5} justifyContent="space-between">
+              <Center h="40" w="20%" rounded="2xl" shadow={5}
+                bg={{
+                  linearGradient: {
+                    colors: ['#FF9190', '#FDC094'],
+                    start: [0, 0],
+                    end: [1, 0]
+                  }
+                }}>
 
-          {/* POPOVER: Hotline */}
-          <Popover initialFocusRef={initialFocusRef} trigger={triggerProps => {
-            return <Button leftIcon={<Icon name="phone-icon" as={PhoneIcon} color="white" />} colorScheme="orange" {...triggerProps}> 0964766165 </Button>;
-          }}>
-            <Popover.Content width="56">
-              <Popover.Arrow />
-              <Popover.CloseButton />
-              {
-                /* @ts-ignore */
-              }
-              <Popover.Header>HOTLINE</Popover.Header>
-              <Popover.Body>
-                <FormControl>
-                  <FormControl.Label _text={{
-                    fontSize: "xs",
-                    fontWeight: "medium"
-                  }}>
-                    Số điện thoại (Hotline)
-                  </FormControl.Label>
-                  <Input rounded="sm" fontSize="xs" ref={initialFocusRef} value={hotlineNumber} onChangeText={(text) => setHotlineNumber(text)} />
-                </FormControl>
-                <FormControl mt="3">
-                  <FormControl.Label _text={{
-                    fontSize: "xs",
-                    fontWeight: "medium"
-                  }}>
-                    Ghi chú
-                  </FormControl.Label>
-                  <Input rounded="sm" fontSize="xs" value={hotlineName} onChangeText={(text) => setHotlineName(text)} />
-                </FormControl>
-              </Popover.Body>
-              <Popover.Footer>
-                <Button.Group>
-                  <Button onPress={handleSaveHotline}>Lưu thay đổi</Button>
-                </Button.Group>
-              </Popover.Footer>
-            </Popover.Content>
-          </Popover>
-        </View>
+                <HStack space={3} alignItems={'center'}>
+                  <UserCircle size={50} color={'white'} />
+                  <VStack>
+                    <Text fontSize={18} color={'white'}>Tổng số người dùng</Text>
+                    <Text fontSize={24} fontWeight={'bold'}
+                      color={'white'}>12</Text>
+                  </VStack>
+                </HStack>
+                <Divider color={'muted.100'}
+                  marginTop={5}></Divider>
+                <TouchableOpacity
+                  onPress={() => router.push('/web/Receptionist/accounts/')}
+                >
+                  <HStack space={1} marginTop={5} alignItems={'center'}>
+                    <Text color={'white'} italic>Đi tới quản lý danh sách cư dân</Text>
+                    <ArrowRight size={20} color={'white'} />
+                  </HStack>
+                </TouchableOpacity>
+              </Center>
+              <Center h="40" w="20%" rounded="2xl" shadow={5}
+                bg={{
+                  linearGradient: {
+                    colors: ['#FF9190', '#FDC094'],
+                    start: [0, 1],
+                    end: [1, 0]
+                  }
+                }}>
 
-      </View >
-    </ScrollView>
+                <HStack space={3} alignItems={'center'}>
+                  <Layers size={50} color={'white'} />
+                  <VStack >
+                    <Text fontSize={18}
+                      color={'white'}>Tổng số tiện ích</Text>
+                    <Text fontSize={24} fontWeight={'bold'}
+                      color={'white'}>12</Text>
+                  </VStack>
+                </HStack>
+                <Divider color={'muted.100'}
+                  marginTop={5}></Divider>
+                <TouchableOpacity
+                  onPress={() => router.push('/web/Receptionist/utilities/')}
+                >
+                  <HStack space={1} marginTop={5} alignItems={'center'}>
+                    <Text color={'white'} italic>Đi tới quản lý tiện ích</Text>
+                    <ArrowRight size={20} color={'white'} />
+                  </HStack>
+                </TouchableOpacity>
+              </Center>
+              <Center h="40" w="20%" rounded="2xl" shadow={5}
+                bg={{
+                  linearGradient: {
+                    colors: ['#FF9190', '#FDC094'],
+                    start: [0, 1],
+                    end: [0, 1]
+                  }
+                }}>
+
+                <HStack space={3} alignItems={'center'}>
+                  <Settings size={50} color={'white'} />
+                  <VStack >
+                    <Text fontSize={18}
+                      color={'white'}>Tổng số yêu cầu dịch vụ</Text>
+                    <Text fontSize={24} fontWeight={'bold'}
+                      color={'white'}>12</Text>
+                  </VStack>
+                </HStack>
+                <Divider color={'muted.100'}
+                  marginTop={5}></Divider>
+                <TouchableOpacity
+                  onPress={() => router.push('/web/Receptionist/services/')}
+                >
+                  <HStack space={1} marginTop={5} alignItems={'center'}>
+                    <Text color={'white'} italic>Đi tới quản lý dịch vụ</Text>
+                    <ArrowRight size={20} color={'white'} />
+                  </HStack>
+                </TouchableOpacity>
+              </Center>
+              <Center h="40" w="20%" rounded="2xl" shadow={5}
+                bg={{
+                  linearGradient: {
+                    colors: ['#FF9190', '#FDC094'],
+                    start: [1, 0],
+                    end: [0, 1]
+                  }
+                }}>
+
+                <HStack space={3} alignItems={'center'}>
+                  <FileText size={50} color={'white'} />
+                  <VStack >
+                    <Text fontSize={18}
+                      color={'white'}>Tổng số bài viết</Text>
+                    <Text fontSize={24} fontWeight={'bold'}
+                      color={'white'}>12</Text>
+                  </VStack>
+                </HStack>
+                <Divider color={'muted.100'}
+                  marginTop={5}></Divider>
+                <TouchableOpacity
+                  onPress={() => router.push('/web/Receptionist/posts/')}
+                >
+                  <HStack space={1} marginTop={5} alignItems={'center'}>
+                    <Text color={'white'} italic>Đi tới quản lý bài viết</Text>
+                    <ArrowRight size={20} color={'white'} />
+                  </HStack>
+                </TouchableOpacity>
+              </Center>
+            </HStack>
+            <HStack flex={1} space={10} mt={5}>
+              <Box width="50%" bg="white" rounded="lg" >
+                <VStack >
+                  <View borderWidth={1} borderColor={'muted.400'}
+                    padding={4} roundedTopLeft={'lg'} roundedTopRight={'lg'}>
+                    <Text fontSize={18}
+                      color={'muted.600'}
+                      fontWeight="600" >
+                      Biểu đồ đặt tiện ích
+                    </Text>
+                  </View>
+                  <View
+                    borderWidth={1} borderColor={'muted.400'}
+                    style={{
+                    }}>
+                   
+                  </View>
+                </VStack>
+              </Box>
+              <Box flex={0.3} bg="gray.100" rounded="lg" shadow={3}>
+                <VStack>
+                  {/* Optional header for the right box */}
+                  {/* Add your content here */}
+                </VStack>
+              </Box>
+            </HStack>
+          </VStack>
+        </ScrollView>
+      </SafeAreaView>
+    </>
   );
 };
 
-export default ImageList;
+const styles = StyleSheet.create({
+  itemBox: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    height: 100,
+    borderColor: '#ccc',
+    borderWidth: 1,
+    margin: 2,
+  },
+});
+export default Dashboard;

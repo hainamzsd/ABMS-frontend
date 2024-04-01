@@ -224,19 +224,18 @@ const parkingCardRegisterScreen = () => {
               },
               );
               if (response.data.statusCode == 200) {
-                const createPost = await axios.post('https://abmscapstone2024.azurewebsites.net/api/v1/post/createReceptionist',{
-                title: `Phòng ${room[0].roomNumber} đăng ký sử dụng thẻ đỗ xe cho ${residentId} đã được tạo bởi ${user.FullName}`,
+                const createPost = await axios.post('https://abmscapstone2024.azurewebsites.net/api/v1/notification/create-for-receptionist',{
+                title: `Cư dân ${user.FullName} đăng ký sử dụng thẻ đỗ xe`,
                 buildingId: user.BuildingId,
-                content:  `Phòng ${room[0].roomNumber} đăng ký sử dụng thẻ đỗ xe cho ${residentId} đã được tạo bởi ${user.FullName}`,
-                image: "",
-                type: 7
+                content: `http://localhost:8081/web/Receptionist/services/parkingcard/${response.data.data}`,
             },
             {
-                timeout: 10000, 
-                headers:{
-                    'Authorization': `Bearer ${session}`
-                }
-              },)
+              timeout: 10000, 
+              headers:{
+                  'Authorization': `Bearer ${session}`
+              }
+            },)
+              console.log(createPost);
                   setShowSuccess(true);
                   setColor("");
                   setBrand("");
