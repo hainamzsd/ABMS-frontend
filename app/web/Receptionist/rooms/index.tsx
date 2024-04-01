@@ -28,7 +28,7 @@ const RoomList = () => {
         const response = await axios.get(`https://abmscapstone2024.azurewebsites.net/api/v1/resident-room/get?buildingId=${user?.BuildingId}`, {
           timeout: 10000,
         });
-        if (response.status === 200) {
+        if (response.data.statusCode  === 200) {
           setData(response.data.data);
         } else {
           Toast.show({
@@ -65,7 +65,7 @@ const RoomList = () => {
       const response = await axios.get(`https://abmscapstone2024.azurewebsites.net/api/v1/building/get/${user?.BuildingId}`, {
         timeout: 10000,
       });
-      if (response.status === 200) {
+      if (response.data.statusCode  === 200) {
         setBuilding(response.data.data);
       } else {
         Toast.show({

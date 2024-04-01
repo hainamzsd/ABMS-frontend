@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { View, Pressable, Text, SafeAreaView, FlatList, TouchableOpacity, ScrollView } from 'react-native'
+import { View, Pressable, Text, SafeAreaView, FlatList, TouchableOpacity, ScrollView, TextInput } from 'react-native'
 import Button from '../../../../components/ui/button'
 import { indexStyle as styles } from './styles'
 import { router } from 'expo-router'
@@ -41,7 +41,7 @@ const FeeDashboard = () => {
             const response = await axios.get(`${API_BASE}/${actionController.FEE}/get-all?buildingId=${user?.BuildingId}`, {
                 timeout: 10000,
             });
-            if (response.status === 200) {
+            if (response.data.statusCode  === 200) {
                 setFees(response.data.data);
             } else {
                 ToastFail('Lỗi lấy thông tin các khoản phí');
@@ -77,7 +77,7 @@ const FeeDashboard = () => {
                     'Authorization': `Bearer ${session}`
                 }
             });
-            if (response.status === 200) {
+            if (response.data.statusCode  === 200) {
                 ToastSuccess('Cập nhập thông tin khoản phí thành công')
             } else {
                 ToastFail('Lỗi lấy cập nhập thông tin khoản phí');

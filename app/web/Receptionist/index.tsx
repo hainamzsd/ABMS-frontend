@@ -41,7 +41,7 @@ const ImageList = () => {
     setIsLoading(true);
     try {
       const response = await axios.put(`${API_BASE}/${actionController.HOTLINE}/...`);
-      if (response.status === 200) {
+      if (response.data.statusCode  === 200) {
         ToastSuccess('Cập nhập hotline thành công');
       } else {
         ToastFail('Cập nhập thông tin thất bại')

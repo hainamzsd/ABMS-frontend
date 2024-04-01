@@ -60,7 +60,7 @@ const RoomDetail = () => {
             const response = await axios.get(`https://abmscapstone2024.azurewebsites.net/api/v1/account/get/${accountId}`, {
                 timeout: 10000,
             });
-            if (response.status === 200) {
+            if (response.data.statusCode  === 200) {
                 setOwner(response.data.data);
             } else {
                 ToastFail('Lỗi lấy thông tin chủ căn hộ')
@@ -84,7 +84,7 @@ const RoomDetail = () => {
             const response = await axios.get(`https://abmscapstone2024.azurewebsites.net/api/v1/resident-room/get/${item?.roomDetail}`, {
                 timeout: 10000,
             });
-            if (response.status === 200) {
+            if (response.data.statusCode  === 200) {
                 setRoomNumber(response.data.data.roomNumber);
                 setBuildingId(response.data.data.buildingId);
                 setRoomArea(response.data.data.roomArea);
@@ -125,7 +125,7 @@ const RoomDetail = () => {
                 timeout: 10000,
             });
             console.log(response);
-            if (response.status === 200) {
+            if (response.data.statusCode  === 200) {
                 setBuilding(response.data.data);
             } else {
                 Toast.show({
@@ -160,7 +160,7 @@ const RoomDetail = () => {
             const response = await axios.get(`https://abmscapstone2024.azurewebsites.net/api/v1/resident-room-member/get?roomId=${item?.roomDetail}`, {
                 timeout: 10000,
             });
-            if (response.status === 200) {
+            if (response.data.statusCode  === 200) {
                 setRoomMembers(response.data.data);
             } else {
                 Toast.show({

@@ -30,7 +30,7 @@ const RoomItem = (props: any) => {
           timeout: 10000,
         });
         console.log(response);
-        if (response.status === 200) {
+        if (response.data.statusCode  === 200) {
           setAccount(response.data.data);
         } else {
           Toast.show({
