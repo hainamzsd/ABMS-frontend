@@ -8,46 +8,64 @@ import { jwtDecode } from 'jwt-decode';
 import moment from 'moment';
 import 'moment/locale/vi'; // without this line it didn't work
 import { calculateTimeAgo } from '../../utils/fromNow';
-
-// Sample data for notifications. Replace it with your actual data source
-
+import { router } from 'expo-router';
+import { HubConnectionBuilder } from '@microsoft/signalr';
+import * as signalR from '@microsoft/signalr';
 interface User{
   Id: string;
   BuildingId:string;
 }
-interface Post{
+interface Notification{
   
-    post: {
+  notification: {
       id: string;
       buildingId: string;
       title: string;
       content: string;
-      image: string;
       type: number
-      createUser: string;
       createTime: Date;
-      modifyUser: string;
-      modifyTime: string;
-      status: number
     },
     isRead: boolean
 }
 
 const NotificationButton = () => {
   const [showPopover, setShowPopover] = useState(false);
-  const [notifications, setNotifications] = useState<Post[]>([]);
+  const [notifications, setNotifications] = useState<Notification[]>([]);
   const [displayCount, setDisplayCount] = useState(10);
   moment.locale('es')
   const {session} = useAuth();
   const user:User = jwtDecode(session as string);
   useEffect(() => {
     fetchNotifications();
+    const connection = new HubConnectionBuilder()
+    .withUrl("https://abmscapstone2024.azurewebsites.net/notificationHub")
+    .configureLogging(signalR.LogLevel.Information)
+    .withAutomaticReconnect()
+    .build();
+
+  // Start the connection and handle new notifications
+  connection.start().then(() => {
+    console.log("Connected to SignalR hub.");
+
+    connection.on("ReceiveNotification", (newNotification) => {
+      const receivedTime = Date.now(); // Capture current time when notification arrives
+      console.log(`Notification received with timestamp: ${newNotification.createTime} (server)`);
+      console.log(`Received at: ${receivedTime} (client)`);
+      setNotifications(prevNotifications => [...prevNotifications, newNotification]);
+    });
+  
+  }).catch(err => console.error('SignalR Connection Error: ', err));
+
+  // Clean up on component unmount
+  return () => {
+    connection.stop();
+  };
   }, [session]);
   moment.locale('vi');
   const markNotificationsAsRead = async () => {
     try {
-      const response= await axios.post(`https://abmscapstone2024.azurewebsites.net/api/v1/markAsRead?accountId=${user?.Id}`);
-      const updatedNotifications = notifications.map((notification:Post) => ({ ...notification, isRead: true }));
+      const response= await axios.post(`https://abmscapstone2024.azurewebsites.net/api/v1/notification/markAsRead?accountId=${user?.Id}`);
+      const updatedNotifications = notifications.map((notification:Notification) => ({ ...notification, isRead: true }));
       setNotifications(updatedNotifications);
       console.log(response);
     } catch (error) {
@@ -57,8 +75,7 @@ const NotificationButton = () => {
 
   const fetchNotifications = async (count = 10) => {
     try {
-      const response = await axios.get(`https://abmscapstone2024.azurewebsites.net/api/v1/post/get-notification?accountId=${user.Id}&onlyUnread=true&skip=0&take=${count}`);
-      console.log(response)
+      const response = await axios.get(`https://abmscapstone2024.azurewebsites.net/api/v1/notification/get-notification?accountId=${user.Id}&skip=0&take=${count}`);
       setNotifications(response.data); 
     } catch (error) {
       console.error("Error fetching notifications:", error);
@@ -109,6 +126,7 @@ const NotificationButton = () => {
   >
     <Popover.Content accessibilityLabel="Notifications" 
     maxHeight={500} overflowY={'scroll'}
+    width={"500"}
     top={5}>
       <Popover.Arrow />
       <Popover.CloseButton />
@@ -119,7 +137,7 @@ const NotificationButton = () => {
       <Popover.Body>
         <VStack space={4}>
           <FlatList
-            data={notifications?.slice(0, displayCount).sort((a, b) => new Date(b.post.createTime).getTime() - new Date(a.post.createTime).getTime()).reverse()}
+            data={notifications?.slice(0, displayCount).sort((a, b) => new Date(b.notification.createTime).getTime() - new Date(a.notification.createTime).getTime())}
             renderItem={({ item }) => (
               <Box
                 borderBottomWidth="1"
@@ -130,7 +148,11 @@ const NotificationButton = () => {
                 py="2"
                 bgColor={item.isRead ? "transparent" : "highlight"}
               >
-                <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', width: '100%' }}>
+                <TouchableOpacity 
+                onPress={()=>{
+                  router.push(item?.notification.content as any)
+                }}
+                style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', width: '100%' }}>
                   <VStack style={{ flex: 1 }}>
                     <Text
                       _dark={{ color: "warmGray.50", }}
@@ -140,16 +162,16 @@ const NotificationButton = () => {
                       ellipsizeMode="tail"
                       style={{ flex: 1 }}
                     >
-                      {item?.post.title}
+                      {item?.notification.title}
                     </Text>
                     <Text color="coolGray.600" _dark={{ color: "warmGray.200", }}>
-                      {calculateTimeAgo(item?.post.createTime)}
+                      {calculateTimeAgo(item?.notification.createTime)}
                     </Text>
                   </VStack>
-                </View>
+                </TouchableOpacity>
               </Box>
             )}
-            keyExtractor={(item) => item.post.id.toString()}
+            keyExtractor={(item) => item.notification.id.toString()}
           />
           {displayCount < notifications?.length && (
             <TouchableOpacity onPress={handleViewMore}>

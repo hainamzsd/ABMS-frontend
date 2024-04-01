@@ -14,6 +14,7 @@ import LoginScreen from "./login";
 import * as Notifications from 'expo-notifications';
 import { LanguageProvider } from "./context/LanguageContext";
 import { usePushNotifications } from "./context/usePushNotifcation";
+import { NativeBaseProvider } from "native-base";
 const Layout = () => {
   const insets = useSafeAreaInsets();
   const { expoPushToken, notification } = usePushNotifications();
@@ -37,7 +38,9 @@ const Layout = () => {
               flex: 1,
             }}
           >
-            <Slot />
+             <NativeBaseProvider >
+          <Slot />
+         </NativeBaseProvider>
           </View>
         </AuthProvider>
       </LanguageProvider>
