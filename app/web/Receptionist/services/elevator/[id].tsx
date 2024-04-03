@@ -11,6 +11,7 @@ import moment from 'moment';
 import Swal from 'sweetalert2'
 import { statusForReceptionist } from '../../../../../constants/status';
 import { useRoute } from '@react-navigation/native';
+import { jwtDecode } from 'jwt-decode';
 const StatusData = [
   { label: "Phê duyệt", value: 3 },
   { label: "Từ chối", value: 4 },
@@ -37,6 +38,7 @@ const page = () => {
   const [response, setResponse] = useState("");
   const [elevator, setElevator] = useState<Elevator>();
   const {session} = useAuth();
+  const user:any= jwtDecode(session as string);
   const disableBtn = status===undefined || status==4 && response=="";
   console.log(status);
   useEffect(() => {
@@ -105,6 +107,18 @@ const page = () => {
           return;
         }
         if (responseAxios.data.statusCode == 200) {
+          const createNotification = await axios.post('https://abmscapstone2024.azurewebsites.net/api/v1/notification/create-for-resident',{
+            title: `Đơn đăng kí sử dụng thang máy đã ${status==3?'phê duyệt':'từ chối'}`,
+            buildingId: user.BuildingId,
+            content: `Đơn đăng kí sử dụng thang máy đã ${status==3?'phê duyệt':'từ chối'}`,
+            roomId: elevator?.roomId
+        },
+        {
+            timeout: 10000, 
+            headers:{
+                'Authorization': `Bearer ${session}`
+            }
+          },)
             Toast.show({
                 type: 'success',
                 text1: 'Phê duyệt phiếu đăng ký thành công',

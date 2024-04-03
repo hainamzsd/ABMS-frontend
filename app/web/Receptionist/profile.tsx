@@ -47,6 +47,22 @@ const formSchema = yup.object().shape({
   fullName: yup.string().required('Họ và tên là bắt buộc'),
   email: yup.string().email('Email không hợp lệ').required('Email không được để trống'),
 });
+
+const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+
+const passwordSchema = yup.object().shape({
+  old_password: yup
+    .string()
+    .required('Mật khẩu cũ không được để trống'),
+  new_password: yup
+    .string()
+    .matches(passwordRegex, 'Mật khẩu phải chứa ít nhất 8 ký tự bao gồm: viết hoa, viết thường, số và ký tự đặc biệt')
+    .required('Mật khẩu mới không được để trống'),
+  confirm_password: yup
+    .string()
+    .oneOf([yup.ref('new_password'), undefined], 'Mật khẩu không khớp')
+    .required('Mật khẩu xác nhận không được để trống'),
+});
 const ProfilePage = () => {
   const [selectedTab, setSelectedTab] = useState('accountDetails');
 
@@ -58,10 +74,15 @@ const ProfilePage = () => {
   const [fullName, setFullName] = useState("");
   const [loading, setLoading]=useState(false); 
   const [image, setImage]= useState<any>();
+  const [oldPassword, setOldPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [reEnterPassword, setReEnterPassword] = useState("");
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [isFetching, setIsFetching] = useState(false);
   useEffect(() => {
     const fetchUser = async () => {
       try {
+        setIsFetching(true);
         const response = await axios.get(`https://abmscapstone2024.azurewebsites.net/api/v1/account/get/${userInfo.Id}`);
         if(response.data.statusCode==200){
           setUser(response.data.data);
@@ -88,6 +109,9 @@ const ProfilePage = () => {
               autoHide: true,
           })
         console.error("Error fetching user info:", error);
+      }
+      finally{
+        setIsFetching(false);
       }
     }
   fetchUser();
@@ -192,6 +216,7 @@ const ProfilePage = () => {
       });
       console.log(response);
       if(response.data.statusCode==200){
+        setErrors({});
         Toast.show({
           type: 'success',
           position: 'bottom',
@@ -228,7 +253,73 @@ const ProfilePage = () => {
       });
     }
   }
-
+  const changePassword = async () => {
+    try {
+      setLoading(true);
+      const formData = { old_password: oldPassword, new_password: newPassword, confirm_password: reEnterPassword };
+      await passwordSchema.validate(formData, { abortEarly: false });
+      const response = await axios.post(`https://abmscapstone2024.azurewebsites.net/api/v1/account/change-password/${user?.id}`, formData,
+      {
+        timeout: 10000,
+        headers: {
+          'Authorization': `Bearer ${session}`
+        }
+      });
+      console.log(response);
+      if(response.data.errMsg =="Wrong old password!"){
+        Toast.show({
+          type: 'error',
+          position: 'bottom',
+          text1: 'Lỗi',
+          text2: 'Mật khẩu cũ không chính xác',
+          autoHide: true,
+        
+        })
+        return;
+      }
+      if(response.data.statusCode==200){
+        setErrors({});
+        setOldPassword("");
+        setNewPassword("");
+        setReEnterPassword("");
+        Toast.show({
+          type: 'success',
+          position: 'bottom',
+          text1: 'Thành công',
+          text2: 'Cập nhật mật khẩu thành công',
+          autoHide: true,
+        })
+    }
+    else{
+      Toast.show({
+        type: 'error',
+        position: 'bottom',
+        text1: 'Lỗi',
+        text2: 'Không thể cập nhật mật khẩu',
+        autoHide: true,
+      
+      })
+    }
+    } catch (error) {
+      if (error instanceof yup.ValidationError) {
+        const errors:any = {};
+              error.inner.forEach((err: any) => {
+                errors[err.path] = err.message;
+              });
+              setErrors(errors);
+      } else {
+        Toast.show({
+          type: 'error',
+          position: 'bottom',
+          text1: 'Lỗi',
+          text2: 'Không thể cập nhật mật khẩu',
+          autoHide: true,
+        })
+      }
+    } finally {
+      setLoading(false);
+    }
+  };    
   const renderContent = () => {
     switch (selectedTab) {
       case 'accountDetails':
@@ -238,6 +329,7 @@ const ProfilePage = () => {
               <Settings size={25} color={'green'}></Settings>
               <Text fontSize={22}>Thông tin chung</Text>
             </HStack>
+            {isFetching && <ActivityIndicator size={'large'} color={'#191919'}/>}
             <HStack alignItems={'center'} marginY={5}>
               <Avatar
                 borderWidth={3}
@@ -266,7 +358,8 @@ const ProfilePage = () => {
               <FormControl isRequired width="50%">
                 <FormControl.Label>Tên người dùng</FormControl.Label>
                 <Input
-                  value={userName || ""}
+                placeholder='Tên người dùng'
+                  value={userName}
                   onChangeText={setUserName}
                 />
                 {errors.userName  && (
@@ -276,7 +369,8 @@ const ProfilePage = () => {
               <FormControl isRequired width="50%">
                 <FormControl.Label>Họ và tên</FormControl.Label>
                 <Input
-                  value={fullName || ""}
+                placeholder='Họ và tên'
+                  value={fullName}
                   onChangeText={setFullName}
                 />
 
@@ -289,7 +383,8 @@ const ProfilePage = () => {
             <FormControl isRequired width="50%">
               <FormControl.Label>Địa chỉ email</FormControl.Label>
               <Input
-  value={email || ""}
+              placeholder='Địa chỉ email'
+  value={email}
   onChangeText={setEmail}
 />
                {errors.email  && (
@@ -321,34 +416,50 @@ const ProfilePage = () => {
               <KeySquare size={25} color={'green'}></KeySquare>
               <Text fontSize={22}>Đổi mật khẩu</Text>
             </HStack>
+            <Text>Mật khẩu phải chứa ít nhất 8 ký tự bao gồm: viết hoa, viết thường, số và ký tự đặc biệt</Text>
             <FormControl isRequired>
               <FormControl.Label>Mật khẩu hiện tại</FormControl.Label>
               <Input
                 type="password"
                 placeholder="Nhập mật khẩu hiện tại"
-                // value={userInfo.currentPassword}
-                // onChangeText={(value) => setUserInfo({ ...userInfo, currentPassword: value })}
+                value={oldPassword}
+                onChangeText={setOldPassword}
+                secureTextEntry
               />
+              {errors.old_password && (
+                <Text style={styles.errorText}>{errors.old_password}</Text>
+              )}
             </FormControl>
             <FormControl isRequired>
               <FormControl.Label>Mật khẩu mới</FormControl.Label>
               <Input
                 type="password"
                 placeholder="Nhập mật khẩu mới"
-                // value={userInfo.newPassword}
-                // onChangeText={(value) => setUserInfo({ ...userInfo, newPassword: value })}
+                value={newPassword}
+                onChangeText={setNewPassword}
+                secureTextEntry
               />
+              {errors.new_password  && (
+                            <Text style={styles.errorText}>{errors.new_password}</Text>
+                        )}
             </FormControl>
             <FormControl isRequired>
               <FormControl.Label>Nhập lại mật khẩu</FormControl.Label>
               <Input
                 type="password"
                 placeholder="Nhập lại mật khẩu mới"
-                // value={userInfo.newPassword}
-                // onChangeText={(value) => setUserInfo({ ...userInfo, newPassword: value })}
+                value={reEnterPassword}
+                onChangeText={setReEnterPassword}
+                secureTextEntry
               />
+              {errors.confirm_password  && (
+                            <Text style={styles.errorText}>{errors.confirm_password}</Text>
+                        )}
             </FormControl>
-            <Button marginTop={5} bgColor={'#191919'} onPress={() => {/* Handle password change */}}>
+            {loading &&
+            <ActivityIndicator color={'#191919'} size={'small'}></ActivityIndicator>} 
+            <Button marginTop={5} bgColor={'#191919'} onPress={changePassword}
+            >
               Đổi mật khẩu
             </Button>
           </VStack>
