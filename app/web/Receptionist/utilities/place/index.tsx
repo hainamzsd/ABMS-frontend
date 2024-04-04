@@ -30,8 +30,6 @@ const Place = () => {
     const [updatePlace, setUpdatePlace] = useState("");
     const [utilityDetailId, setUtilityDetailId] = useState("");
 
-    console.log(session)
-
 
     useEffect(() => {
         fetchUtilityDetail();
@@ -82,7 +80,7 @@ const Place = () => {
                 position: 'bottom'
             })
         } finally {
-            fetchUtilityDetail();
+            
             setIsLoading(false); // Set loading state to false regardless of success or failure
         }
     }
@@ -100,6 +98,7 @@ const Place = () => {
                 }
             });
             if (response.data.statusCode  === 200) {
+                setNewPlace("");
                 Toast.show({
                     type: 'success',
                     text1: 'Cập nhật địa điểm tiện ích thành công',
@@ -177,6 +176,7 @@ const Place = () => {
             });
             if (response.data.statusCode  === 200) {
                 setUtilityDetails(response.data.data);
+                
             } else {
                 Toast.show({
                     type: 'error',
@@ -221,8 +221,8 @@ const Place = () => {
                         </View>
                         <View style={{ flexDirection: 'row', gap: SIZES.small }}>
                             <Button text="Chỉnh sửa" onPress={() => {
-                                setUtilityDetailId(item?.id)
                                 setNewPlace(item?.name)
+                                setUtilityDetailId(item?.id)
                                 setModalUpdate(!modalUpdate)
                             }} />
                             <Button text="Xoá" onPress={() => {

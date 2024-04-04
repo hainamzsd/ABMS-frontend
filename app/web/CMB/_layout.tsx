@@ -68,7 +68,6 @@ const _layout = () => {
   };
 
   const pathName = usePathname();
-  console.log(session);
   const [windowWidth, setWindowWidth] = useState(
     Dimensions.get("window").width,
   );

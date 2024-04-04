@@ -152,7 +152,6 @@ const passwordSchema = yup.object().shape({
         const ref = firebase.storage().ref().child(fileName);
         const snapshot = await ref.put(blob);
         const downloadURL = await snapshot.ref.getDownloadURL();
-        console.log(downloadURL);
         return downloadURL;
       }catch(error){
         console.error('Error uploading image:', error);
