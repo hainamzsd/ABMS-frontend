@@ -25,7 +25,7 @@ const Page: React.FC = () => {
                         <Text>Thông tin các bài viết</Text>
                     </View>
                     <View style={{ marginBottom: 10 }}>
-                    <Input placeholder="Tìm tên tài khoản" style={{ width: '100%', paddingVertical: 10 }} />
+                    <Input placeholder="Tìm tiêu đề bài viết" style={{ width: '100%', paddingVertical: 10 }} />
                 </View>
                 </View>
                 <FlatList

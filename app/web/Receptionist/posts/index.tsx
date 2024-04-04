@@ -71,7 +71,7 @@ const PostList = () => {
             <Text>Thông tin các bài viết</Text>
           </View>
           <View style={{ marginBottom: 10 }}>
-            <Input placeholder="Tìm tên bài viết" style={{ width: '100%', paddingVertical: 10 }} value={searchQuery} onChangeText={(text) => setSearchQuery(text)} />
+            <Input placeholder="Tìm tên tiêu đề bài viết" style={{ width: '100%', paddingVertical: 10 }} value={searchQuery} onChangeText={(text) => setSearchQuery(text)} />
             {/* Filter */}
           </View>
           <View style={{ marginBottom: SIZES.medium }}>
