@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { View, SafeAreaView, Text, FlatList } from 'react-native'
+import { View, SafeAreaView, Text, FlatList, ScrollView } from 'react-native'
 import Input from '../../../../components/ui/input';
 import PostItem from '../../../../components/ui/PostItem';
 import { posts } from "../../../../constants/fakeData"
@@ -15,13 +15,14 @@ import { actionController, API_BASE } from "../../../../constants/action"
 import { ToastFail } from '../../../../constants/toastMessage';
 import { SIZES } from '../../../../constants';
 import { Link, router } from 'expo-router';
+import { truncateText } from '../../../../utils/truncate';
 
 const PostList = () => {
   const { session } = useAuth();
   const user: user = jwtDecode(session as string);
 
   const [isLoading, setIsLoading] = useState(false);
-  const [posts, setPosts] = useState<Post[]>();
+  const [posts, setPosts] = useState<Post[]>([]);
 
   const fetchPosts = async () => {
     setIsLoading(true);
@@ -48,17 +49,31 @@ const PostList = () => {
   useEffect(() => {
     fetchPosts();
   }, [])
-
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filteredRequests, setFilteredRequests] = useState<Post[]>([]);
+  useEffect(() => {
+    if (searchQuery.trim() !== '') {
+      const filtered = posts.filter(item =>
+        item?.title.toLowerCase().includes(searchQuery.toLowerCase()) 
+      );
+      setFilteredRequests(filtered);
+    } else {
+      setFilteredRequests(posts);
+    }
+  }, [searchQuery, posts]);
   return (
     <View style={{ flex: 1, backgroundColor: '#F9FAFB' }}>
       <SafeAreaView style={{ flex: 1 }}>
+      <ScrollView style={{flex:1}}>
         <View style={{ paddingHorizontal: 30, paddingTop: 30 }}>
           <View style={{ marginBottom: 20 }}>
             <Text style={{ fontWeight: 'bold', fontSize: 20, marginBottom: 5 }}>Danh sách bài viết</Text>
             <Text>Thông tin các bài viết</Text>
           </View>
           <View style={{ marginBottom: 10 }}>
-            <Input placeholder="Tìm tên bài viết" style={{ width: '100%', paddingVertical: 10 }} />
+            <Input placeholder="Tìm tên bài viết" style={{ width: '100%', paddingVertical: 10 }}
+             value={searchQuery}
+             onChangeText={(text) => setSearchQuery(text)} />
             {/* Filter */}
           </View>
           <View style={{ marginBottom: SIZES.medium }}>
@@ -67,19 +82,21 @@ const PostList = () => {
             })} />
           </View>
           <FlatList
-            data={posts}
+            data={filteredRequests}
             renderItem={({ item }) => (
               <PostItem
                 title={item.title}
-                content={item.content}
+                content={item?.content}
                 imageUrl={item.image}
                 href={`/web/Receptionist/posts/${item.id}`}
                 date={moment.utc(item?.createTime).format("DD-MM-YYYY")}
+                status={item?.status}
               />
             )}
             keyExtractor={item => item.id} />
 
         </View>
+        </ScrollView>
       </SafeAreaView>
       {/* Paging */}
     </View>

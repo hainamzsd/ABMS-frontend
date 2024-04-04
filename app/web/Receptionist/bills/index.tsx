@@ -140,7 +140,7 @@ const BillDashboard = () => {
                 style={styles.container}
                 onPress={() => {
                     router.push({
-                        pathname: `/web/Receptionist/bills/${item.id}`,
+                        pathname: `/web/Receptionist/bills/${item?.id}`,
                     })
                 }}
             >
