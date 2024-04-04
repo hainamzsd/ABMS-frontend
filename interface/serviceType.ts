@@ -1,14 +1,15 @@
 export interface ServiceCharge {
   id: string;
   roomId: string;
-  totalPrice: number;
+  room_number: string;
+  total_price: number;
   month: number;
   year: number;
   description: string;
-  createUser: string;
-  createTime: string;
-  modifyUser: string | null;
-  modifyTime: string | null;
+  // createUser: string;
+  // createTime: string;
+  // modifyUser: string | null;
+  // modifyTime: string | null;
   status: number;
 }
 

@@ -84,11 +84,11 @@ const Page = () => {
                         <TouchableOpacity style={{ width: '100%', flexDirection: 'row', justifyContent: 'space-between', marginBottom: SIZES.medium }}>
                             <View style={styles.box}>
                                 <HomeIcon strokeWidth={2} color={ColorPalettes.ocean.primary} size={48}></HomeIcon>
-                                <Text style={{ fontSize: SIZES.xLarge, fontWeight: 'bold' }}>Floors: {building?.numberOfFloor}</Text>
+                                <Text style={{ fontSize: SIZES.xLarge, fontWeight: 'bold' }}>Số tầng: {building?.numberOfFloor}</Text>
                             </View>
                             <View style={styles.box}>
                                 <BedSingle strokeWidth={2} color={ColorPalettes.ocean.primary} size={48}></BedSingle>
-                                <Text style={{ fontSize: SIZES.xLarge, fontWeight: 'bold' }}>Rooms/Floor: {building?.roomEachFloor}</Text>
+                                <Text style={{ fontSize: SIZES.xLarge, fontWeight: 'bold' }}>Số căn hộ mỗi tầng: {building?.roomEachFloor}</Text>
                             </View>
                         </TouchableOpacity>
                     </View>

@@ -24,7 +24,7 @@ const styles = StyleSheet.create({
         marginTop: SIZES.medium,
     },
     total: ({
-        fontSize: SIZES.medium - 2 ,
+        fontSize: SIZES.medium ,
         color: COLORS.primary,
         marginBottom: 4,
         fontWeight: '500',
@@ -47,7 +47,7 @@ const styles = StyleSheet.create({
     date: {
         fontSize: SIZES.small,
         color: "#B3AEC6"
-    }
+    },
 });
 
 export default styles;
