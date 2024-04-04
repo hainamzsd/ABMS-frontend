@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { View, SafeAreaView, ScrollView, Text, FlatList, TouchableOpacity, Image } from 'react-native'
 import Button from '../../../../components/ui/button'
 import Input from '../../../../components/ui/input'
-import { CheckIcon, Select } from 'native-base'
+import { Badge, CheckIcon, Select } from 'native-base'
 import { ServiceCharge } from '../../../../interface/serviceType'
 import axios from 'axios'
 import { API_BASE, actionController } from '../../../../constants/action'
@@ -10,16 +10,34 @@ import { ToastFail } from '../../../../constants/toastMessage'
 import styles from './styles'
 import { moneyFormat } from '../../../../utils/moneyFormat'
 import { router } from 'expo-router'
+import { Cell, TableComponent, TableRow } from '../../../../components/ui/table'
+import { COLORS, SIZES } from '../../../../constants'
+import { ActivityIndicator } from 'react-native-paper'
 
 const BillDashboard = () => {
     const months = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
     const years = [2023, 2024];
+    const headers = ['Căn hộ', 'Trạng thái hoá đơn', 'Thời gian', 'Ghi chú', 'Tổng tiền', ''];
 
     // State
     const [isLoading, setIsLoading] = useState(false);
     const [month, setMonth] = useState('');
     const [year, setYear] = useState('');
     const [serviceCharges, setServiceCharges] = useState<ServiceCharge[]>([]);
+    const [searchQuery, setSearchQuery] = useState("");
+    const [filterRequest, setFilterRequest] = useState<ServiceCharge[]>([]);
+
+    // Search
+    // useEffect(() => {
+    //     if (searchQuery.trim() !== '') {
+    //         const filtered = serviceCharges?.filter(item =>
+    //             item.roomNumber.toLowerCase().includes(searchQuery.toLowerCase())
+    //         )
+    //         setFilterRequest(filtered);
+    //     } else {
+    //         setFilterRequest(serviceCharges);
+    //     }
+    // }, [searchQuery, serviceCharges])
 
     // GET: All Service Charge
     const fetchServiceCharge = async () => {
@@ -117,7 +135,6 @@ const BillDashboard = () => {
         }
     }
 
-
     // UseEffect: GET
     useEffect(() => {
         fetchServiceCharge();
@@ -134,28 +151,22 @@ const BillDashboard = () => {
         }
     }, [month, year])
 
-    const renderItem = ({ item }: { item: any }) => {
+    const renderItem = ({ item }: { item: ServiceCharge }) => {
+        const dateTime = `${item.month}/${item.year}`;
+        const statusTitle = item.status == 6 ? "Chưa thanh toán" : "Đã thanh toán";
+        const moneyBadge = `${moneyFormat(item.totalPrice)} VNĐ`;
         return (
-            <TouchableOpacity
-                style={styles.container}
-                onPress={() => {
-                    router.push({
-                        pathname: `/web/Receptionist/bills/${item.id}`,
-                    })
-                }}
-            >
-                <Text style={styles.roomMaster} numberOfLines={1}>
-                    E1011
-                </Text>
-                <View style={styles.infoContainer}>
-                    <Text style={styles.total} numberOfLines={1}>
-                        {moneyFormat(item?.totalPrice)} VNĐ
-                    </Text>
-                    <Text style={styles.date} numberOfLines={1}>
-                        {item?.month}/{item?.year}
-                    </Text>
-                </View>
-            </TouchableOpacity>
+            <TableRow>
+                <Cell>{item.roomId}</Cell>
+                <Cell><Badge colorScheme={item.status === 6 ? "danger" : "success"}>{statusTitle}</Badge></Cell>
+                <Cell> <Badge colorScheme="warning" alignSelf="flex-start">{dateTime}</Badge></Cell>
+                {/* gioi han description */}
+                <Cell>{item.description}</Cell>
+                <Cell> <Badge colorScheme="info" variant="solid" _text={{ fontSize: 14 }}>{moneyBadge}</Badge></Cell>
+                <Cell>
+                    <Button onPress={() => router.push(`/web/CMB/bills/${item.id}`)} text="Chi tiết" />
+                </Cell>
+            </TableRow>
         )
     }
 
@@ -170,7 +181,7 @@ const BillDashboard = () => {
                             <Button text='Thêm hoá đơn' />
                         </View>
                     </View>
-                    <View>
+                    <View style={{ marginBottom: SIZES.medium }}>
                         <Input placeholder='Tìm kiếm số căn hộ' style={{ paddingVertical: 10 }} />
                         <View style={{ flexDirection: 'row', gap: 8 }}>
                             <Select selectedValue={month} maxWidth={150} style={{ alignSelf: 'flex-start' }} accessibilityLabel="Tháng" placeholder="Tháng" _selectedItem={{
@@ -191,14 +202,15 @@ const BillDashboard = () => {
                             </Select>
                         </View>
                     </View>
-                    <FlatList
-                        data={serviceCharges}
-                        renderItem={renderItem}
-                        keyExtractor={(item) => item?.id}
-                        numColumns={5}
-                        columnWrapperStyle={{ gap: 30 }}
-                    />
-
+                    {isLoading ? <ActivityIndicator size="large" color={COLORS.primary} /> :
+                        <TableComponent headers={headers}>
+                            <FlatList
+                                data={serviceCharges}
+                                renderItem={renderItem}
+                                keyExtractor={(item) => item.id}
+                            />
+                        </TableComponent>
+                    }
                 </ScrollView>
             </SafeAreaView>
         </View>
