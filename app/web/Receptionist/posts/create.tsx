@@ -51,7 +51,7 @@ const CreatePost = () => {
                     'Authorization': `Bearer ${session}`
                 }
             })
-            if (response.status === 200) {
+            if (response.data.statusCode  === 200) {
                 ToastSuccess('Tạo bài viết thành công')
                 setTitle("");
                 setContent("");

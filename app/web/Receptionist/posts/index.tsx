@@ -29,7 +29,7 @@ const PostList = () => {
       const response = await axios.get(`${API_BASE}/${actionController.POST}/get-all?buildingId=${user?.BuildingId}`, {
         timeout: 10000,
       });
-      if (response.status === 200) {
+      if (response.data.statusCode  === 200) {
         setPosts(response.data.data);
       } else {
         ToastFail('Lỗi lấy thông tin các bài viết');

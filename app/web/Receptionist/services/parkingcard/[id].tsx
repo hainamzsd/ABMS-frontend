@@ -82,8 +82,7 @@ const page = () => {
         const response = await axios.get(`https://abmscapstone2024.azurewebsites.net/api/v1/parking-card/get/${item.id}`, {
           timeout: 10000,
         });
-        if (response.status === 200) {
-        
+        if (response.data.statusCode  === 200) {
           setParkingCard(response.data.data)
           setColor(response.data.data.color);
           setBrand(response.data.data.brand);

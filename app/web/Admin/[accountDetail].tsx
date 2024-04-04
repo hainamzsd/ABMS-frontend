@@ -77,7 +77,7 @@ const page = () => {
           timeout: 10000,
         });
         console.log(response);
-        if (response.status === 200) {
+        if (response.data.statusCode  === 200) {
           setAccountData(response.data.data);
           setPhoneNumber(response.data.data.phoneNumber);
           setEmail(response.data.data.email);

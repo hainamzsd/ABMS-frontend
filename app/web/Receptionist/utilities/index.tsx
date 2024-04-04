@@ -48,7 +48,7 @@ const Utilities = () => {
       const response = await axios.get(`https://abmscapstone2024.azurewebsites.net/api/v1/utility/get-all?buildingId=${user?.BuildingId}&status=1`, {
         timeout: 10000,
       });
-      if (response.status === 200) {
+      if (response.data.statusCode  === 200) {
         setUtilities(response.data.data);
       } else {
         Toast.show({
@@ -82,7 +82,7 @@ const Utilities = () => {
       const response = await axios.get(`https://abmscapstone2024.azurewebsites.net/api/v1/utility/get-all?buildingId=${user?.BuildingId}&status=0`, {
         timeout: 10000,
       });
-      if (response.status === 200) {
+      if (response.data.statusCode  === 200) {
         setUtilitiesTrash(response.data.data);
       } else {
         ToastFail('Lỗi lấy thông tin thùng rác')
@@ -117,7 +117,7 @@ const Utilities = () => {
           'Authorization': `Bearer ${session}`
         }
       })
-      if (response.status === 200) {
+      if (response.data.statusCode  === 200) {
         Toast.show({
           type: 'success',
           text1: 'Tạo tiện ích mới thành công',
@@ -170,7 +170,7 @@ const Utilities = () => {
           'Authorization': `Bearer ${session}`
         }
       })
-      if (response.status === 200) {
+      if (response.data.statusCode  === 200) {
         Toast.show({
           type: 'success',
           text1: 'Cập nhập tiện ích thành công',
@@ -213,7 +213,7 @@ const Utilities = () => {
           'Authorization': `Bearer ${session}`
         }
       })
-      if (response.status === 200) {
+      if (response.data.statusCode  === 200) {
         Toast.show({
           type: 'success',
           text1: 'Xoá tiện ích thành công',
@@ -256,7 +256,7 @@ const Utilities = () => {
           'Authorization': `Bearer ${session}`
         }
       })
-      if (response.status === 200) {
+      if (response.data.statusCode  === 200) {
         Toast.show({
           type: 'success',
           text1: 'Xoá tiện ích thành công',

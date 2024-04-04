@@ -53,7 +53,7 @@ const Place = () => {
                     'Authorization': `Bearer ${session}`
                 }
             });
-            if (response.status === 200) {
+            if (response.data.statusCode  === 200) {
                 Toast.show({
                     type: 'success',
                     text1: 'Tạo địa điểm tiện ích thành công',
@@ -99,7 +99,7 @@ const Place = () => {
                     'Authorization': `Bearer ${session}`
                 }
             });
-            if (response.status === 200) {
+            if (response.data.statusCode  === 200) {
                 Toast.show({
                     type: 'success',
                     text1: 'Cập nhật địa điểm tiện ích thành công',
@@ -143,7 +143,7 @@ const Place = () => {
                     'Authorization': `Bearer ${session}`
                 }
             });
-            if (response.status === 200) {
+            if (response.data.statusCode  === 200) {
                 Toast.show({
                     type: 'success',
                     text1: 'Xóa địa điểm tiện ích thành công',
@@ -175,7 +175,7 @@ const Place = () => {
             const response = await axios.get(`https://abmscapstone2024.azurewebsites.net/api/v1/utility/get-utility-detail?utilityId=${params?.id}`, {
                 timeout: 10000,
             });
-            if (response.status === 200) {
+            if (response.data.statusCode  === 200) {
                 setUtilityDetails(response.data.data);
             } else {
                 Toast.show({

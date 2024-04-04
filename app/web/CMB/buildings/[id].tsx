@@ -38,7 +38,7 @@ const BuildingDetail = () => {
         const response = await axios.get(`https://abmscapstone2024.azurewebsites.net/api/v1/building/get/${item.id}`, {
           timeout: 10000,
         });
-        if (response.status === 200) {
+        if (response.data.statusCode  === 200) {
           setName(response.data.data.name);
           setAddress(response.data.data.address);
           setFloors(response.data.data.numberOfFloor);

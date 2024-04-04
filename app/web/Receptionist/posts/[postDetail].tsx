@@ -32,7 +32,7 @@ const PostDetail = () => {
       const response = await axios.get(`https://abmscapstone2024.azurewebsites.net/api/v1/post/getPostId/${item?.postDetail}`, {
         timeout: 10000,
       });
-      if (response.status === 200) {
+      if (response.data.statusCode  === 200) {
         console.log(response.data.data);
         setContent(response.data.data.content);
         setTitle(response.data.data.title);
@@ -81,7 +81,7 @@ const PostDetail = () => {
           'Authorization': `Bearer ${session}`
         }
       });
-      if (response.status === 200) {
+      if (response.data.statusCode  === 200) {
         ToastSuccess('Cập nhập bài viết thành công')
       } else {
         ToastFail('Cập nhập bài viết không thành công')
@@ -107,7 +107,7 @@ const PostDetail = () => {
           'Authorization': `Bearer ${session}`
         }
       });
-      if (response.status === 200) {
+      if (response.data.statusCode  === 200) {
         ToastSuccess('Xoá bài viết thành công')
         router.push({ pathname: `/web/Receptionist/posts/` })
       } else {

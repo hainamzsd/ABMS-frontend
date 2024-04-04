@@ -23,6 +23,12 @@ export const ColorPalettes = {
     sub: "#FFCF96",
     background: "#F6FDC3",
   },
+  cold: {
+    primary: "#176B87",
+    secondary: "#86B6F6",
+    sub: "#B4D4FF",
+    background: "#EEF5FF"
+  }
 };
 
 export const COLORS = {
