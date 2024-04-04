@@ -189,7 +189,7 @@ const BillDashboard = () => {
                                 endIcon: <CheckIcon size="5" />
                             }} mt={1} onValueChange={itemValue => setMonth(itemValue)}>
                                 {months.map((item) => (
-                                    <Select.Item label={`Tháng ${item}`} value={`${item}`} />
+                                    <Select.Item key={item} label={`Tháng ${item}`} value={`${item}`} />
                                 ))}
                             </Select>
                             <Select selectedValue={year} maxWidth={100} accessibilityLabel="Năm" placeholder="Năm" _selectedItem={{
@@ -197,7 +197,7 @@ const BillDashboard = () => {
                                 endIcon: <CheckIcon size="5" />
                             }} mt={1} onValueChange={itemValue => setYear(itemValue)}>
                                 {years.map((item) => (
-                                    <Select.Item label={`${item}`} value={`${item}`} />
+                                    <Select.Item key={item} label={`${item}`} value={`${item}`} />
                                 ))}
                             </Select>
                         </View>
@@ -207,7 +207,7 @@ const BillDashboard = () => {
                             <FlatList
                                 data={serviceCharges}
                                 renderItem={renderItem}
-                                keyExtractor={(item) => item.id}
+                                keyExtractor={item => item.id}
                             />
                         </TableComponent>
                     }
