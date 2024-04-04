@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react'
-import { View, ActivityIndicator, SafeAreaView, ScrollView, Text } from 'react-native'
+import { View, ActivityIndicator, SafeAreaView, ScrollView, Text, FlatList } from 'react-native'
 import Input from '../../../../components/ui/input'
 import Button from '../../../../components/ui/button'
 import { router, useLocalSearchParams, useNavigation } from 'expo-router'
-import { Divider, Select, TextArea } from 'native-base'
+import { Badge, Divider, Select, TextArea } from 'native-base'
 import { CheckIcon } from 'lucide-react-native'
 import { COLORS } from '../../../../constants'
 import { Button as ButtonBase } from 'native-base'
@@ -11,32 +11,40 @@ import axios from 'axios'
 import { API_BASE, actionController } from '../../../../constants/action'
 import { ToastFail, ToastSuccess } from '../../../../constants/toastMessage'
 import { useAuth } from '../../context/AuthContext'
-import { ServiceChargeTotal } from '../../../../interface/serviceType'
+import { ServiceCharge, ServiceChargeTotal } from '../../../../interface/serviceType'
+import { moneyFormat } from '../../../../utils/moneyFormat'
+import { Cell, TableComponent, TableRow } from '../../../../components/ui/table'
 
 const BillDetail = () => {
     const [isLoading, setIsLoading] = useState(false);
+    const [roomId, setRoomId] = useState();
     const [description, setDescription] = useState("");
     const [status, setStatus] = useState('');
     const [bill, setBill] = useState<ServiceChargeTotal>();
+    const [generalBill, setGeneralBill] = useState<ServiceCharge>();
 
     const item = useLocalSearchParams();
     const navigation = useNavigation();
+    const headers = ["Tên chi phí", "Chi phí", "Số lượng", "Thành tiền"]
     const { session } = useAuth();
 
     useEffect(() => {
-        fetchBill();
+        fetchGeneralBill();
     }, [])
+
+    useEffect(() => {
+        fetchBill();
+    }, [roomId])
 
     const fetchBill = async () => {
         setIsLoading(true);
         try {
-            const response = await axios.get(`${API_BASE}/${actionController.SERVICE_CHARGE}/get-total/${item.id}`, {
+            const response = await axios.get(`${API_BASE}/${actionController.SERVICE_CHARGE}/get-total/${roomId}`, {
                 timeout: 10000,
             })
             console.log(response)
             if (response.data.statusCode === 200) {
                 setBill(response.data.data[0]);
-                setStatus(response.data.data[0]?.status);
             } else {
                 ToastFail('Lấy thông tin hoá đơn thất bại');
             }
@@ -52,12 +60,38 @@ const BillDetail = () => {
         }
     }
 
+    const fetchGeneralBill = async () => {
+        setIsLoading(true);
+        try {
+            const response = await axios.get(`${API_BASE}/${actionController.SERVICE_CHARGE}/get/${item.id}`, {
+                timeout: 10000,
+            })
+            console.log(response);
+            if (response.data.statusCode === 200) {
+                setGeneralBill(response.data.data);
+                setRoomId(response.data.data.roomId);
+            } else {
+                ToastFail('Lấy thông tin hoá đơn thất bại');
+            }
+        } catch (error) {
+            if (axios.isCancel(error)) {
+                ToastFail('Hệ thống lỗi! Vui lòng thử lại sau');
+            }
+            console.log("Fail to updating service charge data", error);
+            ToastFail("Lỗi lấy thông tin hoá đơn");
+        }
+        finally {
+            setIsLoading(false);
+        }
+    }
+
+
     const updateBill = async () => {
         setIsLoading(true);
         try {
             const response = await axios.put(`${API_BASE}/${actionController.SERVICE_CHARGE}/update/${item?.id}?description=${description}&status=${status}`, {}, {
                 timeout: 10000,
-                withCredentials: true, 
+                withCredentials: true,
                 headers: {
                     'Authorization': `Bearer ${session}`
                 }
@@ -113,6 +147,19 @@ const BillDetail = () => {
     //     deleteBill();
     // }
 
+    const renderItem = ({ item, index }: { item: any, index: number }) => {
+        const length = bill?.detail.length;
+        const feeBadge = `${moneyFormat(item.fee)} VNĐ`;
+        const totalBadge = `${moneyFormat(item.total)} VNĐ`
+        return (
+            <TableRow>
+                <Cell><Badge variant="outline" colorScheme="info">{item.service_name}</Badge></Cell>
+                <Cell><Badge variant="outline">{feeBadge}</Badge></Cell>
+                <Cell><Badge variant="outline" colorScheme="danger">{item.amount}</Badge></Cell>
+                <Cell><Badge variant="outline" colorScheme="success">{totalBadge}</Badge></Cell>
+            </TableRow>
+        )
+    }
     return (
         <View
             style={{
@@ -148,10 +195,9 @@ const BillDetail = () => {
                         {/* {/* <Text style={{ color: '#9c9c9c', fontSize: 12, marginBottom: 10, }}>Họ và tên không được trống.</Text> */}
                         <Text style={{ color: '#9c9c9c', fontSize: 12, marginBottom: 10, }}>Số căn hộ không thể chỉnh sửa.</Text>
                         <Input
-                            value={"Keme tao"}
+                            value={generalBill?.roomId}
                             style={[{ width: "100%", backgroundColor: COLORS.buttonDisable }]}
                             readOnly
-
                         ></Input>
 
                     </View>
@@ -160,14 +206,14 @@ const BillDetail = () => {
                             <Text style={{ marginBottom: 10, fontWeight: "600", fontSize: 16 }}>
                                 Tháng
                             </Text>
-                            <Input style={{ backgroundColor: COLORS.buttonDisable }} value={`${bill?.month}`}/>
+                            <Input style={{ backgroundColor: COLORS.buttonDisable }} value={`${generalBill?.month}`} />
 
                         </View>
                         <View style={{ width: '20%' }}>
                             <Text style={{ marginBottom: 10, fontWeight: "600", fontSize: 16 }}>
                                 Năm
                             </Text>
-                            <Input style={{ backgroundColor: COLORS.buttonDisable }} value={`${bill?.year}`}
+                            <Input style={{ backgroundColor: COLORS.buttonDisable }} value={`${generalBill?.year}`}
                             />
 
                         </View>
@@ -175,12 +221,12 @@ const BillDetail = () => {
                             <Text style={{ marginBottom: 7, fontWeight: "600", fontSize: 16 }}>
                                 Trạng thái hoá đơn
                             </Text>
-                            <Select selectedValue={`${bill?.status}`} minWidth="200" accessibilityLabel="Choose Service" placeholder="Choose Service" _selectedItem={{
+                            <Select selectedValue={`${generalBill?.status}`} minWidth="200" accessibilityLabel="Choose Service" placeholder="Choose Service" _selectedItem={{
                                 bg: "teal.600",
                                 endIcon: <CheckIcon size="5" />
                             }} mt={1} onValueChange={itemValue => setStatus(itemValue)}>
-                                <Select.Item label="Hoạt động" value="6" />
-                                <Select.Item label="Ngưng hoạt động" value="5" />
+                                <Select.Item label="Chưa thanh toán" value="6" />
+                                <Select.Item label="Đã thanh toán" value="5" />
                             </Select>
                         </View>
                     </View>
@@ -197,10 +243,27 @@ const BillDetail = () => {
                             onChangeText={text => setDescription(text)}
                             w="100%" maxW="100%" />
                     </View>
-                    <Divider mt={4} />
+
+                    <View style={{ marginVertical: 12 }}>
+                        <Text style={{ fontWeight: "600", fontSize: 16 }}>Chi tiết hoá đơn</Text>
+                    </View>
+                    <TableComponent headers={headers}>
+                        <FlatList
+                            data={bill?.detail}
+                            renderItem={renderItem}
+                            keyExtractor={(item) => item.service_name}
+                        />
+                        <TableRow>
+                            <Cell>Tổng hoá đơn</Cell>
+                            <Cell>...</Cell>
+                            <Cell>...</Cell>
+                            <Cell><Badge variant="outline" colorScheme="success" _text={{fontSize: 14}}>{`${moneyFormat(bill?.total || 0)} VNĐ`}</Badge></Cell>
+                        </TableRow>
+                    </TableComponent>
+                    {/* <Divider mt={4} /> */}
                     <View style={{ flexDirection: 'row', marginTop: 10, gap: 8, justifyContent: 'center' }}>
                         <ButtonBase colorScheme="success" onPress={handleUpdateBill}>Cập nhập hoá đơn</ButtonBase>
-                        {/* <ButtonBase colorScheme="danger" onPress={deleteBill}>Xoá hoá đơn</ButtonBase> */}
+                        {/* <ButtonBase colorScheme="danger" onPress={handleDeleteBill}>Xoá hoá đơn</ButtonBase> */}
                     </View>
                 </ScrollView>
             </SafeAreaView>
