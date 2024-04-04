@@ -227,7 +227,7 @@ const parkingCardRegisterScreen = () => {
                 const createPost = await axios.post('https://abmscapstone2024.azurewebsites.net/api/v1/notification/create-for-receptionist',{
                 title: `Cư dân ${user.FullName} đăng ký sử dụng thẻ đỗ xe`,
                 buildingId: user.BuildingId,
-                content: `http://localhost:8081/web/Receptionist/services/parkingcard/${response.data.data}`,
+                content: `/web/Receptionist/services/parkingcard/${response.data.data}`,
             },
             {
               timeout: 10000, 

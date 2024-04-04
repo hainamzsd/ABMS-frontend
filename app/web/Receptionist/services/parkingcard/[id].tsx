@@ -14,6 +14,7 @@ import { useRoute } from '@react-navigation/native';
 import { FlatList } from 'native-base';
 import {firebase} from '../../../../../config'
 import * as Yup from 'yup';
+import { jwtDecode } from 'jwt-decode';
 const StatusData = [
   { label: "Phê duyệt", value: 1 },
   { label: "Từ chối", value: 4 },
@@ -43,6 +44,7 @@ interface ParkingCard{
     fullName:string;
     room:{
       roomNumber:string;
+      id:string;
     }
 }
 }
@@ -67,6 +69,7 @@ const page = () => {
   const [color, setColor] = useState("");
   const [brand, setBrand] = useState("");
   const {session} = useAuth();
+  const user:any = jwtDecode(session as string);
   const [reply, setReply] = useState("");
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
   const disableBtn = status===undefined || status==4 && reply=="";
@@ -153,6 +156,18 @@ const page = () => {
           }
         });
         if (response.data.statusCode == 200) {
+          const createNotification = await axios.post('https://abmscapstone2024.azurewebsites.net/api/v1/notification/create-for-resident',{
+            title: `Đơn đăng kí thẻ gửi xe đã ${status==3?'phê duyệt':'từ chối'}`,
+            buildingId: user.BuildingId,
+            content: `Đơn đăng kí thẻ gửi xe đã ${status==3?'phê duyệt':'từ chối'}`,
+            roomId: parkingcard?.resident.room.id
+        },
+        {
+            timeout: 10000, 
+            headers:{
+                'Authorization': `Bearer ${session}`
+            }
+          },)
             Toast.show({
                 type: 'success',
                 text1: 'Cập nhật phiếu đăng ký thành công',

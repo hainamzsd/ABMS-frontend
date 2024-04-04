@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { SafeAreaView, Text, TouchableOpacity, View, FlatList, StyleSheet, Pressable, ActivityIndicator } from 'react-native'
+import { SafeAreaView, Text, TouchableOpacity, View, FlatList, StyleSheet, Pressable, ActivityIndicator, TextInput } from 'react-native'
 import { UtilityDetail } from '../../../../../interface/utilityType';
 import Toast from 'react-native-toast-message';
 import axios from 'axios';
@@ -12,17 +12,22 @@ import { COLORS, ColorPalettes, SIZES } from '../../../../../constants';
 import Button from '../../../../../components/ui/button';
 import { Modal, Button as ButtonNative, Input, VStack, Text as TextNative, FormControl, Center } from "native-base";
 import { useAuth } from '../../../context/AuthContext';
+import * as Yup from 'yup'
 
+const validationSchema = Yup.object().shape({
+    place: Yup.string().required("Không được để trống")
+})
 const Place = () => {
     const params = useLocalSearchParams();
     const { session } = useAuth();
-
+    const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
     const [isLoading, setIsLoading] = useState(false);
-    const [utilityDetails, setUtilityDetails] = useState<UtilityDetail[]>();
+    const [utilityDetails, setUtilityDetails] = useState<UtilityDetail[]>([]);
     const [modalVisible, setModalVisible] = useState(false);
     const [modalUpdate, setModalUpdate] = useState(false);
     const [modalDelete, setModalDelete] = useState(false);
     const [newPlace, setNewPlace] = useState("");
+    const [updatePlace, setUpdatePlace] = useState("");
     const [utilityDetailId, setUtilityDetailId] = useState("");
 
 
@@ -32,6 +37,9 @@ const Place = () => {
 
     const createUtilityDetail = async () => {
         setIsLoading(true);
+        await validationSchema.validate({
+           place:newPlace
+        }, { abortEarly: false });
         const bodyData = {
             name: newPlace,
             utility_id: params?.id
@@ -49,6 +57,7 @@ const Place = () => {
                     text1: 'Tạo địa điểm tiện ích thành công',
                     position: 'bottom'
                 })
+                setValidationErrors({});
                 fetchUtilityDetail();
             } else {
                 Toast.show({
@@ -57,7 +66,14 @@ const Place = () => {
                     position: 'bottom'
                 })
             }
-        } catch (error) {
+        } catch (error:any) {
+            if (error.name === 'ValidationError') {
+                const errors:any = {};
+                error.inner.forEach((err: any) => {
+                  errors[err.path] = err.message;
+                });
+                setValidationErrors(errors);
+              }
             Toast.show({
                 type: 'error',
                 text1: 'Lỗi tạo địa điểm tiện ích mới, vui lòng thử lại sau!',
@@ -71,8 +87,11 @@ const Place = () => {
 
     const updateUtilityDetail = async () => {
         setIsLoading(true);
+        await validationSchema.validate({
+            place:updatePlace
+         }, { abortEarly: false });
         try {
-            const response = await axios.put(`https://abmscapstone2024.azurewebsites.net/api/v1/utility/update-utility-detail/${utilityDetailId}?name=${newPlace}`, {}, {
+            const response = await axios.put(`https://abmscapstone2024.azurewebsites.net/api/v1/utility/update-utility-detail/${utilityDetailId}?name=${updatePlace}`,{}, {
                 timeout: 10000,
                 headers: {
                     'Authorization': `Bearer ${session}`
@@ -82,21 +101,30 @@ const Place = () => {
                 setNewPlace("");
                 Toast.show({
                     type: 'success',
-                    text1: 'Cập nhập địa điểm tiện ích thành công',
+                    text1: 'Cập nhật địa điểm tiện ích thành công',
                     position: 'bottom'
                 })
+                setValidationErrors({});
+                setUpdatePlace("");
                 fetchUtilityDetail();
             } else {
                 Toast.show({
                     type: 'error',
-                    text1: 'Cập nhập địa điểm tiện ích thất bại',
+                    text1: 'Cập nhật địa điểm tiện ích thất bại',
                     position: 'bottom'
                 })
             }
-        } catch (error) {
+        } catch (error:any) {
+            if (error.name === 'ValidationError') {
+                const errors:any = {};
+                error.inner.forEach((err: any) => {
+                  errors[err.path] = err.message;
+                });
+                setValidationErrors(errors);
+              }
             Toast.show({
                 type: 'error',
-                text1: 'Lỗi cập nhập địa điểm tiện ích mới, vui lòng thử lại sau!',
+                text1: 'Lỗi cập nhật địa điểm tiện ích mới, vui lòng thử lại sau!',
                 position: 'bottom'
             })
         } finally {
@@ -209,15 +237,49 @@ const Place = () => {
 
         )
     }
+
+    const [searchQuery, setSearchQuery] = useState('');
+        const [filteredRequests, setFilteredRequests] = useState<UtilityDetail[]>([]);
+    useEffect(() => {
+      if (searchQuery.trim() !== '' && utilityDetails) {
+        const filtered = utilityDetails.filter(item =>
+          item.name.toLowerCase().includes(searchQuery.toLowerCase())
+        );
+        setFilteredRequests(filtered);
+      } else {
+        setFilteredRequests(utilityDetails);
+      }
+    }, [searchQuery, utilityDetails]);
+  
+
+
     return (
         <View style={{ flex: 1, backgroundColor: '#F9FAFB' }}>
             <SafeAreaView style={{ flex: 1 }}>
+               
+           
                 <View style={{ paddingHorizontal: 30, paddingTop: 30 }}>
+                {router.canGoBack() &&
+                 <Button
+                 style={{ width: 100, marginBottom: 20 }}
+                 text="Quay Lại"
+                 onPress={() => router.back}
+             ></Button>}
                     <View style={{ marginBottom: 20 }}>
                         <Text style={{ fontWeight: 'bold', fontSize: 20, marginBottom: 5 }}>Danh sách vị trí tiện ích</Text>
                         <Text>Thông tin các vị trí tiện ích</Text>
                     </View>
-                    <SearchWithButton placeholder="Tìm kiếm tên vị trí tiện ích" />
+                    <View style={styles.searchContainer}>
+                    <View style={styles.searchWrapper}>
+                            <TextInput
+                                 style={styles.searchInput}
+                                 placeholderTextColor={'black'}
+                                 placeholder="Tìm theo theo họ tên hoặc số điện thoại"
+                                 value={searchQuery}
+                                 onChangeText={(text) => setSearchQuery(text)}
+                            />
+                        </View>
+                        </View>
                     <View>
                         <Button text="Thêm địa điểm tiện ích" onPress={() =>
                             setModalVisible(!modalVisible)} />
@@ -226,7 +288,7 @@ const Place = () => {
                 {isLoading && <ActivityIndicator size={'large'} color={'#171717'}></ActivityIndicator>}
                 <FlatList
                     style={{ paddingHorizontal: 30, paddingTop: 30 }}
-                    data={utilityDetails}
+                    data={filteredRequests}
                     renderItem={renderItem}
                     keyExtractor={item => item?.id}
                 />
@@ -240,7 +302,10 @@ const Place = () => {
                     <Modal.Body>
                         <FormControl mt="3">
                             <FormControl.Label>Tên địa điểm</FormControl.Label>
-                            <Input placeholder="Nhập tên địa điểm" onChangeText={(text) => setNewPlace(text)} />
+                            <Input value={newPlace} onChangeText={(text) => setNewPlace(text)} />
+                            {validationErrors.place  && (
+                            <Text style={{color:'red'}}>{validationErrors.place}</Text>
+                        )}
                         </FormControl>
                     </Modal.Body>
                     <Modal.Footer>
@@ -262,8 +327,10 @@ const Place = () => {
                     <Modal.Body>
                         <FormControl mt="3">
                             <FormControl.Label>Tên địa điểm</FormControl.Label>
-                            <Input placeholder={`${newPlace}`} onChangeText={(text) => setNewPlace(text)}/>
-                            {/* placeholder={`${newPlace}`} */}
+                            <Input value={updatePlace} onChangeText={(text) => setUpdatePlace(text)} />
+                            {validationErrors.place  && (
+                            <Text style={{color:'red'}}>{validationErrors.place}</Text>
+                        )}
                         </FormControl>
                     </Modal.Body>
                     <Modal.Footer>
@@ -271,7 +338,7 @@ const Place = () => {
                             updateUtilityDetail();
                             setModalUpdate(false);
                         }}>
-                            Cập nhập
+                            Cập nhật
                         </ButtonNative>
                     </Modal.Footer>
                 </Modal.Content>
@@ -348,5 +415,28 @@ const styles = StyleSheet.create({
     date: {
         fontSize: 12,
         color: '#999999',
+    },
+    searchContainer: {
+        justifyContent: "center",
+        alignItems: "center",
+        flexDirection: "row",
+        marginVertical: SIZES.medium,
+        height: 50,
+    },
+    searchWrapper: {
+        flex: 1,
+        backgroundColor: '#ffffff',
+        marginRight: SIZES.small,
+        justifyContent: "center",
+        alignItems: "center",
+        height: "100%",
+    },
+    searchInput: {
+        width: "100%",
+        height: "100%",
+        paddingHorizontal: SIZES.medium,
+        borderWidth: 1,
+        borderRadius: 10,
+        borderColor:'#9c9c9c'
     },
 });

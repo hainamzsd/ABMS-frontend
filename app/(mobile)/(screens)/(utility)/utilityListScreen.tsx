@@ -6,7 +6,7 @@ import { useTheme } from "../../context/ThemeContext";
 import SHADOW from "../../../../constants/shadow";
 import { CircleDotDashedIcon, FileTerminal, Settings } from "lucide-react-native";
 import { router } from "expo-router";
-import ICON_MAP from "../../../../constants/iconUtility";
+import {ICON_MAP} from "../../../../constants/iconUtility";
 import { useEffect, useState } from "react";
 import axios from 'axios';
 import LoadingComponent from "../../../../components/resident/loading";
@@ -46,7 +46,6 @@ export default function UtilityList() {
   const [utilities, setUtilities] = useState<Utility[]>([]);
   const{session } = useSession();
   const user:user = jwtDecode(session as string);
-  
   useEffect(() => {
     const fetchData = async () => {
       setIsLoading(true);
@@ -79,6 +78,25 @@ export default function UtilityList() {
 
     fetchData();
   }, []);
+
+  const [alert,setAlert]=useState(false);
+  const handlePress = (item:any) => {
+    const currentTime = new Date();
+    const currentHour = currentTime.getHours();
+    if (currentHour >= 8 && currentHour < 17) {
+      router.push({
+        pathname: `/(mobile)/(screens)/(utility)/schedules/utilityPlace`,
+        params: {
+          id: item.id,
+          location: item.location,
+          utilityName: item.name,
+          price: item.pricePerSlot,
+        },
+      });
+    } else {
+      setAlert(true);
+    }
+  }
   const renderItem = ({item}:{item:Utility}) => {
     const icon = ICON_MAP[item.name];
     return(
@@ -109,6 +127,11 @@ export default function UtilityList() {
   )};
   return (
     <>
+    <AlertWithButton
+     title={t("Notification")}
+     visible={alert}
+     content={t("Navigation to utility schedules is allowed only between 8 AM and 5 PM"+".")} onClose={() =>setAlert(false)}
+    ></AlertWithButton>
       <AlertWithButton 
       title={t("Error")}
       visible={showError}

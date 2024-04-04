@@ -6,11 +6,12 @@ import Input from '../../../../../components/ui/input';
 import { statusForReceptionist } from '../../../../../constants/status';
 import axios from 'axios';
 import Toast from 'react-native-toast-message';
-import { Reservation } from '../../../../../interface/utilityType';
 import { Dropdown } from 'react-native-element-dropdown';
 import { useAuth } from '../../../context/AuthContext';
 import { Room } from '../../../../../interface/roomType';
 import Swal from 'sweetalert2';
+import { jwtDecode } from 'jwt-decode';
+import { Reservation } from '../../../../../interface/utilityType';
 
 const StatusData = [
     { label: "Phê duyệt", value: 3 },
@@ -26,8 +27,8 @@ const UtilityDetail = () => {
     const navigation = useNavigation();
     const disableBtn = status === undefined;
     const { session } = useAuth();
+    const user:any = jwtDecode(session as string);
     const [room, setRoom] = useState<Room>();
-
     useEffect(() => {
         fetchData();
     }, [session])
@@ -112,6 +113,18 @@ const UtilityDetail = () => {
             // console.log(response);
 
             if (response.data.statusCode == 200) {
+                const createNotification = await axios.post('https://abmscapstone2024.azurewebsites.net/api/v1/notification/create-for-resident',{
+            title: `Đơn đăng kí sử dụng tiện ích ${utility?.utility} đã ${status==3?'phê duyệt':'từ chối'}`,
+            buildingId: user.BuildingId,
+            content: `Đơn đăng kí sử dụng tiện ích ${utility?.utility} đã ${status==3?'phê duyệt':'từ chối'}`,
+            roomId:utility?.room_id
+        },
+        {
+            timeout: 10000, 
+            headers:{
+                'Authorization': `Bearer ${session}`
+            }
+          },)
                 Toast.show({
                     type: 'success',
                     text1: 'Phê duyệt phiếu đặt chỗ thành công',
