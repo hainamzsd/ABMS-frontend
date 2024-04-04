@@ -19,7 +19,7 @@ const PostDetail = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [content, setContent] = useState("");
   const [title, setTitle] = useState("");
-  const [image, setImage] = useState("");
+  const [image, setImage] = useState<any>();
   const [type, setType] = useState("");
 
   const navigation = useNavigation();
@@ -127,7 +127,7 @@ const PostDetail = () => {
           type: 'error',
           position: 'bottom',
           text1: 'Lỗi',
-          text2: 'Không thể thêm ảnh',
+          text2: 'Không thể cập nhập ảnh',
           autoHide: true,
         });
         return;
@@ -197,15 +197,6 @@ const PostDetail = () => {
     fetchPost();
   }, [])
 
-  const handleChoosePhoto = () => {
-    let result = ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.All,
-      allowsEditing: true,
-      aspect: [4, 3],
-      quality: 1,
-    })
-  }
-
   return (
     <View style={{ padding: SIZES.x30, flex: 1, backgroundColor: "#F9FAFB" }}>
       <SafeAreaView >
@@ -262,6 +253,7 @@ const PostDetail = () => {
                 </ButtonBase>
               </FormControl>
               <Image mt={2} source={{ uri: image }} size="md" />
+
               <FormControl>
                 <Divider mt={1} />
 
