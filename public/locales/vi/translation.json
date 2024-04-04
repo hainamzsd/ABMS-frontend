@@ -228,6 +228,7 @@
     "Manage feedback":"Quản lý phản hồi",
     "Feedback information":"Thông tin phản hồi",
     "Response":"Phản hồi",
-    "Responded":"Đã phản hồi"
+    "Responded":"Đã phản hồi",
+    "Full name must be at least 10 characters":"Họ và tên phải ít nhất 10 ký tự"
   }
 }

@@ -31,6 +31,7 @@ const Login: React.FC = () => {
     try {
      
       const token = await signIn(phone, password)
+      console.log(token);
       if(token.data.statusCode===500) {
         Toast.show({
           type: "error",

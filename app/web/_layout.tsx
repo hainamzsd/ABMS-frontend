@@ -6,12 +6,20 @@ import Toast from 'react-native-toast-message';
 import { View } from "react-native";
 import { NativeBaseProvider } from "native-base";
 import { ThemeProvider } from "../(mobile)/context/ThemeContext";
+import { LinearGradient } from "expo-linear-gradient";
 export default function Layout() {
+  
+const config = {
+  dependencies: {
+    'linear-gradient': LinearGradient
+  }
+};
+
   return (
     <PaperProvider>
       <AuthProvider>
         <ThemeProvider> 
-         <NativeBaseProvider>
+         <NativeBaseProvider config={config}>
           <Slot />
          </NativeBaseProvider>
         </ThemeProvider>

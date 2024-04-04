@@ -61,7 +61,7 @@ export const AuthProvider = ({ children }: any) => {
 
   const login = async (phone: string, password: string) => {
     try {
-      const result = await axios.post(`https://abmscapstone2024.azurewebsites.net/api/v1/account/loginByPhone`, { 
+      const result = await axios.post(`https://abmscapstone2024.azurewebsites.net/api/v1/account/login-by-phone`, { 
         phoneNumber: phone,
         password:password
        },{
