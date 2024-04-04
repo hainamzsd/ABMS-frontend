@@ -105,7 +105,7 @@ const index = () => {
             } else {
                 Toast.show({
                     type: 'error',
-                    text1: 'Tạo  đường dây nóng không thành công',
+                    text1: 'Tạo đường dây nóng không thành công',
                     position: 'bottom',
                 })
             }
@@ -131,6 +131,8 @@ const index = () => {
             })
         } finally {
             setIsLoading(false)
+            setShowModalCreate(false);
+            
         }
     }
     const [nameUpdate, setNameUpdate]= useState("");
@@ -187,7 +189,6 @@ const index = () => {
             setIsLoading(false)
             setSelectedItem(undefined);
             setShowModal(false);
-
         }
     }
 
@@ -214,7 +215,7 @@ const index = () => {
             } else {
                 Toast.show({
                     type: 'error',
-                    text1: 'Xóa  đường dây nóng không thành công',
+                    text1: 'Xóa đường dây nóng không thành công',
                     position: 'bottom',
                     
                 })
@@ -280,7 +281,7 @@ const index = () => {
                     </Modal.Footer>
                 </Modal.Content>
             </Modal>
-            <Modal isOpen={showModalCreate} onClose={() => setShowModal(false)}>
+            <Modal isOpen={showModalCreate} onClose={() => setShowModalCreate(false)}>
                 <Modal.Content maxWidth="400px">
                     <Modal.CloseButton onPress={() => setShowModalCreate(false)} />
                     <Modal.Header>Tạo mới loại đường dây nóng</Modal.Header>
@@ -375,7 +376,13 @@ const index = () => {
                                                     style={{ marginRight: 5 }}
                                                     onPress={() => {
                                                         setSelectedItem(item);
-                                                        setShowModal(true)}}
+                                                        setShowModal(true);
+                                                        if(selectedItem){
+                                                            setNameUpdate(selectedItem?.name);
+                                                            setPhoneUpdate(selectedItem?.phoneNumber);
+                                                        }
+                                                    }}
+                                                        
                                                 />
                                                 <Button
                                                     text="Xóa"
@@ -406,9 +413,9 @@ const index = () => {
                 <AlertDialog leastDestructiveRef={cancelRef} isOpen={isOpen} onClose={onClose}>
                     <AlertDialog.Content>
                         <AlertDialog.CloseButton />
-                        <AlertDialog.Header>Xóa loại tiện ích</AlertDialog.Header>
+                        <AlertDialog.Header>Xóa đưuòng dây nóng</AlertDialog.Header>
                         <AlertDialog.Body>
-                            Hành động này sẽ xóa tiện ích đã chọn. Bạn có xác nhận xóa không?
+                            Hành động này sẽ xóa đường dây nóng đã chọn. Bạn có xác nhận xóa không?
                         </AlertDialog.Body>
                         <AlertDialog.Footer>
                                 <Button text='Hủy' style={{marginRight:5}} onPress={onClose}>

@@ -101,12 +101,10 @@ const Checkout = () => {
           );
       
           if(response.data.statusCode==200){
-            const createPost = await axios.post('https://abmscapstone2024.azurewebsites.net/api/v1/post/createReceptionist',{
+            const createPost = await axios.post('https://abmscapstone2024.azurewebsites.net/api/v1/notification/create-for-receptionist',{
                 title: `Phòng ${room[0].roomNumber} đăng ký sử dụng tiện ích ${item.utilityName} - ${item.utilityDetail} đã được tạo bởi ${user.FullName}`,
                 buildingId: user.BuildingId,
-                content: `Phòng ${room[0].roomNumber} đăng ký sử dụng tiện ích ${item.utilityName} - ${item.utilityDetail} đã được tạo bởi ${user.FullName}`,
-                image: "",
-                type: 7
+                content: `http://localhost:8081/web/Receptionist/utilities/reservation/${response.data.data}`,
             },
             {
                 timeout: 10000, 
@@ -114,7 +112,6 @@ const Checkout = () => {
                     'Authorization': `Bearer ${session}`
                 }
               },)
-            console.log(createPost);
             setAlertConfirmVisible(true);
             setTimeout(() => {
               setAlertConfirmVisible(false);

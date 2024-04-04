@@ -168,6 +168,16 @@
           email: email
         }, { abortEarly: false });
         setErrors({});
+        console.log({
+          userName: userName,
+          fullName: fullName,
+          email: email,
+          avatar: uri,
+          building_id: userInfo.BuildingId,
+          phone: user?.phoneNumber,
+          role: 1,
+        })
+        console.log(userInfo.Id)
         const response = await axios.put(`https://abmscapstone2024.azurewebsites.net/api/v1/account/update/${userInfo.Id}`, {
           user_name: userName,
           full_name: fullName,

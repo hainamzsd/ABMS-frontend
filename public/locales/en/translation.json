@@ -227,7 +227,8 @@
     "Manage feedback":"Manage feedback",
     "Feedback information":"Feedback information",
     "Response":"Response",
-    "Responded":"Responded"
+    "Responded":"Responded",
+    "Full name must be at least 10 characters":"Full name must be at least 10 characters"
     
   }
 }

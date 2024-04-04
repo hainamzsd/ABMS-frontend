@@ -2,7 +2,7 @@ export interface Room {
   id: string;
   accountId: string;
   buildingId: string | null;
-  roomNumber: string | null;
+  roomNumber: string;
   roomArea: number;
   numberOfResident: number;
   createUser: string;

@@ -142,12 +142,10 @@ const [errors, setErrors] = useState<any>({});
 
       console.log(response);
       if (response.data.statusCode == 200) {
-        const createPost = await axios.post('https://abmscapstone2024.azurewebsites.net/api/v1/post/createReceptionist',{
+        const createPost = await axios.post('https://abmscapstone2024.azurewebsites.net/api/v1/notification/create-for-receptionist',{
           title: `Phòng ${room[0].roomNumber} đăng ký thi công`,
           buildingId: user.BuildingId,
-          content:  `Phòng ${room[0].roomNumber} đăng ký thi công`,
-          image: "",
-          type: 7
+          content: `http://localhost:8081/web/Receptionist/services/construction/${response.data.data}`,
       },
       {
           timeout: 10000, 

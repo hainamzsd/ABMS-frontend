@@ -55,6 +55,11 @@ const _layout = () => {
       name: "Quản lý hoá đơn",
       href: "/web/CMB/bills",
     },
+    {
+      name: "Quản lý thu chi",
+      href: "/web/CMB/fundexpenses/expense",
+
+    },
   ];
   const user = {
     name: "John Doe",

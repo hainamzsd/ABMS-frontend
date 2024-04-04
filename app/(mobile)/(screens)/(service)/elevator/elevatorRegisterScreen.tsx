@@ -133,12 +133,10 @@ const ElevatorRegisterScreen = () => {
         setErrorText(t("There has been a request to use the elevator at this time, please choose another time")+".");
       }
       if (response.data.statusCode == 200) {
-        const createPost = await axios.post('https://abmscapstone2024.azurewebsites.net/api/v1/post/createReceptionist',{
+        const createPost = await axios.post('https://abmscapstone2024.azurewebsites.net/api/v1/notification/create-for-receptionist',{
           title: `Phòng ${room[0].roomNumber} đăng ký sử dụng thang máy bắt đầu vào lúc ${moment.utc(sendStartDate).format('DD/MM/YYYY HH:mm')}`,
           buildingId: user.BuildingId,
-          content:  `Phòng ${room[0].roomNumber} đăng ký sử dụng thang máy bắt đầu vào lúc ${sendStartDate}`,
-          image: "",
-          type: 7
+          content: `http://localhost:8081/web/Receptionist/services/elevator/${response.data.data}`,
       },
       {
           timeout: 10000, 
