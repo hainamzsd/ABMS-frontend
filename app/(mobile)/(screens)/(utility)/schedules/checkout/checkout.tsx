@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, SafeAreaView, StyleSheet, ScrollView, Pressable } from 'react-native';
 import Header from '../../../../../../components/resident/header';
-import { Redirect, useLocalSearchParams, useNavigation, Navigator } from 'expo-router';
+import { Redirect, useLocalSearchParams, useNavigation, Navigator, router } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '../../../../context/ThemeContext';
 import SHADOW from '../../../../../../constants/shadow';
@@ -104,7 +104,7 @@ const Checkout = () => {
             const createPost = await axios.post('https://abmscapstone2024.azurewebsites.net/api/v1/notification/create-for-receptionist',{
                 title: `Phòng ${room[0].roomNumber} đăng ký sử dụng tiện ích ${item.utilityName} - ${item.utilityDetail} đã được tạo bởi ${user.FullName}`,
                 buildingId: user.BuildingId,
-                content: `http://localhost:8081/web/Receptionist/utilities/reservation/${response.data.data}`,
+                content: `/web/Receptionist/utilities/reservation/${response.data.data}`,
             },
             {
                 timeout: 10000, 

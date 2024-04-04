@@ -16,11 +16,6 @@ import { statusUtility } from '../../../../../constants/status';
 import { useIsFocused } from '@react-navigation/native';
 import AlertWithButton from '../../../../../components/resident/AlertWithButton';
 import LoadingComponent from '../../../../../components/resident/loading';
-export const MOCK_DATA = [
-  { id: 1, name: 'Xay nha', description: 'Description for item 1' },
-  { id: 2, name: 'Hoa', description: 'Description for item 2Description for item 2Description for item 2Description for item 2' },
-  { id: 3, name: 'Item 3', description: 'Description for item 3' },
-];
 
 interface ParkingCard{
     id: string;
@@ -169,7 +164,7 @@ const loadMoreItems = () => {
                     <Text style={{color:"#9c9c9c"}}>{t("Create date")}: {moment.utc(item.createTime).format("DD-MM-YYYY")}</Text>
                 </View>
                 <View style={{
-                    padding: 10, borderRadius: 20, backgroundColor: theme.primary,
+                    padding: 10, borderRadius: 20, backgroundColor: statusUtility[item?.status]?.color,
                     justifyContent: 'center', height: 40
                 }}>
                     <Text style={{ fontWeight: '600',color:'white' }}>{t(statusUtility[item?.status]?.status)}</Text>

@@ -83,18 +83,7 @@ const page = () => {
           timeout: 10000,
         });
         if (response.status === 200) {
-          const createNotification = await axios.post('https://abmscapstone2024.azurewebsites.net/api/v1/notification/create-for-resident',{
-            title: `Đơn đăng kí thẻ gửi xe đã ${status==3?'phê duyệt':'từ chối'}`,
-            buildingId: user.BuildingId,
-            content: `Đơn đăng kí thẻ gửi xe đã ${status==3?'phê duyệt':'từ chối'}`,
-            roomId: parkingcard?.resident.room.id
-        },
-        {
-            timeout: 10000, 
-            headers:{
-                'Authorization': `Bearer ${session}`
-            }
-          },)
+        
           setParkingCard(response.data.data)
           setColor(response.data.data.color);
           setBrand(response.data.data.brand);
@@ -168,6 +157,18 @@ const page = () => {
           }
         });
         if (response.data.statusCode == 200) {
+          const createNotification = await axios.post('https://abmscapstone2024.azurewebsites.net/api/v1/notification/create-for-resident',{
+            title: `Đơn đăng kí thẻ gửi xe đã ${status==3?'phê duyệt':'từ chối'}`,
+            buildingId: user.BuildingId,
+            content: `Đơn đăng kí thẻ gửi xe đã ${status==3?'phê duyệt':'từ chối'}`,
+            roomId: parkingcard?.resident.room.id
+        },
+        {
+            timeout: 10000, 
+            headers:{
+                'Authorization': `Bearer ${session}`
+            }
+          },)
             Toast.show({
                 type: 'success',
                 text1: 'Cập nhật phiếu đăng ký thành công',

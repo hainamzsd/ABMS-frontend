@@ -1,5 +1,5 @@
 import { Link, Redirect, router, useNavigation } from "expo-router";
-import { SafeAreaView, Text, View, ScrollView, TextInput, TouchableOpacity, Image, FlatList, ActivityIndicator } from "react-native";
+import { SafeAreaView, Text, View, ScrollView, TextInput, TouchableOpacity, Image, FlatList, ActivityIndicator, Platform } from "react-native";
 import Button from "../../../../../components/ui/button";
 import { Cell, TableComponent, TableRow } from "../../../../../components/ui/table";
 import styles from "../../accounts/styles";
@@ -10,9 +10,11 @@ import { paginate } from "../../../../../utils/pagination";
 import { useAuth } from "../../../context/AuthContext";
 import { jwtDecode } from "jwt-decode";
 import moment from "moment";
-import { AlertDialog, FormControl, Input, Modal } from "native-base";
+import { AlertDialog, FormControl, HStack, Input, Modal } from "native-base";
 import * as Yup from "yup"
 import { formatVND } from "../../../../../utils/moneyFormat";
+import { Download } from "lucide-react-native";
+import * as FileSystem from 'expo-file-system';
 interface Expense {
     id: string;
     buildingId: string;
@@ -76,7 +78,25 @@ export default function ExpenseManagement() {
 
         fetchData();
     }, []);
-    
+    const handleDownload = async () => {
+        try {
+          const apiUrl = `https://abmscapstone2024.azurewebsites.net/api/v1/expense/export-data/${user.BuildingId}`;
+          if (Platform.OS === 'web') {
+            window.open(apiUrl, '_self');
+          } else {
+            const fileInfo = await FileSystem.downloadAsync(
+              apiUrl,
+              FileSystem.documentDirectory + 'accounts.xlsx',
+              {
+                headers: {
+                },
+              }
+            );}
+        } catch (error) {
+          console.error('Failed to download the file:', error);
+        }
+  };
+
     //search box
     const [searchQuery, setSearchQuery] = useState('');
     const [filteredRequests, setFilteredRequests] = useState<Expense[]>([]);
@@ -400,13 +420,14 @@ export default function ExpenseManagement() {
                                 onChangeText={(text) => setSearchQuery(text)}
                             />
                         </View>
-                        {/* <TouchableOpacity style={styles.searchBtn} onPress={() => { }}>
-                            <Image
-                                source={icons.search}
-                                resizeMode="contain"
-                                style={styles.searchBtnIcon}
-                            ></Image>
-                        </TouchableOpacity> */}
+                        <TouchableOpacity onPress={handleDownload}>
+                            <HStack space={2} alignItems={'center'}
+                                backgroundColor={'#191919'} borderRadius={10}
+                                padding={2}>
+                                <Download color="white" />
+                                <Text style={{ color: 'white' }}>Xuất dữ liệu</Text>
+                            </HStack>
+                        </TouchableOpacity>
                     </View>
                     {isLoading && <ActivityIndicator size={'large'} color={'#171717'}></ActivityIndicator>}
                     {!filteredRequests.length ? <Text style={{ marginBottom: 10, fontSize: 18, fontWeight: '600' }}>Chưa có dữ liệu</Text> :

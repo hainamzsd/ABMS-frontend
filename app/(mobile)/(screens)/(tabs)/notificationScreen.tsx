@@ -64,7 +64,6 @@ const NotificationScreen = () => {
         timeout: 10000
       });
       setData(response.data); // Store all data
-      console.log(response)
     } catch (error) {
       if (axios.isAxiosError(error)) {
         setShowError(true);
