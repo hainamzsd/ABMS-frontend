@@ -226,7 +226,7 @@ const visitorRegisterScreen = () => {
                     const createPost = await axios.post('https://abmscapstone2024.azurewebsites.net/api/v1/notification/create-for-receptionist',{
                         title: `Phòng ${room[0].roomNumber} đăng ký khách thăm mới `,
                         buildingId: user.BuildingId,
-                        content: `http://localhost:8081/web/Receptionist/services/visitor/${response.data.data}`,
+                        content: `/web/Receptionist/services/visitor/${response.data.data}`,
                     },
                     {
                         timeout: 10000, 

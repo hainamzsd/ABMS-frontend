@@ -228,7 +228,15 @@
     "Feedback information":"Feedback information",
     "Response":"Response",
     "Responded":"Responded",
-    "Full name must be at least 10 characters":"Full name must be at least 10 characters"
-    
+    "Full name must be at least 10 characters":"Full name must be at least 10 characters",
+    "Password must include uppercase, lowercase, numbers, and special characters":"Password must include uppercase, lowercase, numbers, and special characters",
+    "Old password is required":"Old password is required",
+    "New password is required":"New password is required",
+    "Passwords must match":"Passwords must match",
+    "Confirm password is required":"Confirm password is required",
+    "Old password is incorrect":"Old password is incorrect",
+    "Password updated successfully":"Password updated successfully",
+    "You don't have any notifications":"You don't have any notifications",
+    "Navigation to utility schedules is allowed only between 8 AM and 5 PM":"Navigation to utility schedules is allowed only between 8 AM and 5 PM"
   }
 }

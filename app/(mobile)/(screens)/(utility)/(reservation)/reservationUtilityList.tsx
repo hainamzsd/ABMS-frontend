@@ -4,7 +4,7 @@ import Header from '../../../../../components/resident/header';
 import { useTheme } from '../../../context/ThemeContext';
 import { useTranslation } from 'react-i18next';
 import SHADOW from '../../../../../constants/shadow';
-import ICON_MAP from '../../../../../constants/iconUtility';
+import {ICON_MAP} from '../../../../../constants/iconUtility';
 import {statusUtility} from '../../../../../constants/status';
 import { router } from 'expo-router';
 import axios from 'axios';

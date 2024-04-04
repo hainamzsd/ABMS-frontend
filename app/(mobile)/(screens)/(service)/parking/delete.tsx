@@ -180,7 +180,7 @@ const handleDeleteCard = async (id:string) => {
       <LoadingComponent loading={isLoading}></LoadingComponent>
       <Header headerTitle={t("Manage parking card")} />
       <SafeAreaView style={{ backgroundColor: theme.background, flex: 1 }}>
-        <View style={{ paddingHorizontal: 26 }}>
+        <View style={{ paddingHorizontal: 26,flex:1 }}>
           <View style={{ marginTop: 20 }}>
             <Text style={{ marginBottom: 5, fontSize: 20, fontWeight: 'bold' }}>{t("Registered card")}</Text>
             <Text>{t("Choose card to cancel")}</Text>
@@ -189,7 +189,7 @@ const handleDeleteCard = async (id:string) => {
           {data.length>0 &&
                    <FlatList
                     data={data}
-                    style={{marginTop:10}}
+                    style={{ marginVertical:20,flex:1}}
                     renderItem={({item}:{item:ParkingCard}) => {return(
                       <TouchableOpacity
                       onPress={() => setShowConfirmBox(true)}
