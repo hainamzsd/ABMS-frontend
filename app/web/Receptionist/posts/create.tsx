@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Box, Text, FormControl, Input, Divider, TextArea, Icon, Button as ButtonBase, Select, CheckIcon, WarningOutlineIcon } from "native-base";
+import { Box, Text, FormControl, Input, Divider, TextArea, Icon, Button as ButtonBase, Select, CheckIcon, WarningOutlineIcon, Image } from "native-base";
 import { View, SafeAreaView, ScrollView, Button as ButtonNative, ActivityIndicator } from 'react-native';
 import { SIZES } from '../../../../constants';
 import Button from '../../../../components/ui/button';
@@ -12,12 +12,14 @@ import { useAuth } from '../../context/AuthContext';
 import { user } from '../../../../interface/accountType';
 import { jwtDecode } from 'jwt-decode';
 import { ToastFail, ToastSuccess } from '../../../../constants/toastMessage';
+import Toast from 'react-native-toast-message';
+import { firebase } from '../../../../config';
 
 const CreatePost = () => {
     const [content, setContent] = useState("");
     const [title, setTitle] = useState("");
     const [type, setType] = useState("");
-    const [image, setImage] = useState('https://images.pexels.com/photos/1254736/pexels-photo-1254736.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1');
+    const [image, setImage] = useState('');
     const [isLoading, setIsLoading] = useState(false);
 
 
@@ -25,23 +27,82 @@ const CreatePost = () => {
     const user: user = jwtDecode(session as string)
     const navigation = useNavigation();
 
-
-    const handleChoosePhoto = () => {
-        let result = ImagePicker.launchImageLibraryAsync({
-            mediaTypes: ImagePicker.MediaTypeOptions.All,
-            allowsEditing: true,
+    //pick image
+    const pickImage = async () => {
+        const options: any = {
+            mediaTypes: ImagePicker.MediaTypeOptions.Images,
+            allowEditing: true,
             aspect: [4, 3],
             quality: 1,
-        })
-    }
+        };
+
+        try {
+            const result = await ImagePicker.launchImageLibraryAsync(options);
+            if (!result.canceled) {
+                // uploadImage(result.assets[0].uri);
+                setImage(result.assets[0].uri);
+            }
+        } catch (error) {
+            Toast.show({
+                type: 'error',
+                position: 'bottom',
+                text1: 'Lỗi',
+                text2: 'Không thể chọn ảnh',
+                autoHide: true,
+            })
+        } finally {
+        }
+    };
+
+    const uploadImage = async (uri: string) => {
+        try {
+            setIsLoading(true);
+            const response = await fetch(uri);
+            const blob = await response.blob();
+            const fileName = `posts/${title}_${new Date().getTime()}`;
+            const ref = firebase.storage().ref().child(fileName);
+            const snapshot = await ref.put(blob);
+            const downloadURL = await snapshot.ref.getDownloadURL();
+            console.log(downloadURL);
+            return downloadURL;
+        } catch (error) {
+            console.error('Error uploading image:', error);
+            Toast.show({
+                type: 'error',
+                position: 'bottom',
+                text1: 'Lỗi',
+                text2: 'Không thể tải ảnh lên',
+                autoHide: true,
+            });
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
 
     const handleCreatePost = async () => {
+        let uri = image;
+        // Only attempt to upload if an image has been selected
+        if (image && typeof image === 'string') {
+            const uploadUri = await uploadImage(image);
+            if (!uploadUri) {
+                Toast.show({
+                    type: 'error',
+                    position: 'bottom',
+                    text1: 'Lỗi',
+                    text2: 'Không thể thêm ảnh',
+                    autoHide: true,
+                });
+                return;
+            }
+            uri = uploadUri;
+        }
         setIsLoading(true);
         const bodyData = {
             title: title,
             buildingId: user?.BuildingId,
             content: content,
-            image: image,
+            image: uri,
             type: type
         }
         try {
@@ -51,7 +112,7 @@ const CreatePost = () => {
                     'Authorization': `Bearer ${session}`
                 }
             })
-            if (response.data.statusCode  === 200) {
+            if (response.data.statusCode === 200) {
                 ToastSuccess('Tạo bài viết thành công')
                 setTitle("");
                 setContent("");
@@ -128,9 +189,11 @@ const CreatePost = () => {
                                 </FormControl.ErrorMessage> */}
                             </FormControl>
                             <FormControl mb="3">
-                                <ButtonBase onPress={handleChoosePhoto} leftIcon={<Icon as={Ionicons} name="cloud-upload-outline" size="sm" />}>
+
+                                <ButtonBase onPress={pickImage} leftIcon={<Icon as={Ionicons} name="cloud-upload-outline" size="sm" />}>
                                     Tải lên
                                 </ButtonBase>
+                                {image && <Image mt={2} source={{ uri: image }} size="md" />}
                             </FormControl>
                             <FormControl>
                                 <Divider mt={1} />

@@ -25,8 +25,6 @@ const Place = () => {
     const [newPlace, setNewPlace] = useState("");
     const [utilityDetailId, setUtilityDetailId] = useState("");
 
-    console.log(session)
-
 
     useEffect(() => {
         fetchUtilityDetail();
@@ -51,6 +49,7 @@ const Place = () => {
                     text1: 'Tạo địa điểm tiện ích thành công',
                     position: 'bottom'
                 })
+                fetchUtilityDetail();
             } else {
                 Toast.show({
                     type: 'error',
@@ -65,7 +64,7 @@ const Place = () => {
                 position: 'bottom'
             })
         } finally {
-            fetchUtilityDetail();
+            
             setIsLoading(false); // Set loading state to false regardless of success or failure
         }
     }
@@ -73,19 +72,19 @@ const Place = () => {
     const updateUtilityDetail = async () => {
         setIsLoading(true);
         try {
-            const response = await axios.put(`https://abmscapstone2024.azurewebsites.net/api/v1/utility/update-utility-detail/${utilityDetailId}?name=S%C3%A2n%20%C4%90%C3%A0%20N%E1%BA%B5ng`, {}, {
+            const response = await axios.put(`https://abmscapstone2024.azurewebsites.net/api/v1/utility/update-utility-detail/${utilityDetailId}?name=${newPlace}`, {}, {
                 timeout: 10000,
                 headers: {
                     'Authorization': `Bearer ${session}`
                 }
             });
             if (response.data.statusCode  === 200) {
+                setNewPlace("");
                 Toast.show({
                     type: 'success',
                     text1: 'Cập nhập địa điểm tiện ích thành công',
                     position: 'bottom'
                 })
-                setNewPlace("");
                 fetchUtilityDetail();
             } else {
                 Toast.show({
@@ -149,6 +148,7 @@ const Place = () => {
             });
             if (response.data.statusCode  === 200) {
                 setUtilityDetails(response.data.data);
+                
             } else {
                 Toast.show({
                     type: 'error',
@@ -193,8 +193,8 @@ const Place = () => {
                         </View>
                         <View style={{ flexDirection: 'row', gap: SIZES.small }}>
                             <Button text="Chỉnh sửa" onPress={() => {
-                                setUtilityDetailId(item?.id)
                                 setNewPlace(item?.name)
+                                setUtilityDetailId(item?.id)
                                 setModalUpdate(!modalUpdate)
                             }} />
                             <Button text="Xoá" onPress={() => {
@@ -240,7 +240,7 @@ const Place = () => {
                     <Modal.Body>
                         <FormControl mt="3">
                             <FormControl.Label>Tên địa điểm</FormControl.Label>
-                            <Input value={newPlace} onChangeText={(text) => setNewPlace(text)} />
+                            <Input placeholder="Nhập tên địa điểm" onChangeText={(text) => setNewPlace(text)} />
                         </FormControl>
                     </Modal.Body>
                     <Modal.Footer>
@@ -262,7 +262,8 @@ const Place = () => {
                     <Modal.Body>
                         <FormControl mt="3">
                             <FormControl.Label>Tên địa điểm</FormControl.Label>
-                            <Input value={newPlace} onChangeText={(text) => setNewPlace(text)} />
+                            <Input placeholder={`${newPlace}`} onChangeText={(text) => setNewPlace(text)}/>
+                            {/* placeholder={`${newPlace}`} */}
                         </FormControl>
                     </Modal.Body>
                     <Modal.Footer>

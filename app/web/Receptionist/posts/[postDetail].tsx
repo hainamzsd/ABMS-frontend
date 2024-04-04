@@ -13,6 +13,7 @@ import { useAuth } from '../../context/AuthContext';
 import { jwtDecode } from 'jwt-decode';
 import { user } from '../../../../interface/accountType';
 import { ToastFail, ToastSuccess } from '../../../../constants/toastMessage';
+import { firebase } from '../../../../config';
 
 const PostDetail = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -26,13 +27,64 @@ const PostDetail = () => {
   const { session } = useAuth();
   const user: user = jwtDecode(session as string)
 
+  //pick image
+  const pickImage = async () => {
+    const options: any = {
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    };
+
+    try {
+      const result = await ImagePicker.launchImageLibraryAsync(options);
+      if (!result.canceled) {
+        // uploadImage(result.assets[0].uri);
+        setImage(result.assets[0].uri);
+      }
+    } catch (error) {
+      Toast.show({
+        type: 'error',
+        position: 'bottom',
+        text1: 'Lỗi',
+        text2: 'Không thể chọn ảnh',
+        autoHide: true,
+      })
+    } finally {
+    }
+  };
+
+  const uploadImage = async (uri: string) => {
+    try {
+      setIsLoading(true);
+      const response = await fetch(uri);
+      const blob = await response.blob();
+      const fileName = `posts/${title}_${new Date().getTime()}`;
+      const ref = firebase.storage().ref().child(fileName);
+      const snapshot = await ref.put(blob);
+      const downloadURL = await snapshot.ref.getDownloadURL();
+      return downloadURL;
+    } catch (error) {
+      console.error('Error uploading image:', error);
+      Toast.show({
+        type: 'error',
+        position: 'bottom',
+        text1: 'Lỗi',
+        text2: 'Không thể tải ảnh lên',
+        autoHide: true,
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const fetchPost = async () => {
     setIsLoading(true);
     try {
       const response = await axios.get(`https://abmscapstone2024.azurewebsites.net/api/v1/post/getPostId/${item?.postDetail}`, {
         timeout: 10000,
       });
-      if (response.data.statusCode  === 200) {
+      if (response.data.statusCode === 200) {
         console.log(response.data.data);
         setContent(response.data.data.content);
         setTitle(response.data.data.title);
@@ -66,12 +118,28 @@ const PostDetail = () => {
 
   // UPDATE: Post
   const handleUpdatePost = async () => {
+    let uri = image;
+    // Only attempt to upload if an image has been selected
+    if (image && typeof image === 'string') {
+      const uploadUri = await uploadImage(image);
+      if (!uploadUri) {
+        Toast.show({
+          type: 'error',
+          position: 'bottom',
+          text1: 'Lỗi',
+          text2: 'Không thể thêm ảnh',
+          autoHide: true,
+        });
+        return;
+      }
+      uri = uploadUri;
+    }
     setIsLoading(true);
     const bodyData = {
       title: title,
       buildingId: user?.BuildingId,
       content: content,
-      image: image,
+      image: uri,
       type: type
     }
     try {
@@ -81,7 +149,7 @@ const PostDetail = () => {
           'Authorization': `Bearer ${session}`
         }
       });
-      if (response.data.statusCode  === 200) {
+      if (response.data.statusCode === 200) {
         ToastSuccess('Cập nhập bài viết thành công')
       } else {
         ToastFail('Cập nhập bài viết không thành công')
@@ -107,7 +175,7 @@ const PostDetail = () => {
           'Authorization': `Bearer ${session}`
         }
       });
-      if (response.data.statusCode  === 200) {
+      if (response.data.statusCode === 200) {
         ToastSuccess('Xoá bài viết thành công')
         router.push({ pathname: `/web/Receptionist/posts/` })
       } else {
@@ -146,7 +214,9 @@ const PostDetail = () => {
           <Button
             style={{ width: 100, marginBottom: 20 }}
             text="Quay Lại"
-            onPress={() => navigation.goBack()}
+            onPress={() => router.push({
+              pathname: '/web/Receptionist/posts/'
+            })}
           ></Button>
           <View style={{ marginBottom: 20 }}>
             <Text style={{ fontWeight: "bold", fontSize: 30, marginBottom: 5 }}>
@@ -186,22 +256,12 @@ const PostDetail = () => {
                                     Bắt buộc chọn thể loại
                                 </FormControl.ErrorMessage> */}
               </FormControl>
-              {/* {image ? <> <ButtonBase onPress={handleChoosePhoto} leftIcon={<Icon as={Ionicons} name="cloud-upload-outline" size="sm" />}>
-                Upload
-              </ButtonBase>
-                <Image mt={2} source={{ uri: image }} size="md" /></> :
-                <FormControl mb="3">
-                  <ButtonBase onPress={handleChoosePhoto} leftIcon={<Icon as={Ionicons} name="cloud-upload-outline" size="sm" />}>
-                    Tải lên
-                  </ButtonBase>
-                </FormControl>
-              } */}
               <FormControl mb="3">
-                <ButtonBase onPress={handleChoosePhoto} leftIcon={<Icon as={Ionicons} name="cloud-upload-outline" size="sm" />}>
-                  Upload
+                <ButtonBase onPress={pickImage} leftIcon={<Icon as={Ionicons} name="cloud-upload-outline" size="sm" />}>
+                  Tải lên
                 </ButtonBase>
-                <Image mt={2} source={{ uri: image }} size="md" />
               </FormControl>
+              <Image mt={2} source={{ uri: image }} size="md" />
               <FormControl>
                 <Divider mt={1} />
 
