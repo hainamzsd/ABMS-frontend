@@ -13,11 +13,16 @@ import { router } from 'expo-router'
 import { Cell, TableComponent, TableRow } from '../../../../components/ui/table'
 import { COLORS, SIZES } from '../../../../constants'
 import { ActivityIndicator } from 'react-native-paper'
+import { useAuth } from '../../context/AuthContext'
+import { jwtDecode } from 'jwt-decode'
+import { user } from '../../../../interface/accountType'
 
 const BillDashboard = () => {
     const months = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
     const years = [2023, 2024];
     const headers = ['Căn hộ', 'Trạng thái hoá đơn', 'Thời gian', 'Ghi chú', 'Tổng tiền', ''];
+    const { session } = useAuth();
+    const user: user = jwtDecode(session as string);
 
     // State
     const [isLoading, setIsLoading] = useState(false);
@@ -28,22 +33,22 @@ const BillDashboard = () => {
     const [filterRequest, setFilterRequest] = useState<ServiceCharge[]>([]);
 
     // Search
-    // useEffect(() => {
-    //     if (searchQuery.trim() !== '') {
-    //         const filtered = serviceCharges?.filter(item =>
-    //             item.roomNumber.toLowerCase().includes(searchQuery.toLowerCase())
-    //         )
-    //         setFilterRequest(filtered);
-    //     } else {
-    //         setFilterRequest(serviceCharges);
-    //     }
-    // }, [searchQuery, serviceCharges])
+    useEffect(() => {
+        if (searchQuery.trim() !== '') {
+            const filtered = serviceCharges?.filter(item =>
+                item.room_number.toLowerCase().includes(searchQuery.toLowerCase())
+            )
+            setFilterRequest(filtered);
+        } else {
+            setFilterRequest(serviceCharges);
+        }
+    }, [searchQuery, serviceCharges])
 
     // GET: All Service Charge
     const fetchServiceCharge = async () => {
         setIsLoading(true);
         try {
-            const response = await axios.get(`${API_BASE}/${actionController.SERVICE_CHARGE}/get`, {
+            const response = await axios.get(`${API_BASE}/${actionController.SERVICE_CHARGE}/get?buildingId=${user.BuildingId}`, {
                 timeout: 10000
             })
             if (response.data.statusCode === 200) {
@@ -67,7 +72,7 @@ const BillDashboard = () => {
     const fetchServiceChargeByMonth = async () => {
         setIsLoading(true);
         try {
-            const response = await axios.get(`${API_BASE}/${actionController.SERVICE_CHARGE}/get?month=${month}`, {
+            const response = await axios.get(`${API_BASE}/${actionController.SERVICE_CHARGE}/get?buildingId=${user.BuildingId}&month=${month}`, {
                 timeout: 10000
             })
             if (response.data.statusCode === 200) {
@@ -91,7 +96,7 @@ const BillDashboard = () => {
     const fetchServiceChargeByYear = async () => {
         setIsLoading(true);
         try {
-            const response = await axios.get(`${API_BASE}/${actionController.SERVICE_CHARGE}/get?year=${year}`, {
+            const response = await axios.get(`${API_BASE}/${actionController.SERVICE_CHARGE}/get?buildingId=${user.BuildingId}&year=${year}`, {
                 timeout: 10000
             })
             if (response.data.statusCode === 200) {
@@ -115,7 +120,7 @@ const BillDashboard = () => {
     const fetchServiceChargeByMonthAndYear = async () => {
         setIsLoading(true);
         try {
-            const response = await axios.get(`${API_BASE}/${actionController.SERVICE_CHARGE}/get?month=${month}&year=${year}`, {
+            const response = await axios.get(`${API_BASE}/${actionController.SERVICE_CHARGE}/get?buildingId=${user.BuildingId}&month=${month}&year=${year}`, {
                 timeout: 10000
             })
             if (response.data.statusCode === 200) {
@@ -154,17 +159,23 @@ const BillDashboard = () => {
     const renderItem = ({ item }: { item: ServiceCharge }) => {
         const dateTime = `${item.month}/${item.year}`;
         const statusTitle = item.status == 6 ? "Chưa thanh toán" : "Đã thanh toán";
-        const moneyBadge = `${moneyFormat(item.totalPrice)} VNĐ`;
+        const moneyBadge = `${moneyFormat(item.total_price)} VNĐ`;
         return (
             <TableRow>
-                <Cell>{item.roomId}</Cell>
+                <Cell><Badge variant="outline">{item.room_number}</Badge></Cell>
                 <Cell><Badge colorScheme={item.status === 6 ? "danger" : "success"}>{statusTitle}</Badge></Cell>
                 <Cell> <Badge colorScheme="warning" alignSelf="flex-start">{dateTime}</Badge></Cell>
                 {/* gioi han description */}
                 <Cell>{item.description}</Cell>
                 <Cell> <Badge colorScheme="info" variant="solid" _text={{ fontSize: 14 }}>{moneyBadge}</Badge></Cell>
                 <Cell>
-                    <Button onPress={() => router.push(`/web/CMB/bills/${item.id}`)} text="Chi tiết" />
+                    <Button onPress={() => router.push({
+                        pathname: `/web/CMB/bills/detail`, params: {
+                            id: item.id,
+                            roomId: item.roomId,
+                            roomNumber: item.room_number,
+                        }
+                    })} text="Chi tiết" />
                 </Cell>
             </TableRow>
         )
@@ -182,7 +193,7 @@ const BillDashboard = () => {
                         </View>
                     </View>
                     <View style={{ marginBottom: SIZES.medium }}>
-                        <Input placeholder='Tìm kiếm số căn hộ' style={{ paddingVertical: 10 }} />
+                        <Input placeholder='Tìm kiếm số căn hộ' style={{ paddingVertical: 10 }} value={searchQuery} onChangeText={(text) => setSearchQuery(text)}/>
                         <View style={{ flexDirection: 'row', gap: 8 }}>
                             <Select selectedValue={month} maxWidth={150} style={{ alignSelf: 'flex-start' }} accessibilityLabel="Tháng" placeholder="Tháng" _selectedItem={{
                                 bg: "teal.600",
@@ -203,13 +214,15 @@ const BillDashboard = () => {
                         </View>
                     </View>
                     {isLoading ? <ActivityIndicator size="large" color={COLORS.primary} /> :
-                        <TableComponent headers={headers}>
-                            <FlatList
-                                data={serviceCharges}
-                                renderItem={renderItem}
-                                keyExtractor={item => item.id}
-                            />
-                        </TableComponent>
+                        filterRequest.length > 0 ?
+                            <TableComponent headers={headers}>
+                                <FlatList
+                                    data={filterRequest}
+                                    renderItem={renderItem}
+                                    keyExtractor={item => item.id}
+                                />
+                            </TableComponent>
+                            : <View><Text style={{ fontSize: SIZES.medium, color: COLORS.gray, fontStyle: 'italic', textAlign: 'center' }}>Hiện chưa có hoá đơn nào.</Text></View>
                     }
                 </ScrollView>
             </SafeAreaView>

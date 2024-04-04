@@ -23,23 +23,20 @@ const BillDetail = () => {
     const [bill, setBill] = useState<ServiceChargeTotal>();
     const [generalBill, setGeneralBill] = useState<ServiceCharge>();
 
-    const item = useLocalSearchParams();
+    const params = useLocalSearchParams();
     const navigation = useNavigation();
     const headers = ["Tên chi phí", "Chi phí", "Số lượng", "Thành tiền"]
     const { session } = useAuth();
 
     useEffect(() => {
         fetchGeneralBill();
-    }, [])
-
-    useEffect(() => {
         fetchBill();
-    }, [roomId])
+    }, [])
 
     const fetchBill = async () => {
         setIsLoading(true);
         try {
-            const response = await axios.get(`${API_BASE}/${actionController.SERVICE_CHARGE}/get-total/${roomId}`, {
+            const response = await axios.get(`${API_BASE}/${actionController.SERVICE_CHARGE}/get-total/${params.roomId}`, {
                 timeout: 10000,
             })
             console.log(response)
@@ -63,7 +60,7 @@ const BillDetail = () => {
     const fetchGeneralBill = async () => {
         setIsLoading(true);
         try {
-            const response = await axios.get(`${API_BASE}/${actionController.SERVICE_CHARGE}/get/${item.id}`, {
+            const response = await axios.get(`${API_BASE}/${actionController.SERVICE_CHARGE}/get/${params.id}`, {
                 timeout: 10000,
             })
             console.log(response);
@@ -89,7 +86,7 @@ const BillDetail = () => {
     const updateBill = async () => {
         setIsLoading(true);
         try {
-            const response = await axios.put(`${API_BASE}/${actionController.SERVICE_CHARGE}/update/${item?.id}?description=${description}&status=${status}`, {}, {
+            const response = await axios.put(`${API_BASE}/${actionController.SERVICE_CHARGE}/update/${params?.id}?description=${description}&status=${status}`, {}, {
                 timeout: 10000,
                 withCredentials: true,
                 headers: {
@@ -116,7 +113,7 @@ const BillDetail = () => {
     const deleteBill = async () => {
         setIsLoading(true);
         try {
-            const response = await axios.delete(`${API_BASE}/${actionController.SERVICE_CHARGE}/delete/${item?.id}`, {
+            const response = await axios.delete(`${API_BASE}/${actionController.SERVICE_CHARGE}/delete/${params?.id}`, {
                 timeout: 10000,
                 headers: {
                     'Authorization': `Bearer ${session}`
@@ -147,8 +144,7 @@ const BillDetail = () => {
         deleteBill();
     }
 
-    const renderItem = ({ item, index }: { item: any, index: number }) => {
-        const length = bill?.detail.length;
+    const renderItem = ({ item }: { item: any, index: number }) => {
         const feeBadge = `${moneyFormat(item.fee)} VNĐ`;
         const totalBadge = `${moneyFormat(item.total)} VNĐ`
         return (
@@ -195,7 +191,7 @@ const BillDetail = () => {
                         {/* {/* <Text style={{ color: '#9c9c9c', fontSize: 12, marginBottom: 10, }}>Họ và tên không được trống.</Text> */}
                         <Text style={{ color: '#9c9c9c', fontSize: 12, marginBottom: 10, }}>Số căn hộ không thể chỉnh sửa.</Text>
                         <Input
-                            value={generalBill?.roomId}
+                            value={params.roomNumber}
                             style={[{ width: "100%", backgroundColor: COLORS.buttonDisable }]}
                             readOnly
                         ></Input>
