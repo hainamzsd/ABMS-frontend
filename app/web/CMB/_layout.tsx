@@ -48,8 +48,17 @@ const _layout = () => {
       href: "/web/CMB/posts",
     },
     {
+      name: "Quản lý chi phí",
+      href: "/web/CMB/fees",
+    },
+    {
+      name: "Quản lý hoá đơn",
+      href: "/web/CMB/bills",
+    },
+    {
       name: "Quản lý thu chi",
       href: "/web/CMB/fundexpenses/expense",
+
     },
   ];
   const user = {

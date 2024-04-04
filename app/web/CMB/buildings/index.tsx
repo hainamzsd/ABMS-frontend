@@ -27,7 +27,7 @@ const Page = () => {
             const response = await axios.get(`https://abmscapstone2024.azurewebsites.net/api/v1/building/get/${user?.BuildingId}`, {
                 timeout: 10000,
             });
-            if (response.status === 200) {
+            if (response.data.statusCode  === 200) {
                 setBuilding(response.data.data);
             } else {
                 Toast.show({

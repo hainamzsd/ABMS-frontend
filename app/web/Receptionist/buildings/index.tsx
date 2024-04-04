@@ -48,7 +48,7 @@ const BuildingList = () => {
     setIsLoading(true);
     try {
       const response = await axios.get(`https://abmscapstone2024.azurewebsites.net/api/v1/building/get`);
-      if (response.status === 200) {
+      if (response.data.statusCode  === 200) {
         setBuildings(response.data.data);
       } else {
         Toast.show({

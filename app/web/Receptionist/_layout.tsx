@@ -41,6 +41,10 @@ const _layout = () => {
         name: "Quản lý căn hộ",
         href: "/web/Receptionist/rooms",
       },
+      {
+        name: "Quản lý biểu phí",
+        href: "/web/Receptionist/fees",
+      },
     ];
     const [windowWidth, setWindowWidth] = useState(
         Dimensions.get("window").width,

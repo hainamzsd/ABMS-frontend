@@ -42,7 +42,6 @@ const Dashboard = () => {
                     end: [1, 0]
                   }
                 }}>
-
                 <HStack space={3} alignItems={'center'}>
                   <UserCircle size={50} color={'white'} />
                   <VStack>

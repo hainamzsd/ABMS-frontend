@@ -57,7 +57,7 @@ const ReservationUtility = () => {
                 url += `&status=${status}`
             }
             const response = await axios.get(url, { timeout: 10000 })
-            if (response.status === 200) {
+            if (response.data.statusCode  === 200) {
                 setUtilityReservation(response.data.data);
             } else {
                 Toast.show({
