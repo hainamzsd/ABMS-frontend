@@ -109,9 +109,9 @@ const BillDetail = () => {
         updateBill();
     }
 
-    const handleDeleteBill = () => {
-        deleteBill();
-    }
+    // const handleDeleteBill = () => {
+    //     deleteBill();
+    // }
 
     return (
         <View
@@ -200,7 +200,7 @@ const BillDetail = () => {
                     <Divider mt={4} />
                     <View style={{ flexDirection: 'row', marginTop: 10, gap: 8, justifyContent: 'center' }}>
                         <ButtonBase colorScheme="success" onPress={handleUpdateBill}>Cập nhập hoá đơn</ButtonBase>
-                        <ButtonBase colorScheme="danger" onPress={deleteBill}>Xoá hoá đơn</ButtonBase>
+                        {/* <ButtonBase colorScheme="danger" onPress={deleteBill}>Xoá hoá đơn</ButtonBase> */}
                     </View>
                 </ScrollView>
             </SafeAreaView>
