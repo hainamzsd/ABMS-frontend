@@ -333,7 +333,7 @@ const BillDashboard = () => {
                     <Button onPress={() => router.push({
                         pathname: `/web/Receptionist/bills/detail`, params: {
                             id: item.id,
-                            roomId: item.roomId,
+                            roomId: item.room_id,
                             roomNumber: item.room_number,
                         }
                     })} text="Chi tiết" />

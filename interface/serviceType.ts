@@ -1,6 +1,6 @@
 export interface ServiceCharge {
   id: string;
-  roomId: string;
+  room_id: string;
   room_number: string;
   total_price: number;
   month: number;
