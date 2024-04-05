@@ -19,6 +19,8 @@ import axios from 'axios'
 import CustomAlert from '../../../../../components/resident/confirmAlert'
 import AlertWithButton from '../../../../../components/resident/AlertWithButton'
 import moment from 'moment'
+import Toast from 'react-native-toast-message'
+import { router } from 'expo-router'
 interface ImageInfo {
   uri: string;
   name: string | null | undefined;
@@ -37,6 +39,11 @@ interface Room {
   roomNumber: string;
   id: string;
   residents:Resident[]
+}
+
+interface Fee{
+  id: string;
+  serviceName: string;
 }
 interface Resident{
   id:string;
@@ -66,11 +73,7 @@ const parkingCardRegisterScreen = () => {
   const [licensePlate, setLicensePlate] = useState("");
   const [showSuccess, setShowSuccess] = useState(false);
     const [showConfirm, setShowConfirm] = useState(false);
-    const vehicleTypeList = [
-      { label: t("Car"), value: "2" },
-      { label: t("Motorbike"), value: "1" },
-      { label: t("Bicycle"), value: "3" },
-    ]
+    const [vehicleTypeList, setVehicleTypeList] = useState<Fee[]>([]);
     const [residents, setResidents] = useState<Resident[]>([]);
  
   const [vehicleTypes, setVehicleTypes] = useState("");
@@ -78,10 +81,9 @@ const parkingCardRegisterScreen = () => {
   const [isLicensePlateRequired, setIsLicensePlateRequired] = useState(true); 
 
   useEffect(() => {
-    setIsLicensePlateRequired(vehicleTypes !== "3");
+    setIsLicensePlateRequired(vehicleTypes !== "Xe đạp điện" && vehicleTypes !== "Xe đạp");
   }, [vehicleTypes]);
     const isButtonDisabled = !color || !brand || !note || selectedImages.length === 0 ||  !vehicleTypes;
-  const [room, setRoom] = useState<Room[]>([]);
   useEffect(() => {
       const fetchData = async () => {
           setErrorText("");
@@ -92,8 +94,18 @@ const parkingCardRegisterScreen = () => {
                   timeout: 10000
               }
               );
-              console.log(response);
-              if (response.data.statusCode == 200) {
+              const checkVehicle = await axios.get(
+                `https://abmscapstone2024.azurewebsites.net/api/v1/CheckVehicleFee/${user.BuildingId}`, {
+                timeout: 10000
+            }
+            );
+            const getVehicle = await axios.get(
+              `https://abmscapstone2024.azurewebsites.net/api/v1/GetFeesByNames?names=%C3%94%20t%C3%B4&names=Xe%20m%C3%A1y&names=Xe%20%C4%91%E1%BA%A1p&names=Xe%20%C4%91%E1%BA%A1p%20%C4%91i%E1%BB%87n&buildingId=${user.BuildingId}`
+            ,{timeout:10000})
+              console.log(response.data.statusCode == 200,checkVehicle.data.statusCode == 200
+                , getVehicle.data.statusCode == 200 );
+              if (response.data.statusCode == 200 && checkVehicle.data.statusCode == 200
+                && getVehicle.data.statusCode == 200) {
                   // setRoom(response?.data?.data);
                   // if(room[0]?.residents.length>0){
                   //     setResidents(room[0].residents);
@@ -103,7 +115,18 @@ const parkingCardRegisterScreen = () => {
                   //   setErrorText(t("Error retrieving resident datas, try again later"));
                   //   return;
                   // }
+                  if(!checkVehicle.data.data){
+                    Toast.show({
+                      type: 'info',
+                      text1: 'Lỗi',
+                      topOffset:50,
+                      text2: 'Chưa có thông tin phí đỗ xe, vui lòng liên hệ quản lý chung cư để được hỗ trợ',
+                      
+                    });
+                    router.back();
+                  }
                   setResidents(response?.data?.data[0].residents);
+                  setVehicleTypeList(getVehicle.data.data);
               }
               else {
                   setShowError(true);
@@ -206,10 +229,24 @@ const parkingCardRegisterScreen = () => {
           }, { abortEarly: false });
         const body = {
           resident_id: residentId,
-          license_plate: vehicleTypes==="3"?"Xe dap":licensePlate,
+          license_plate: vehicleTypes==="Xe đạp" || vehicleTypes==="Xe đạp điện"
+          ?"Xe dap":licensePlate,
           brand: brand,
           color: color,
-          type: Number(vehicleTypes),
+          type: (function() {
+            switch (vehicleTypes) {
+              case "Xe đạp":
+                return 3;
+              case "Ô tô":
+                return 2;
+              case "Xe đạp điện":
+                return 4;
+              case "Xe máy":
+                return 1;
+              default:
+                return null; // Or a different default value
+            }
+          })(),
           image: url,
           expire_date: moment.utc(expirationDate).format("YYYY-MM-DD"),
           note: note
@@ -335,11 +372,11 @@ const parkingCardRegisterScreen = () => {
                 data={vehicleTypeList}
                 value={vehicleTypes}
                 search={false}
-                labelField="label"
-                valueField="value"
+                labelField="serviceName"
+                valueField="id"
                 onChange={(item) => {
-                  setVehicleTypes(item.value);
-                  setIsLicensePlateRequired(item.value !== "3"); 
+                  setVehicleTypes(item.serviceName);
+                  setIsLicensePlateRequired(item.serviceName !== "Xe đạp điện" && item.serviceName !== "Xe đạp"); 
                 }}
               ></Dropdown>
             </View>

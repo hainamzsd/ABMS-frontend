@@ -46,11 +46,13 @@ const StatusData = [
   { label: "Thẻ chưa phê duyệt", value: 2 },
   { label: "Thẻ đã xác minh", value: 1 },
   { label: "Thẻ đã từ chối", value: 4 },
+  { label: "Thẻ đã hủy", value: 0 },
 ]
 const vehicleType: { [key: number]: string } ={
     1: "Xe máy",
     2: "Ô tô",
-    3: "Xe đạp"
+    3: "Xe đạp",
+    4:"Xe đạp điện"
 }
 const index = () => {
     const headers = ['Căn hộ', 'Họ và tên chủ thẻ', 'Loại xe', 'Ngày tạo', 'Trạng thái',''];

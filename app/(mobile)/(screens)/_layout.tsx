@@ -40,9 +40,10 @@ export default function AppLayout() {
         position: 'top',
         text1: 'Lỗi',
         text2: 'Tài khoản này không được đăng nhập.',
+        text1Style:{fontWeight:'bold', fontSize: 16},
         visibilityTime: 4000,
         autoHide: true, 
-        topOffset: 30,
+        topOffset: 50,
         bottomOffset: 40,
         onShow: () => {},
         onHide: () => {}

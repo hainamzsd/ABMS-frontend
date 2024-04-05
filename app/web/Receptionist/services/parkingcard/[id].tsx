@@ -52,7 +52,8 @@ interface ParkingCard{
 const vehicleType: { [key: number]: string } ={
   1: "Xe máy",
   2: "Ô tô",
-  3: "Xe đạp"
+  3: "Xe đạp",
+  4:"Xe đạp điện"
 }
 
 const validationSchema = Yup.object().shape({
@@ -122,6 +123,8 @@ const page = () => {
   }, []);
   const approveParkingCard = async () => {
     setIsLoading(true);
+    const feeId = await axios.get(`https://abmscapstone2024.azurewebsites.net/api/v1/GetFeesByNames?names=${vehicleType[parkingcard?.type as any]}&buildingId=${user.BuildingId}`)
+    console.log(vehicleType[parkingcard?.type as any]);
     try {
       await validationSchema.validate({
         Color: color,
@@ -155,6 +158,32 @@ const page = () => {
               'Authorization': `Bearer ${session}`
           }
         });
+        if(status==1){
+          const createRoomService = await axios.post('https://abmscapstone2024.azurewebsites.net/api/v1/room-service/create', {
+            room_id: parkingcard?.resident?.room?.id,
+            fee_id: feeId.data.data[0].id,
+            amount: 1,
+            description: ""
+          },{ timeout: 10000, 
+            headers:{
+                'Authorization': `Bearer ${session}`
+            }})
+        if(createRoomService.data.statusCode!=200){
+          Toast.show({
+            type: 'error',
+            text1: 'Lỗi gán phí cho phòng.',
+            position: 'bottom'
+          })
+        }
+        }
+        if(status==4){
+          const deleteRoomService = await axios.delete(`https://abmscapstone2024.azurewebsites.net/api/v1/room-service/delete-by-roomfee?feeId=${feeId.data.data[0].id}&roomId=${parkingcard?.resident?.room?.id}`,
+          { timeout: 10000, 
+            headers:{
+                'Authorization': `Bearer ${session}`
+            }})
+            console.log(deleteRoomService);
+          }
         if (response.data.statusCode == 200) {
           const createNotification = await axios.post('https://abmscapstone2024.azurewebsites.net/api/v1/notification/create-for-resident',{
             title: `Đơn đăng kí thẻ gửi xe đã ${status==3?'phê duyệt':'từ chối'}`,

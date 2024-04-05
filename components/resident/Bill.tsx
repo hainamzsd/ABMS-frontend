@@ -2,44 +2,54 @@ import { X } from 'lucide-react-native';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Modal, View, Text, StyleSheet, ScrollView, Dimensions } from 'react-native';
+import { moneyFormat } from '../../utils/moneyFormat';
 
 interface BillDetailProps {
     visible: boolean;
     item: any; // Can be replaced with a more specific type based on your data structure
     onRequestClose: () => void; // Function to call when closing the modal
 }
+interface BillDetail {
+    service_name: string;
+    fee: number;
+    amount: number;
+    total: number;
+}
 
-const BillDetail: React.FC<BillDetailProps> = ({ visible, item, onRequestClose }) => {
+const BillModal: React.FC<BillDetailProps> = ({ visible, item, onRequestClose }) => {
     const {t} = useTranslation();
     return (
         <Modal
-            visible={visible}
-            animationType="slide"
-            transparent={true}
-            onRequestClose={onRequestClose}
-        >
-            <View style={styles.modalBackground}>
-                <View style={styles.modalContainer}>
-                    <View style={styles.scrollView}>
-                        <View style={{ borderBottomWidth: 0.5, borderColor: "#9C9C9C",}}>
-                            <View style={{ flexDirection: 'row',padding: 20, alignItems:'center',justifyContent:'space-between'}}>
-                                <X color={'black'} size={30} onPress={onRequestClose}></X>
-                                <Text style={styles.detailText}>{t("Bill details")}</Text>
-                                <View></View>
-                            </View>
-
+        visible={visible}
+        animationType="slide"
+        transparent={true}
+        onRequestClose={onRequestClose}
+    >
+        <View style={styles.modalBackground}>
+            <View style={styles.modalContainer}>
+                <ScrollView style={styles.scrollView}>
+                    <View style={{ borderBottomWidth: 0.5, borderColor: "#9C9C9C",}}>
+                        <View style={{ flexDirection: 'row',padding: 20, alignItems:'center',justifyContent:'space-between'}}>
+                            <X color={'black'} size={30} onPress={onRequestClose} />
+                            <Text style={styles.detailText}>{t("Bill details")}</Text>
+                            <View></View>
                         </View>
-                        <View style={styles.itemContainer}>
-                            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                                <Text >Dich vu</Text>
-                                <Text style={{ fontWeight: '600' }}>bbb</Text>
-                            </View>
-                        </View>
-                        
                     </View>
-                </View>
+                    {item.details.map((detail:any, index:any) => (
+                        <View key={index} style={styles.itemContainer}>
+                            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                                <Text>{detail.service_name}</Text>
+                                <Text style={{ fontWeight: '600' }}>{moneyFormat(detail.total)} VND</Text>
+                            </View>
+                            <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 5 }}>
+                                <Text style={{color: '#9C9C9C'}}>{t("Fee")}: {moneyFormat(detail.fee)} VND</Text>
+                            </View>
+                        </View>
+                    ))}
+                </ScrollView>
             </View>
-        </Modal>
+        </View>
+    </Modal>
     );
 };
 
@@ -78,5 +88,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default BillDetail;
-7
+export default BillModal;

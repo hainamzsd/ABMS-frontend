@@ -238,6 +238,12 @@
     "Old password is incorrect":"Mật khẩu cũ không chính xác",
     "Password updated successfully":"Cập nhật mật khẩu thành công",
     "You don't have any notifications":"Bạn không có bất kỳ thông báo nào",
-    "Navigation to utility schedules is allowed only between 8 AM and 5 PM":"Chỉ được phép đăng kí tiện ích từ 8 giờ sáng đến 5 giờ chiều"
+    "Navigation to utility schedules is allowed only between 8 AM and 5 PM":"Chỉ được phép đăng kí tiện ích từ 8 giờ sáng đến 5 giờ chiều",
+    "Electric bicycles":"Xe điện",
+    "ParkingCard information":"Thông tin thẻ gửi xe",
+    "Currently, you don't have any bills":"Hiện tại, bạn không có hóa đơn nào",
+    "Fee":"Phí",
+    "Amount":"Số tiền",
+    "Currently, you don't have any bills that have paid":"Hiện tại, bạn không có hóa đơn nào đã thanh toán"
   }
 }

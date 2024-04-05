@@ -237,6 +237,12 @@
     "Old password is incorrect":"Old password is incorrect",
     "Password updated successfully":"Password updated successfully",
     "You don't have any notifications":"You don't have any notifications",
-    "Navigation to utility schedules is allowed only between 8 AM and 5 PM":"Navigation to utility schedules is allowed only between 8 AM and 5 PM"
+    "Navigation to utility schedules is allowed only between 8 AM and 5 PM":"Navigation to utility schedules is allowed only between 8 AM and 5 PM",
+    "Electric bicycles":"Electric bicycles",
+    "ParkingCard information":"ParkingCard information",
+    "Currently, you don't have any bills":"Currently, you don't have any bills",
+    "Fee":"Fee",
+    "Amount":"Amount",
+    "Currently, you don't have any bills that have paid":"Currently, you don't have any bills that have paid"
   }
 }

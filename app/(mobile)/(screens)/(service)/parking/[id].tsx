@@ -91,7 +91,7 @@ const Page = () => {
     setError("");
     try {
         const response = await axios.delete(
-            `https://abmscapstone2024.azurewebsites.net/api/v1/parking-card/delete/${data?.id}`, {
+            `https://abmscapstone2024.azurewebsites.net/api/v1/parking-card/removee/${data?.id}`, {
             timeout: 10000,
             headers:{
                 'Authorization': `Bearer ${session}`
