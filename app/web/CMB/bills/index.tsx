@@ -306,6 +306,7 @@ const BillDashboard = () => {
                     <View style={{ marginBottom: SIZES.medium }}>
                         <Input placeholder='Tìm kiếm số căn hộ' style={{ paddingVertical: 10 }} value={searchQuery} onChangeText={(text) => setSearchQuery(text)} />
                         <View style={{ flexDirection: 'row', gap: 8 }}>
+                            {/* Lọc tháng */}
                             <Select selectedValue={month} maxWidth={150} style={{ alignSelf: 'flex-start' }} accessibilityLabel="Tháng" placeholder="Tháng" _selectedItem={{
                                 bg: "teal.600",
                                 endIcon: <CheckIcon size="5" />
@@ -314,6 +315,7 @@ const BillDashboard = () => {
                                     <Select.Item key={item} label={`Tháng ${item}`} value={`${item}`} />
                                 ))}
                             </Select>
+                            {/* Lọc năm */}
                             <Select selectedValue={year} maxWidth={100} accessibilityLabel="Năm" placeholder="Năm" _selectedItem={{
                                 bg: "teal.600",
                                 endIcon: <CheckIcon size="5" />
@@ -322,6 +324,7 @@ const BillDashboard = () => {
                                     <Select.Item key={item} label={`${item}`} value={`${item}`} />
                                 ))}
                             </Select>
+                            {/* Lọc theo nhu cầu */}
                             <Select selectedValue={filterQuery} maxWidth={200} accessibilityLabel="Lọc" placeholder="Lọc" _selectedItem={{
                                 bg: "teal.600",
                                 endIcon: <CheckIcon size="5" />

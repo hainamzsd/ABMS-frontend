@@ -16,3 +16,14 @@ export const filterBill = [
         value: "4",
     },
 ]
+
+export const filterPost = [
+    {
+        name: "Bài viết",
+        value: '1'
+    },
+    {
+        name: "Thông báo",
+        value: '2'
+    }
+]
