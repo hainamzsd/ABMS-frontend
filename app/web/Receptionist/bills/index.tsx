@@ -293,6 +293,7 @@ const BillDashboard = () => {
             })
             if (response.data.statusCode === 200) {
                 ToastSuccess("Tạo hoá đơn cho các căn hộ thành công");
+                fetchServiceCharge();
             } else {
                 ToastFail('Tạo hoá đơn cho các căn hộ không thành công');
             }
