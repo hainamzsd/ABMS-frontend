@@ -17,7 +17,6 @@ import { Cell, TableComponent, TableRow } from '../../../../components/ui/table'
 
 const BillDetail = () => {
     const [isLoading, setIsLoading] = useState(false);
-    const [roomId, setRoomId] = useState();
     const [description, setDescription] = useState("");
     const [status, setStatus] = useState('');
     const [bill, setBill] = useState<ServiceChargeTotal>();
@@ -67,7 +66,7 @@ const BillDetail = () => {
             console.log(response);
             if (response.data.statusCode === 200) {
                 setGeneralBill(response.data.data);
-                setRoomId(response.data.data.roomId);
+                setStatus(response.data.data.status)
             } else {
                 ToastFail('Lấy thông tin hoá đơn thất bại');
             }
@@ -193,7 +192,7 @@ const BillDetail = () => {
                         {/* {/* <Text style={{ color: '#9c9c9c', fontSize: 12, marginBottom: 10, }}>Họ và tên không được trống.</Text> */}
                         <Text style={{ color: '#9c9c9c', fontSize: 12, marginBottom: 10, }}>Số căn hộ không thể chỉnh sửa.</Text>
                         <Input
-                            value={params.roomNumber}
+                            value={`${params?.roomNumber}`}
                             style={[{ width: "100%", backgroundColor: COLORS.buttonDisable }]}
                             readOnly
                         ></Input>
@@ -219,7 +218,7 @@ const BillDetail = () => {
                             <Text style={{ marginBottom: 7, fontWeight: "600", fontSize: 16 }}>
                                 Trạng thái hoá đơn
                             </Text>
-                            <Select selectedValue={`${generalBill?.status}`} minWidth="200" accessibilityLabel="Choose Service" placeholder="Choose Service" _selectedItem={{
+                            <Select selectedValue={`${status}`} minWidth="200" accessibilityLabel="Choose Service" placeholder="Choose Service" _selectedItem={{
                                 bg: "teal.600",
                                 endIcon: <CheckIcon size="5" />
                             }} mt={1} onValueChange={itemValue => setStatus(itemValue)}>

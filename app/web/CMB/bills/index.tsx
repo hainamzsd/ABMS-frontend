@@ -284,7 +284,7 @@ const BillDashboard = () => {
                     <Button onPress={() => router.push({
                         pathname: `/web/CMB/bills/detail`, params: {
                             id: item.id,
-                            roomId: item.roomId,
+                            roomId: item.room_id,
                             roomNumber: item.room_number,
                         }
                     })} text="Chi tiết" />
@@ -300,7 +300,7 @@ const BillDashboard = () => {
                     <View style={{ marginBottom: 20, flexDirection: 'row', justifyContent: 'space-between' }}>
                         <Text style={{ fontWeight: 'bold', fontSize: 20 }}>Quản lý hoá đơn</Text>
                         <View style={{ flexDirection: 'row', gap: 12 }}>
-                            <Button text='Thêm hoá đơn' />
+                            <Button text='Thêm hoá đơn' onPress={() => setIsOpenModal(true)}/>
                         </View>
                     </View>
                     <View style={{ marginBottom: SIZES.medium }}>

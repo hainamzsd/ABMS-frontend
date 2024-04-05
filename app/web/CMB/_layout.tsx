@@ -48,7 +48,7 @@ const _layout = () => {
       href: "/web/CMB/posts",
     },
     {
-      name: "Quản lý chi phí",
+      name: "Quản lý biểu phí",
       href: "/web/CMB/fees",
     },
     {

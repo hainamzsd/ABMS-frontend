@@ -293,6 +293,7 @@ const BillDashboard = () => {
             })
             if (response.data.statusCode === 200) {
                 ToastSuccess("Tạo hoá đơn cho các căn hộ thành công");
+                fetchServiceCharge();
             } else {
                 ToastFail('Tạo hoá đơn cho các căn hộ không thành công');
             }
@@ -332,7 +333,7 @@ const BillDashboard = () => {
                     <Button onPress={() => router.push({
                         pathname: `/web/Receptionist/bills/detail`, params: {
                             id: item.id,
-                            roomId: item.roomId,
+                            roomId: item.room_id,
                             roomNumber: item.room_number,
                         }
                     })} text="Chi tiết" />
