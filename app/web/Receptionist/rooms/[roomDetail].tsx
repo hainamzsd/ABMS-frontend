@@ -60,7 +60,7 @@ const RoomDetail = () => {
             const response = await axios.get(`https://abmscapstone2024.azurewebsites.net/api/v1/account/get/${accountId}`, {
                 timeout: 10000,
             });
-            if (response.data.statusCode  === 200) {
+            if (response.data.statusCode === 200) {
                 setOwner(response.data.data);
             } else {
                 ToastFail('Lỗi lấy thông tin chủ căn hộ')
@@ -84,7 +84,7 @@ const RoomDetail = () => {
             const response = await axios.get(`https://abmscapstone2024.azurewebsites.net/api/v1/resident-room/get/${item?.roomDetail}`, {
                 timeout: 10000,
             });
-            if (response.data.statusCode  === 200) {
+            if (response.data.statusCode === 200) {
                 setRoomNumber(response.data.data.roomNumber);
                 setBuildingId(response.data.data.buildingId);
                 setRoomArea(response.data.data.roomArea);
@@ -125,7 +125,7 @@ const RoomDetail = () => {
                 timeout: 10000,
             });
             console.log(response);
-            if (response.data.statusCode  === 200) {
+            if (response.data.statusCode === 200) {
                 setBuilding(response.data.data);
             } else {
                 Toast.show({
@@ -160,7 +160,7 @@ const RoomDetail = () => {
             const response = await axios.get(`https://abmscapstone2024.azurewebsites.net/api/v1/resident-room-member/get?roomId=${item?.roomDetail}`, {
                 timeout: 10000,
             });
-            if (response.data.statusCode  === 200) {
+            if (response.data.statusCode === 200) {
                 setRoomMembers(response.data.data);
             } else {
                 Toast.show({
@@ -599,76 +599,74 @@ const RoomDetail = () => {
                 backgroundColor: "#F9FAFB",
             }}
         >
-            {isLoading ?
-                <ActivityIndicator size={'large'} color={'#171717'}></ActivityIndicator>
-                :
-                <SafeAreaView style={{ flex: 1 }}>
-                    <ScrollView style={{ flex: 1 }}>
-                        <Button
-                            style={{ width: 100, marginBottom: 20 }}
-                            text="Quay Lại"
-                            onPress={() => navigation.goBack()}
-                        ></Button>
-                        <View style={{ marginBottom: 20 }}>
-                            <Text style={{ fontWeight: "bold", fontSize: 20, marginBottom: 5 }}>
-                                Thông tin căn hộ
+            <SafeAreaView style={{ flex: 1 }}>
+                <ScrollView style={{ flex: 1 }}>
+                    <Button
+                        style={{ width: 100, marginBottom: 20 }}
+                        text="Quay Lại"
+                        onPress={() => navigation.goBack()}
+                    ></Button>
+                    <View style={{ marginBottom: 20 }}>
+                        <Text style={{ fontWeight: "bold", fontSize: 20, marginBottom: 5 }}>
+                            Thông tin căn hộ
+                        </Text>
+                        <Text>Thông tin chi tiết của căn hộ <Text style={{ fontWeight: 'bold', fontSize: SIZES.medium - 2 }}>{roomNumber} </Text></Text>
+                    </View>
+                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', width: '100%' }}>
+                        <View style={{ width: '48%' }}>
+                            <Text style={{ marginBottom: 10, fontWeight: "600", fontSize: 16 }}>
+                                Số căn hộ
                             </Text>
-                            <Text>Thông tin chi tiết của căn hộ <Text style={{ fontWeight: 'bold', fontSize: SIZES.medium - 2 }}>{roomNumber} </Text></Text>
-                        </View>
-                        <View style={{ flexDirection: 'row', justifyContent: 'space-between', width: '100%' }}>
-                            <View style={{ width: '48%' }}>
-                                <Text style={{ marginBottom: 10, fontWeight: "600", fontSize: 16 }}>
-                                    Số căn hộ
-                                </Text>
-                                <Text style={{ color: '#9c9c9c', fontSize: 12, marginBottom: 10, }}>Số căn hộ không được trống.</Text>
-                                <Input
-                                    value={roomNumber} onChangeText={(text) => {
-                                        setRoomNumber(text);
-                                    }}
-                                    placeholder="Số căn hộ" style={[{ width: "100%" }]}
+                            <Text style={{ color: '#9c9c9c', fontSize: 12, marginBottom: 10, }}>Số căn hộ không được trống.</Text>
+                            <Input
+                                value={roomNumber} onChangeText={(text) => {
+                                    setRoomNumber(text);
+                                }}
+                                placeholder="Số căn hộ" style={[{ width: "100%" }]}
 
-                                ></Input>
-                                {/* {validationErrors.full_name && (
+                            ></Input>
+                            {/* {validationErrors.full_name && (
               <Text style={styles.errorText}>{validationErrors.full_name}</Text>
             )} */}
-                            </View>
-                            <View style={{ width: '48%' }}>
-                                <Text style={{ marginBottom: 10, fontWeight: "600", fontSize: 16 }}>
-                                    Toà nhà
-                                </Text>
-                                <Text style={{ color: '#9c9c9c', fontSize: 12, marginBottom: 6, }}>Tòa nhà không thể thay đổi.</Text>
-                                <Input
-                                    value={building?.name}
-                                    style={[{ width: "100%", backgroundColor: COLORS.buttonDisable }]}
-                                    editable={false}
-
-                                ></Input>
-                            </View>
                         </View>
-                        <View>
+                        <View style={{ width: '48%' }}>
                             <Text style={{ marginBottom: 10, fontWeight: "600", fontSize: 16 }}>
-                                Diện tích căn hộ
+                                Toà nhà
                             </Text>
-                            <Text style={{ color: '#9c9c9c', fontSize: 12, marginBottom: 6, }}>Diện tích căn hộ không được trống.</Text>
-                            <Input style={[{ width: "100%" }]}
-                                value={roomArea}
-                                onChangeText={(text) => {
-                                    setRoomArea(text);
-                                }}></Input>
-                            {/* {validationErrors.user_name && (
+                            <Text style={{ color: '#9c9c9c', fontSize: 12, marginBottom: 6, }}>Tòa nhà không thể thay đổi.</Text>
+                            <Input
+                                value={building?.name}
+                                style={[{ width: "100%", backgroundColor: COLORS.buttonDisable }]}
+                                editable={false}
+
+                            ></Input>
+                        </View>
+                    </View>
+                    <View>
+                        <Text style={{ marginBottom: 10, fontWeight: "600", fontSize: 16 }}>
+                            Diện tích căn hộ
+                        </Text>
+                        <Text style={{ color: '#9c9c9c', fontSize: 12, marginBottom: 6, }}>Diện tích căn hộ không được trống.</Text>
+                        <Input style={[{ width: "100%" }]}
+                            value={roomArea}
+                            onChangeText={(text) => {
+                                setRoomArea(text);
+                            }}></Input>
+                        {/* {validationErrors.user_name && (
               <Text style={styles.errorText}>{validationErrors.user_name}</Text>
             )} */}
+                    </View>
+                    <View style={{ marginTop: 4 }}>
+                        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: SIZES.small }}>
+                            <Text style={{ marginBottom: 10, fontWeight: "600", fontSize: 20 }}>
+                                Số thành viên ({numberOfResident})
+                            </Text>
+                            <Button text={addMember ? "Hủy bỏ" : "Thêm thành viên"} onPress={toggleAddMember} />
                         </View>
-                        <View style={{ marginTop: 4 }}>
-                            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: SIZES.small }}>
-                                <Text style={{ marginBottom: 10, fontWeight: "600", fontSize: 20 }}>
-                                    Số thành viên ({numberOfResident})
-                                </Text>
-                                <Button text={addMember ? "Hủy bỏ" : "Thêm thành viên"} onPress={toggleAddMember} />
-                            </View>
-                        </View>
+                    </View>
 
-                        {/* Member Card */}
+                    {/* Member Card */}
+                    {isLoading ? <ActivityIndicator size={'large'} color={'#171717'}></ActivityIndicator> :
                         <View id='member' style={{ width: '100%', flexDirection: 'row', gap: SIZES.small, marginVertical: SIZES.xSmall - 2, justifyContent: 'space-between' }}>
                             {numberOfResident === 0 ? <Owner /> :
                                 <FlatList
@@ -776,21 +774,22 @@ const RoomDetail = () => {
                                 <Button style={{ marginTop: 4 }} text="Huỷ" onPress={closeUpdate} color={COLORS.buttonRed} />
                             </View>}
                         </View>
+                    }
 
-                        {/* ACTION */}
-                        <View style={{ flexDirection: 'row', marginTop: 10, justifyContent: 'center' }}>
-                            <Button
-                                onPress={updateRoom}
-                                text="Cập nhật" style={[{
-                                    width: 100, marginRight: 10,
-                                }]}></Button>
-                            {/* <Button
+
+                    {/* ACTION */}
+                    <View style={{ flexDirection: 'row', marginTop: 10, justifyContent: 'center' }}>
+                        <Button
+                            onPress={updateRoom}
+                            text="Cập nhật" style={[{
+                                width: 100, marginRight: 10,
+                            }]}></Button>
+                        {/* <Button
                                 // onPress={handleDeleteAccount}
                                 text="Xóa" style={{ width: 100, backgroundColor: '#9b2c2c' }}></Button> */}
-                        </View>
-                    </ScrollView>
-                </SafeAreaView>
-            }
+                    </View>
+                </ScrollView>
+            </SafeAreaView>
         </View>
     )
 }
