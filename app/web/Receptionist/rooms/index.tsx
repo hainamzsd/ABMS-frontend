@@ -1,22 +1,25 @@
 import React, { useEffect, useState } from 'react'
-import { View, SafeAreaView, Text, FlatList, Button, TextInput, StyleSheet } from 'react-native'
-import RoomItem from '../../../../components/receptionist/rooms/roomItem';
-import RoomItemCard from '../../../../components/receptionist/rooms/roomItemCard';
-import SearchWithButton from '../../../../components/ui/searchWithButton';
+import { View, SafeAreaView, Text, FlatList, TextInput, StyleSheet } from 'react-native'
+// import RoomItem from '../../../../components/receptionist/rooms/roomItem';
+// import RoomItemCard from '../../../../components/receptionist/rooms/roomItemCard';
+// import SearchWithButton from '../../../../components/ui/searchWithButton';
+import Button from '../../../../components/ui/button';
 import { SIZES } from '../../../../constants';
 import { Link, router, useLocalSearchParams } from 'expo-router';
 import Toast from 'react-native-toast-message';
 import axios from 'axios';
 import { Building, Room } from '../../../../interface/roomType';
-import { Radio } from 'native-base';
+import { Badge, Radio, Button as ButtonBase } from 'native-base';
 import { user } from '../../../../interface/accountType';
 import { useAuth } from '../../context/AuthContext';
 import { jwtDecode } from 'jwt-decode';
+import { Cell, TableComponent, TableRow } from '../../../../components/ui/table';
 
 const RoomList = () => {
   const [data, setData] = useState<Room[]>([]);
   const [building, setBuilding] = useState<Building>();
   const [isLoading, setIsLoading] = useState(false);
+  const headers = ["Số căn hộ", "Chủ căn hộ", "Diện tích căn hộ (m2)", "Số thành viên", ""];
   const { session } = useAuth();
   const user: user = jwtDecode(session as string);
 
@@ -106,6 +109,35 @@ const RoomList = () => {
       setFilteredRequests(data);
     }
   }, [searchQuery, data]);
+
+  const renderItem = ({ item }: { item: Room }) => {
+
+    return (
+      <TableRow>
+        <Cell> {item?.roomNumber ? <Badge>{item?.roomNumber}</Badge> : <Badge colorScheme="warning">Căn hộ mới</Badge>}</Cell>
+        <Cell>
+          {item?.accountStatus === 0 ? <Badge>Không có chủ căn hộ</Badge> :
+            <Badge colorScheme="error">{item?.accountName}</Badge>}
+        </Cell>
+        <Cell><Badge colorScheme="info">{`${item?.roomArea}`}</Badge></Cell>
+        <Cell><Badge>{item?.numberOfResident}</Badge></Cell>
+        <Cell>
+          {item?.accountStatus === 0
+            ? <ButtonBase onPress={() => router.push({
+              pathname: '/web/Receptionist/accounts/create',
+              params: {
+                roomId: item?.id,
+                roomNumber: item?.roomNumber,
+                roomArea: item?.roomArea
+              }
+            })}>Thêm chủ căn hộ</ButtonBase>
+            : <ButtonBase variant="subtle" colorScheme="dark" onPress={() => router.push(`/web/Receptionist/rooms/${item?.id}`)}>Chi tiết</ButtonBase>
+          }
+        </Cell>
+      </TableRow>
+    )
+
+  }
   return (
     <View style={{ flex: 1, backgroundColor: '#F9FAFB', paddingTop: 30, paddingHorizontal: 30 }}>
       <SafeAreaView style={{ height: '100%' }}>
@@ -118,7 +150,7 @@ const RoomList = () => {
             <TextInput
               style={styles.searchInput}
               placeholderTextColor={'black'}
-              placeholder="Tìm theo mã căn hộ"
+              placeholder="Tìm theo số căn hộ"
               value={searchQuery}
               onChangeText={(text) => setSearchQuery(text)}
             />
@@ -126,20 +158,11 @@ const RoomList = () => {
         </View>
         {!filteredRequests.length ? (
           <Text style={{ marginBottom: 10, fontSize: 18, fontWeight: '600' }}>Chưa có dữ liệu</Text>
-        ) : (<FlatList
+        ) : (<TableComponent headers={headers}><FlatList
           data={filteredRequests}
-          renderItem={({ item }: { item: any }) => (
-            <RoomItem
-              floor={1}
-              data={item}
-              isLoading={isLoading}
-              setIsLoading={setIsLoading}
-            />
-          )}
-          numColumns={8}
-          keyExtractor={(item) => item?.id}
-          columnWrapperStyle={{ gap: 30 }}
-        />)}
+          renderItem={renderItem}
+          keyExtractor={(item) => item.id}
+        /></TableComponent>)}
 
       </SafeAreaView>
       {/* Paging */}
