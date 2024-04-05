@@ -5,7 +5,7 @@ import Button from '../../../../components/ui/button'
 import { router, useLocalSearchParams, useNavigation } from 'expo-router'
 import { Badge, Divider, Select, TextArea } from 'native-base'
 import { CheckIcon } from 'lucide-react-native'
-import { COLORS } from '../../../../constants'
+import { COLORS, SIZES } from '../../../../constants'
 import { Button as ButtonBase } from 'native-base'
 import axios from 'axios'
 import { API_BASE, actionController } from '../../../../constants/action'
@@ -241,23 +241,23 @@ const BillDetail = () => {
                     <View style={{ marginVertical: 12 }}>
                         <Text style={{ fontWeight: "600", fontSize: 16 }}>Chi tiết hoá đơn</Text>
                     </View>
-                    <TableComponent headers={headers}>
-                        <FlatList
-                            data={bill?.detail}
-                            renderItem={renderItem}
-                            keyExtractor={(item) => item.service_name}
-                        />
-                        <TableRow>
-                            <Cell>Tổng hoá đơn</Cell>
-                            <Cell>...</Cell>
-                            <Cell>...</Cell>
-                            <Cell><Badge variant="outline" colorScheme="success" _text={{fontSize: 14}}>{`${moneyFormat(bill?.total || 0)} VNĐ`}</Badge></Cell>
-                        </TableRow>
-                    </TableComponent>
+                    {bill?.detail.length || 0 > 0 ?
+                        <TableComponent headers={headers}>
+                            <FlatList
+                                data={bill?.detail}
+                                renderItem={renderItem}
+                                keyExtractor={(item) => item.service_name}
+                            />
+                            <TableRow>
+                                <Cell>Tổng hoá đơn</Cell>
+                                <Cell>...</Cell>
+                                <Cell>...</Cell>
+                                <Cell><Badge variant="outline" colorScheme="success" _text={{fontSize: 14}}>{`${moneyFormat(bill?.total || 0)} VNĐ`}</Badge></Cell>
+                            </TableRow>
+                        </TableComponent> : <View><Text style={{ fontSize: SIZES.medium, color: COLORS.gray, fontStyle: 'italic', textAlign: 'center' }}>Hiện chưa có chi phí nào.</Text></View>}
                     {/* <Divider mt={4} /> */}
                     <View style={{ flexDirection: 'row', marginTop: 10, gap: 8, justifyContent: 'center' }}>
                         <ButtonBase colorScheme="success" onPress={handleUpdateBill}>Cập nhập hoá đơn</ButtonBase>
-                        {/* <ButtonBase colorScheme="danger" onPress={handleDeleteBill}>Xoá hoá đơn</ButtonBase> */}
                     </View>
                 </ScrollView>
             </SafeAreaView>

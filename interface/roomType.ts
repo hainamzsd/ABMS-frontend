@@ -1,6 +1,8 @@
 export interface Room {
   id: string;
   accountId: string;
+  accountName: string;
+  accountStatus: number;
   buildingId: string | null;
   roomNumber: string;
   roomArea: number;
