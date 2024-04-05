@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { View, SafeAreaView, Text, FlatList, TextInput, StyleSheet } from 'react-native'
+import { View, SafeAreaView, Text, FlatList, TextInput, StyleSheet, ScrollView } from 'react-native'
 // import RoomItem from '../../../../components/receptionist/rooms/roomItem';
 // import RoomItemCard from '../../../../components/receptionist/rooms/roomItemCard';
 // import SearchWithButton from '../../../../components/ui/searchWithButton';
@@ -14,6 +14,8 @@ import { user } from '../../../../interface/accountType';
 import { useAuth } from '../../context/AuthContext';
 import { jwtDecode } from 'jwt-decode';
 import { Cell, TableComponent, TableRow } from '../../../../components/ui/table';
+import { paginate } from '../../../../utils/pagination';
+import Input from '../../../../components/ui/input';
 
 const RoomList = () => {
   const [data, setData] = useState<Room[]>([]);
@@ -96,7 +98,7 @@ const RoomList = () => {
     }
   };
 
-  //search box
+  //Search box
   const [searchQuery, setSearchQuery] = useState('');
   const [filteredRequests, setFilteredRequests] = useState<Room[]>([]);
   useEffect(() => {
@@ -110,11 +112,16 @@ const RoomList = () => {
     }
   }, [searchQuery, data]);
 
+  // Paging
+  const itemsPerPage = 10;
+  const [currentPage, setCurrentPage] = useState(1);
+  const { currentItems, totalPages } = paginate(filteredRequests, currentPage, itemsPerPage)
+
   const renderItem = ({ item }: { item: Room }) => {
 
     return (
       <TableRow>
-        <Cell> {item?.roomNumber ? <Badge>{item?.roomNumber}</Badge> : <Badge colorScheme="warning">Căn hộ mới</Badge>}</Cell>
+        <Cell> {item?.roomNumber ? <Badge>{item?.roomNumber}</Badge> : <Badge variant="outline" colorScheme="warning">Căn hộ mới</Badge>}</Cell>
         <Cell>
           {item?.accountStatus === 0 ? <Badge>Không có chủ căn hộ</Badge> :
             <Badge colorScheme="error">{item?.accountName}</Badge>}
@@ -140,32 +147,38 @@ const RoomList = () => {
   }
   return (
     <View style={{ flex: 1, backgroundColor: '#F9FAFB', paddingTop: 30, paddingHorizontal: 30 }}>
-      <SafeAreaView style={{ height: '100%' }}>
-        <View style={{}}>
-          <View style={{ marginBottom: 10 }}>
-            <Text style={{ fontWeight: 'bold', fontSize: 20, marginBottom: 5 }}>Danh sách căn hộ ở Tòa {building?.name}</Text>
-            <Text>Thông tin các căn phòng</Text>
+      <SafeAreaView style={{ flex: 1 }}>
+        <ScrollView style={{flex: 1, width: '100%', height: '100%'}}>
+          <View style={{}}>
+            <View style={{ marginBottom: 10 }}>
+              <Text style={{ fontWeight: 'bold', fontSize: 20, marginBottom: 5 }}>Danh sách căn hộ ở Tòa {building?.name}</Text>
+              <Text>Thông tin các căn phòng</Text>
+            </View>
+            <View style={{width: '100%', marginVertical: SIZES.xSmall}}>
+              <Input placeholder="Tìm kiếm theo số căn hộ" value={searchQuery}
+                onChangeText={(text) => setSearchQuery(text)} style={{ paddingVertical: 10 }}/>
+            </View>
           </View>
-          <View style={styles.searchContainer}>
-            <TextInput
-              style={styles.searchInput}
-              placeholderTextColor={'black'}
-              placeholder="Tìm theo số căn hộ"
-              value={searchQuery}
-              onChangeText={(text) => setSearchQuery(text)}
-            />
-          </View>
-        </View>
-        {!filteredRequests.length ? (
-          <Text style={{ marginBottom: 10, fontSize: 18, fontWeight: '600' }}>Chưa có dữ liệu</Text>
-        ) : (<TableComponent headers={headers}><FlatList
-          data={filteredRequests}
-          renderItem={renderItem}
-          keyExtractor={(item) => item.id}
-        /></TableComponent>)}
 
+          {!filteredRequests.length ? (
+            <Text style={{ marginBottom: 10, fontSize: 18, fontWeight: '600' }}>Chưa có dữ liệu</Text>
+          ) : (<TableComponent headers={headers}><FlatList
+            data={currentItems}
+            renderItem={renderItem}
+            keyExtractor={(item) => item?.id}
+          /></TableComponent>)}
+
+          <View style={{ flexDirection: 'row', alignItems: "center", justifyContent: 'center', marginTop: 20 }}>
+            <Button text="Trước"
+              style={{ width: 50 }}
+              onPress={() => setCurrentPage((prev) => Math.max(prev - 1, 1))} disabled={currentPage === 1} />
+            <Text style={{ marginHorizontal: 10, fontWeight: "600" }}>
+              Page {currentPage} of {totalPages}
+            </Text>
+            <Button text="Sau" onPress={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))} disabled={currentPage === totalPages} />
+          </View>
+        </ScrollView>
       </SafeAreaView>
-      {/* Paging */}
     </View>
   )
 }
