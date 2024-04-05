@@ -55,7 +55,10 @@ const BillDashboard = () => {
         } else {
             setFilterRequest(serviceCharges);
         }
+    }, [searchQuery, serviceCharges])
 
+    // Filter
+    useEffect(() => {
         if (filterQuery !== "") {
             let filtered: ServiceCharge[] = [];
             switch (filterQuery) {
@@ -87,7 +90,7 @@ const BillDashboard = () => {
         } else {
             setFilterRequest(serviceCharges);
         }
-    }, [searchQuery, serviceCharges, filterQuery])
+    }, [filterQuery, serviceCharges])
 
     // GET: All Service Charge
     const fetchServiceCharge = async () => {

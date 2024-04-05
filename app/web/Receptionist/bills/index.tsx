@@ -45,7 +45,6 @@ const BillDashboard = () => {
 
     // Search
     useEffect(() => {
-
         if (searchQuery.trim() !== '') {
             const filtered = serviceCharges?.filter(item =>
                 item.room_number.toLowerCase().includes(searchQuery.toLowerCase())
@@ -54,7 +53,10 @@ const BillDashboard = () => {
         } else {
             setFilterRequest(serviceCharges);
         }
+    }, [searchQuery, serviceCharges])
 
+    // Filter
+    useEffect(() => {
         if (filterQuery !== "") {
             let filtered: ServiceCharge[] = [];
             switch (filterQuery) {
@@ -86,7 +88,7 @@ const BillDashboard = () => {
         } else {
             setFilterRequest(serviceCharges);
         }
-    }, [searchQuery, serviceCharges, filterQuery])
+    }, [filterQuery, serviceCharges])
 
     // GET: All Service Charge
     const fetchServiceCharge = async () => {
