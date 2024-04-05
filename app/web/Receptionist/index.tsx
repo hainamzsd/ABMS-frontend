@@ -28,6 +28,7 @@ interface Report {
   totalElevatorRequests: number
   totalConstructionRequests: number
   totalVisitorRequests: number
+  totalFee:number
 }
 
 interface Building{
@@ -52,6 +53,7 @@ const Dashboard = () => {
   const formattedCurrentDate = currentDate.toISOString().split("T")[0];
   const [isHotlineAlert, setIsHotlineAlert] = useState(false);
   const [isUtilityAlert, setIsUtilityAlert] = useState(false);
+  const [isFeeAlert, setFeeAlert] = useState(false);
   setCalendarLocale('vi')
   useEffect(() => {
     const report = async () => {
@@ -70,6 +72,9 @@ const Dashboard = () => {
           }
           if(response.data.data.totalUtilities==0){
             setIsUtilityAlert(true);
+          }
+          if(response.data.data.totalFee==0){
+            setFeeAlert(true);
           }
         }
         else {
@@ -152,7 +157,27 @@ const Dashboard = () => {
                </HStack>
                </TouchableOpacity>
              </Box>}
-           
+             {isFeeAlert &&
+               <Box p={3} borderRadius={'lg'} backgroundColor={'white'} shadow={4} w="20%" >
+               <TouchableOpacity
+                onPress={()=>{
+                  router.push('/web/Receptionist/fees/')
+                }}>
+             <HStack justifyContent="space-between" alignItems="center">
+               <VStack>
+                 <HStack alignItems="center">
+                   <AlertTriangle  color="red"  />
+                   <Text fontSize="sm" color="red.500" fontWeight="semibold"
+                   numberOfLines={2} ellipsizeMode="tail">
+                     Nhắc nhở: Tòa nhà chưa có phí dịch vụ
+                   </Text>
+                 </HStack>
+                 <Text fontSize="xs" color="gray.500"
+                 numberOfLines={2}>Tạo phí dịch vụ ngay.</Text>
+               </VStack>
+               </HStack>
+               </TouchableOpacity>
+             </Box>}
              
             <HStack space={2}>
               <StatisticCard number={report?.totalRooms} statisticName='Phòng'
