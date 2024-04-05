@@ -18,24 +18,35 @@ import { Bike } from 'lucide-react-native'
 import moment from 'moment'
 import { formatVND, moneyFormat } from '../../../../utils/moneyFormat'
 import * as yup from 'yup'
+import { ActivityIndicator } from 'react-native-paper'
+import { isDateInFuture, isSecondDateLarger } from '../../../../utils/compareDate'
 
-
+interface ValidationErrorDetails {
+    path: string;
+    message: string;
+  }
+  
+  interface ValidationErrors {
+    [key: string]: string;
+  }
+  
 
 const feeSchema = yup.object().shape({
     name: yup.string().required('Tên khoản phí là bắt buộc'),
     money: yup.number().required('Chi phí là bắt buộc').positive('Chi phí phải là số dương'),
     effectiveDate: yup.string().required('Ngày có hiệu lực là bắt buộc').matches(/^(0[1-9]|1[0-2])\/(0[1-9]|[12]\d|3[01])\/\d{4}$/, 'Ngày có hiệu lực không hợp lệ (mm/dd/yyyy)'),
     expireDate: yup.string().nullable().when('effectiveDate', {
-        is: (effectiveDate: string) => effectiveDate !== '', 
+        is: (effectiveDate: string) => effectiveDate !== '',
         then: (schema) => schema
-          .matches(/^(0[1-9]|1[0-2])\/(0[1-9]|[12]\d|3[01])\/\d{4}$/, 'Invalid format')
-          .required('Required if effectiveDate is set'),
+          .matches(/^(0[1-9]|1[0-2])\/(0[1-9]|[12]\d|3[01])\/\d{4}$/, 'Ngày có hết hạn không hợp lệ (mm/dd/yyyy)')
+          .required('Ngày hết hạn không được để trống')
       }),
     description: yup.string().max(255, 'Mô tả không được quá 255 ký tự'),
   });
 const FeeDashboard = () => {
     const { session } = useAuth();
     const user: user = jwtDecode(session as string);
+    const [isAssigning, setIsAssigning] = useState(false);
     // STATE
     const [isLoading, setIsLoading] = useState(false);
     const [isUpdate, setIsUpdate] = useState(false);
@@ -118,15 +129,22 @@ const FeeDashboard = () => {
 
     const assignFee = async () => {
         try {
-            const response = await axios.post(`https://abmscapstone2024.azurewebsites.net/api/v1/AssignFeesToBuildingRooms?buildingId=${user.BuildingId}`, {
-                timeout: 10000,
-                withCredentials: true,
-                headers: {
+            setIsAssigning(true);
+            const response = await axios.post(
+                `https://abmscapstone2024.azurewebsites.net/api/v1/AssignFeesToBuildingRooms?buildingId=${user.BuildingId}`,
+                null,
+                {
+                  timeout: 10000,
+                  withCredentials: true,
+                  headers: {
                     'Authorization': `Bearer ${session}`
+                  }
                 }
-            });
+              );
+            console.log(response);
             if (response.data.statusCode  === 200) {
                 ToastSuccess('Gán phí thành công');
+                checkRoomFee();
             } else {
                 ToastFail('Lỗi gán phí');
             }
@@ -137,6 +155,7 @@ const FeeDashboard = () => {
             console.error('Error fetching posts data:', error);
             ToastFail('Lỗi gán phí')
         } finally {
+            setIsAssigning(false);
         }
     }
     
@@ -144,23 +163,37 @@ const FeeDashboard = () => {
     //POST:create
     const handleCreate = async () => {
         setIsLoading(true);
-        await feeSchema.validate({
-            name: nameCreate,
-            money: priceCreate,
-            effectiveDate: effectiveDateCreate,
-            expireDate: expireDateCreate,
-            description: descriptionCreate,
-        }, { abortEarly: false });
-        const bodyData = {
-            feeName: nameCreate,
-            buildingId: user?.BuildingId,
-            price: priceCreate,
-            unit: "VND",
-            effectiveDate: effectiveDateCreate,
-            expireDate: expireDateCreate,
-            description: descriptionCreate
+        setValidationErrors({});
+        if(!isSecondDateLarger(effectiveDateCreate,expireDateCreate)){
+            ToastFail('Ngày hết hiệu lực phải lớn hơn ngày có hiệu lực');
+            setIsLoading(false);
+            return;
+        }
+        if(!isDateInFuture(expireDateCreate)){
+            ToastFail('Ngày hết hiệu lực phải lớn hơn ngày hiện tại');
+            setIsLoading(false);
+            return;
         }
         try {
+            // Move validation inside the try block
+            await feeSchema.validate({
+                name: nameCreate,
+                money: priceCreate,
+                effectiveDate: effectiveDateCreate,
+                expireDate: expireDateCreate,
+                description: descriptionCreate,
+            }, { abortEarly: false });
+    
+            const bodyData = {
+                feeName: nameCreate,
+                buildingId: user?.BuildingId,
+                price: priceCreate,
+                unit: "VND",
+                effectiveDate: effectiveDateCreate,
+                expireDate: expireDateCreate,
+                description: descriptionCreate
+            };
+    
             const response = await axios.post(`${API_BASE}/${actionController.FEE}/create`, bodyData, {
                 timeout: 10000,
                 withCredentials: true,
@@ -168,8 +201,10 @@ const FeeDashboard = () => {
                     'Authorization': `Bearer ${session}`
                 }
             });
-            if (response.data.statusCode  === 200) {
-                ToastSuccess('Tạo thông tin khoản phí thành công')
+    
+            if (response.data.statusCode === 200) {
+                ToastSuccess('Tạo thông tin khoản phí thành công');
+                // Reset the fields and errors
                 setValidationErrors({});
                 setNameCreate("");
                 setPriceCreate(undefined);
@@ -177,51 +212,68 @@ const FeeDashboard = () => {
                 setEffectiveDateCreate("");
                 setExpireDateCreate("");
                 setDescriptionCreate("");
+                // Fetch updated data
                 fetchFee();
                 checkRoomFee();
             } else {
                 ToastFail('Lỗi lấy tạo thông tin khoản phí');
             }
         } catch (error:any) {
-            if (error.name === 'ValidationError') {
+            if (error && error.name === 'ValidationError' && error.inner) {
                 const errors:any = {};
-                error.inner.forEach((err: any) => {
-                  errors[err.path] = err.message;
+                error.inner.forEach((err:any) => {
+                    if (err.path && err.message) {
+                        errors[err.path] = err.message;
+                    }
                 });
                 setValidationErrors(errors);
-              }
-            if (axios.isCancel(error)) {
-                ToastFail('Hệ thống lỗi! Vui lòng thử lại sau')
+            } else if (axios.isCancel(error)) {
+                ToastFail('Hệ thống lỗi! Vui lòng thử lại sau');
+            } else {
+                console.error('Error creating fee data:', error);
+                ToastFail('Lỗi khi tạo thông tin khoản phí');
             }
-            console.error('Error updating fees data:', error);
-            ToastFail('Lỗi lấy tạo thông tin khoản phí')
         } finally {
-            setIsLoading(false); // Set loading state to false regardless of success or failure
-            setIsCreateModal(false);
+            setIsLoading(false);
+            // Consider whether you want to close the modal here
         }
-    }
+    };
 
 
     // PUT: update fee
     const updateFee = async () => {
         setIsLoading(true);
-        await feeSchema.validate({
-            name: name,
-            money: price,
-            effectiveDate: effectiveDate,
-            expireDate: expireDate,
-            description: description,
-        }, { abortEarly: false });
-        const bodyData = {
-            feeName: name,
-            buildingId: user?.BuildingId,
-            price: price,
-            unit: "VND",
-            effectiveDate: effectiveDate,
-            expireDate: expireDate,
-            description: description
+        setValidationErrors({}); // Clear previous errors
+        if(!isSecondDateLarger(effectiveDate,expireDate)){
+            ToastFail('Ngày hết hiệu lực phải lớn hơn ngày có hiệu lực');
+            setIsLoading(false);
+            return;
+        }
+        if(!isDateInFuture(expireDate)){
+            ToastFail('Ngày hết hiệu lực phải lớn hơn ngày hiện tại');
+            setIsLoading(false);
+            return;
         }
         try {
+            // Validate first
+            await feeSchema.validate({
+                name: name,
+                money: price,
+                effectiveDate: effectiveDate,
+                expireDate: expireDate,
+                description: description,
+            }, { abortEarly: false });
+    
+            const bodyData = {
+                feeName: name,
+                buildingId: user?.BuildingId,
+                price: price,
+                unit: "VND",
+                effectiveDate: effectiveDate,
+                expireDate: expireDate,
+                description: description
+            };
+    
             const response = await axios.put(`${API_BASE}/${actionController.FEE}/update/${feeId}`, bodyData, {
                 timeout: 10000,
                 withCredentials: true,
@@ -229,29 +281,66 @@ const FeeDashboard = () => {
                     'Authorization': `Bearer ${session}`
                 }
             });
-            if (response.data.statusCode  === 200) {
-                ToastSuccess('Cập nhật thông tin khoản phí thành công')
+    
+            if (response.data.statusCode === 200) {
+                ToastSuccess('Cập nhật thông tin khoản phí thành công');
+
             } else {
-                ToastFail('Lỗi lấy cập nhập thông tin khoản phí');
+                ToastFail('Lỗi lấy cập nhật thông tin khoản phí');
             }
         } catch (error:any) {
-            if (error.name === 'ValidationError') {
+            if (error && error.name === 'ValidationError' && error.inner) {
                 const errors:any = {};
-                error.inner.forEach((err: any) => {
-                  errors[err.path] = err.message;
+                error.inner.forEach((err:any) => {
+                    if (err.path && err.message) {
+                        errors[err.path] = err.message;
+                    }
                 });
                 setValidationErrors(errors);
-              }
+            } else if (axios.isCancel(error)) {
+                ToastFail('Hệ thống lỗi! Vui lòng thử lại sau');
+            } else {
+                console.error('Error updating fees data:', error);
+                ToastFail('Lỗi cập nhật thông tin khoản phí');
+            }
+        } finally {
+            setIsLoading(false);
+        }
+    };
+    //deleteAssign
+    const [showDeleteAssign, setShowDeleteAssign] = useState(false);
+    const handleDeleteAssign = async ()=>{
+        setIsLoading(true);
+        try {
+            const response = await axios.delete(`https://abmscapstone2024.azurewebsites.net/api/v1/DeleteRoomServicesInBuilding/${user.BuildingId}`, {
+                timeout: 10000,
+                withCredentials: true,
+                headers: {
+                    'Authorization': `Bearer ${session}`
+                }
+            });
+            if (response.data.statusCode  === 200) {
+                ToastSuccess('Xoá thành công')
+                fetchFee();
+                checkRoomFee();
+            } 
+            else if(response.data.statusCode ===404){
+                ToastFail('Không có phí nào được gán với các phòng, vui lòng bấm nút gán phí trước');
+            }
+            else {
+                ToastFail("Xóa không thành công");
+            }
+        } catch (error) {
             if (axios.isCancel(error)) {
                 ToastFail('Hệ thống lỗi! Vui lòng thử lại sau')
             }
-            console.error('Error updating fees data:', error);
-            ToastFail('Lỗi lấy cập nhập thông tin các khoản phí')
+            console.error('Error fetching posts data:', error);
+            ToastFail('Lỗi xoá thông tin khoản phí')
         } finally {
-            setIsLoading(false); // Set loading state to false regardless of success or failure
+            setIsLoading(false); 
+            setShowDeleteAssign(false);
         }
     }
-
     //Delete
     const [showDelete, setShowDelete] = useState(false);
     const cancelRef = React.useRef(null);
@@ -411,8 +500,13 @@ const FeeDashboard = () => {
                             <Button 
                             color='#276749'
                             text={'Gán biểu phí cho từng phòng'} onPress={()=>assignFee()} />
+                             <Button 
+                            color='#9b2c2c'
+                            text={'Xóa biểu phí cho tất cả các phòng'} onPress={()=>setShowDeleteAssign(true)} />
                         </View>
                     </View>
+                    {isAssigning && <ActivityIndicator size={'large'} color='#191919'/>}
+                    {isLoading && <ActivityIndicator size={'large'} color='#191919'/>}
                     {unassignedRoom.length>0 &&
                          <Box bg="white"  rounded={8} p={4}>
                          <HStack alignItems="center" space={4}>
@@ -508,11 +602,16 @@ const FeeDashboard = () => {
                 </Modal.Content>
             </Modal>
 {/* Create */}
-            <Modal isOpen={isCreateModal} onClose={() => setIsCreateModal(false)} justifyContent="center" top="4" size="lg">
+            <Modal isOpen={isCreateModal} onClose={() => 
+                {
+                    setIsCreateModal(false)
+                    setValidationErrors({})
+                    }} justifyContent="center" top="4" size="lg">
                 <Modal.Content>
                     <Modal.CloseButton />
                     <Modal.Header>Tạo thông tin khoản phí</Modal.Header>
                     <Modal.Body>
+                    {isLoading && <ActivityIndicator size={'large'} color='#191919'/>}
                     <FormControl mt="3">
             <FormControl.Label>Loại phí</FormControl.Label>
             <Select
@@ -593,6 +692,7 @@ const FeeDashboard = () => {
                         <ButtonNative.Group space={2}>
                             <ButtonNative variant="ghost" colorScheme="blueGray" onPress={() => {
                                 setIsCreateModal(false);
+                                setValidationErrors({})
                             }}>
                                 Hủy bỏ
                             </ButtonNative>
@@ -606,14 +706,21 @@ const FeeDashboard = () => {
                 </Modal.Content>
             </Modal>
             {/* Update */}
-            <Modal isOpen={isUpdateModal} onClose={() => setIsUpdateModal(false)} justifyContent="center" top="4" size="lg">
+            <Modal isOpen={isUpdateModal} onClose={() => 
+                {setIsUpdateModal(false)
+                    setValidationErrors({})
+                }} justifyContent="center" top="4" size="lg">
                 <Modal.Content>
                     <Modal.CloseButton />
                     <Modal.Header>Cập nhật thông tin khoản phí</Modal.Header>
                     <Modal.Body>
+                    {isLoading && <ActivityIndicator size={'large'} color='#191919'/>}
                         <FormControl mt="3">
                             <FormControl.Label>Tên khoản phí</FormControl.Label>
                             <Input value={name} onChangeText={(text) => setName(text)} />
+                            {validationErrors.name  && (
+                            <Text style={{color:'red'}}>{validationErrors.name}</Text>
+                        )}
                         </FormControl>
                         <FormControl mt="3">
                             <FormControl.Label>Chi phí</FormControl.Label>
@@ -622,30 +729,43 @@ const FeeDashboard = () => {
                              value={displayMoneyUpdate}
                              onChangeText={handleTextChangeUpdate}
                              keyboardType="numeric" />
+                         {validationErrors.money  && (
+                            <Text style={{color:'red'}}>{validationErrors.money}</Text>
+                        )}
                         </FormControl>
                         <FormControl mt="3">
                             <FormControl.Label>Ngày có hiệu lực (mm/dd/yyyy)</FormControl.Label>
                             <Input value={effectiveDate} onChangeText={(text) => setEffectiveDate(text)} />
+                            {validationErrors.effectiveDate  && (
+                            <Text style={{color:'red'}}>{validationErrors.effectiveDate}</Text>
+                        )}
                         </FormControl>
                         <FormControl mt="3">
                             <FormControl.Label>Ngày hết hiệu lực (mm/dd/yyyy)</FormControl.Label>
                             <Input value={expireDate} onChangeText={(text) => setExpireDate(text)} placeholder={expireDate === "" ? "Nhập ngày hết hiệu lực" : ""} />
+                            {validationErrors.expireDate  && (
+                            <Text style={{color:'red'}}>{validationErrors.expireDate}</Text>
+                        )}
                         </FormControl>
                         <FormControl mt="3">
                             <FormControl.Label>Mô tả</FormControl.Label>
                             <Input value={description} onChangeText={(text) => setDescription(text)} placeholder={description === "" ? "Nhập mô tả" : ""} />
+                            {validationErrors.description  && (
+                            <Text style={{color:'red'}}>{validationErrors.description}</Text>
+                        )}
                         </FormControl>
+
                     </Modal.Body>
                     <Modal.Footer>
                         <ButtonNative.Group space={2}>
                             <ButtonNative variant="ghost" colorScheme="blueGray" onPress={() => {
                                 setIsUpdateModal(false);
+                                setValidationErrors({})
                             }}>
                                 Hủy bỏ
                             </ButtonNative>
                             <ButtonNative onPress={() => {
                                 updateFee();
-                                setIsUpdateModal(false);
                             }}>
                                 Cập nhật
                             </ButtonNative>
@@ -653,7 +773,22 @@ const FeeDashboard = () => {
                     </Modal.Footer>
                 </Modal.Content>
             </Modal>
-           
+           <AlertDialog leastDestructiveRef={cancelRef} isOpen={showDeleteAssign}
+            onClose={()=>setShowDeleteAssign(false)}>
+                    <AlertDialog.Content>
+                        <AlertDialog.CloseButton />
+                        <AlertDialog.Header>Xóa phí của phòng</AlertDialog.Header>
+                        <AlertDialog.Body>
+                            Hành động này sẽ xóa phí của các phòng. Sau khi xóa, bạn phải gán lại phí cho từng phòng. Bạn muốn tiếp tục không?
+                        </AlertDialog.Body>
+                        <AlertDialog.Footer>
+                                <Button text='Hủy' style={{marginRight:5}} onPress={()=>setShowDeleteAssign(false)}>
+                                </Button>
+                                <Button text='Xóa' color='#9b2c2c'  onPress={handleDeleteAssign}>
+                                </Button>
+                        </AlertDialog.Footer>
+                    </AlertDialog.Content>
+                </AlertDialog>
         </View >
     )
 }

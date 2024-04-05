@@ -16,6 +16,7 @@ import { ActivityIndicator } from 'react-native-paper'
 import { useAuth } from '../../context/AuthContext'
 import { user } from '../../../../interface/accountType'
 import { jwtDecode } from 'jwt-decode'
+import Toast from 'react-native-toast-message'
 
 const BillDashboard = () => {
     const months = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
@@ -31,7 +32,55 @@ const BillDashboard = () => {
     const [serviceCharges, setServiceCharges] = useState<ServiceCharge[]>([]);
     const [searchQuery, setSearchQuery] = useState("");
     const [filterRequest, setFilterRequest] = useState<ServiceCharge[]>([]);
-
+    useEffect(() => {
+      
+        const checkFee = async () => {
+            try {
+                const response = await axios.get(`https://abmscapstone2024.azurewebsites.net/api/v1/CheckUnassignedRoomServicesInBuilding/${user.BuildingId}`, {
+                timeout: 10000
+                })
+                const feeTotal = await axios.get(`https://abmscapstone2024.azurewebsites.net/api/v1/report/building-report/${user.BuildingId}`, {
+                    timeout: 10000
+                })
+                console.log(response)
+                if (response.data.statusCode === 200 && feeTotal.data.statusCode === 200) {
+                if(response.data.data){
+                    Toast.show({
+                        type: 'info',
+                        position: 'top',
+                        text1: 'Thông báo',
+                        text2: 'Chưa phòng nào được gán dịch vụ, vui lòng gán trước.',
+                        visibilityTime: 4000,
+                        autoHide: true, 
+                        topOffset: 30,
+                        bottomOffset: 40,
+                        onShow: () => {},
+                        onHide: () => {}
+                    
+                    })
+                    router.replace("/web/Receptionist/fees/")
+                }
+                if(feeTotal.data.data.totalFee==0){
+                    ToastFail('Chưa có dữ liệu phí, vui lòng tạo phí trước');
+                    router.replace("/web/Receptionist/fees/")
+                }
+                } else {
+                ToastFail('Lấy thông tin phí thất bại');
+                }
+            } catch (error) {
+                if (axios.isCancel(error)) {
+                ToastFail('Hệ thống lỗi! Vui lòng thử lại sau');
+                }
+                console.log("Fail to fetching service charge data", error);
+                ToastFail("Lỗi lấy thông tin phí");
+            }
+            finally {
+                setIsLoading(false);
+            }
+        }
+        checkFee()
+      }, [])
+      
     // Search
     useEffect(() => {
         if (searchQuery.trim() !== '') {
