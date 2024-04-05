@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { View, SafeAreaView, Text, FlatList } from 'react-native'
+import { View, SafeAreaView, Text, FlatList, ScrollView } from 'react-native'
 import Input from '../../../../components/ui/input';
 import PostItem from '../../../../components/ui/PostItem';
 import { posts } from "../../../../constants/fakeData"
@@ -15,6 +15,7 @@ import { actionController, API_BASE } from "../../../../constants/action"
 import { ToastFail } from '../../../../constants/toastMessage';
 import { COLORS, SIZES } from '../../../../constants';
 import { Link, router } from 'expo-router';
+import { truncateText } from '../../../../utils/truncate';
 
 const PostList = () => {
   const { session } = useAuth();
@@ -65,6 +66,7 @@ const PostList = () => {
   return (
     <View style={{ flex: 1, backgroundColor: '#F9FAFB' }}>
       <SafeAreaView style={{ flex: 1 }}>
+      <ScrollView style={{flex:1}}>
         <View style={{ paddingHorizontal: 30, paddingTop: 30 }}>
           <View style={{ marginBottom: 20 }}>
             <Text style={{ fontWeight: 'bold', fontSize: 20, marginBottom: 5 }}>Danh sách bài viết</Text>
@@ -85,16 +87,18 @@ const PostList = () => {
             renderItem={({ item }) => (
               <PostItem
                 title={item.title}
-                content={item.content}
+                content={item?.content}
                 imageUrl={item.image}
                 href={`/web/Receptionist/posts/${item.id}`}
                 date={moment.utc(item?.createTime).format("DD-MM-YYYY")}
+                status={item?.status}
               />
             )}
             keyExtractor={item => item.id} />
               : <View><Text style={{ fontSize: SIZES.medium, color: COLORS.gray, fontStyle: 'italic', textAlign: 'center' }}>Không tìm thấy bài viết.</Text></View>
             }
         </View>
+        </ScrollView>
       </SafeAreaView>
       {/* Paging */}
     </View>
