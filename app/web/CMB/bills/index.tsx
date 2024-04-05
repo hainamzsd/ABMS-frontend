@@ -17,6 +17,7 @@ import { useAuth } from '../../context/AuthContext'
 import { jwtDecode } from 'jwt-decode'
 import { user } from '../../../../interface/accountType'
 import { paginate } from '../../../../utils/pagination'
+import { filterBill } from '../../../../constants/filter'
 
 const BillDashboard = () => {
     const months = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
@@ -37,6 +38,7 @@ const BillDashboard = () => {
     const [filterRequest, setFilterRequest] = useState<ServiceCharge[]>([]);
     const [isOpenModal, setIsOpenModal] = useState(false);
     const [numberOfRooms, setNumberOfRooms] = useState(0);
+    const [filterQuery, setFilterQuery] = useState("");
 
     // Paging
     const itemsPerPage = 10;
@@ -53,7 +55,39 @@ const BillDashboard = () => {
         } else {
             setFilterRequest(serviceCharges);
         }
-    }, [searchQuery, serviceCharges])
+
+        if (filterQuery !== "") {
+            let filtered: ServiceCharge[] = [];
+            switch (filterQuery) {
+                case '1':
+                    filtered = [...serviceCharges].sort((a, b) => a.total_price - b.total_price);
+                    break; // Add break statement to prevent fall-through
+                case '2':
+                    filtered = [...serviceCharges].sort((a, b) => b.total_price - a.total_price);
+                    break; // Add break statement to prevent fall-through
+                case '3':
+                    filtered = serviceCharges.slice().sort((a, b) => {
+                        if (a.year === b.year) {
+                            return a.month - b.month;
+                        } else {
+                            return a.year - b.year;
+                        }
+                    });
+                    break;
+                case '4':
+                    filtered = serviceCharges.slice().sort((a, b) => {
+                        if (a.year === b.year) {
+                            return b.month - a.month;
+                        } else {
+                            return b.year - a.year;
+                        }
+                    })
+            }
+            setFilterRequest(filtered);
+        } else {
+            setFilterRequest(serviceCharges);
+        }
+    }, [searchQuery, serviceCharges, filterQuery])
 
     // GET: All Service Charge
     const fetchServiceCharge = async () => {
@@ -227,6 +261,7 @@ const BillDashboard = () => {
     const handleCancelFilter = () => {
         setMonth("");
         setYear("");
+        setFilterQuery("");
         fetchServiceCharge();
     }
 
@@ -284,7 +319,15 @@ const BillDashboard = () => {
                                     <Select.Item key={item} label={`${item}`} value={`${item}`} />
                                 ))}
                             </Select>
-                            {(month !== "" || year !== "") && <ButtonBase onPress={handleCancelFilter} style={{marginTop: 4}} height="35">Huỷ lọc</ButtonBase>}
+                            <Select selectedValue={filterQuery} maxWidth={200} accessibilityLabel="Lọc" placeholder="Lọc" _selectedItem={{
+                                bg: "teal.600",
+                                endIcon: <CheckIcon size="5" />
+                            }} mt={1} onValueChange={itemValue => setFilterQuery(itemValue)}>
+                                {filterBill.map((item) => (
+                                    <Select.Item key={item.value} label={item.name} value={item.value} />
+                                ))}
+                            </Select>
+                            {(month !== "" || year !== "" || filterQuery !== "") && <ButtonBase onPress={handleCancelFilter} style={{ marginTop: 4 }} height="35">Huỷ lọc</ButtonBase>}
                         </View>
                     </View>
                     {isLoading ? <ActivityIndicator size="large" color={COLORS.primary} /> :
