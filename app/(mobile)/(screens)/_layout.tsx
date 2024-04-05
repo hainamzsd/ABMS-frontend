@@ -1,5 +1,5 @@
-import { Stack } from "expo-router";
-import { Text, View } from "react-native";
+import { router, Stack } from "expo-router";
+import { Platform, Text, View } from "react-native";
 import { Redirect } from "expo-router";
 import styles from "../styles/indexStyles";
 import { useTheme } from "../context/ThemeContext";
@@ -10,6 +10,7 @@ import LoadingComponent from "../../../components/resident/loading";
 import { jwtDecode } from "jwt-decode";
 import { useEffect } from "react";
 import { useSession } from "../context/AuthContext";
+import Toast from "react-native-toast-message";
 
 interface User{
   FullName:string;
@@ -34,8 +35,23 @@ export default function AppLayout() {
   if(session){
     const user: User = jwtDecode(session as string);
     if (user.Status === "0" || user.Role !== "3") {
+      Toast.show({
+        type: 'error',
+        position: 'top',
+        text1: 'Lỗi',
+        text2: 'Tài khoản này không được đăng nhập.',
+        visibilityTime: 4000,
+        autoHide: true, 
+        topOffset: 30,
+        bottomOffset: 40,
+        onShow: () => {},
+        onHide: () => {}
+      })
       signOut();
     }
+  }
+  if(Platform.OS === 'web'){
+    return <Redirect href="/web/login" />;
   }
   
 
