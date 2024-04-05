@@ -180,9 +180,8 @@ const CreatePost = () => {
                                     bg: "teal.600",
                                     endIcon: <CheckIcon size={5} />
                                 }} mt="1">
-                                    <Select.Item label="UX Research" value="1" />
-                                    <Select.Item label="Web Development" value="2" />
-                                    <Select.Item label="Cross Platform Development" value="3" />
+                                    <Select.Item label="Bài viết" value="1" />
+                                    <Select.Item label="Thông báo" value="2" />
                                 </Select>
                                 {/* <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>
                                     Bắt buộc chọn thể loại

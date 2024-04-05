@@ -5,7 +5,7 @@ import Button from '../../../../components/ui/button'
 import { router, useLocalSearchParams, useNavigation } from 'expo-router'
 import { Badge, Divider, Select, TextArea } from 'native-base'
 import { CheckIcon } from 'lucide-react-native'
-import { COLORS } from '../../../../constants'
+import { COLORS, SIZES } from '../../../../constants'
 import { Button as ButtonBase } from 'native-base'
 import axios from 'axios'
 import { API_BASE, actionController } from '../../../../constants/action'
@@ -17,7 +17,6 @@ import { Cell, TableComponent, TableRow } from '../../../../components/ui/table'
 
 const BillDetail = () => {
     const [isLoading, setIsLoading] = useState(false);
-    const [roomId, setRoomId] = useState();
     const [description, setDescription] = useState("");
     const [status, setStatus] = useState('');
     const [bill, setBill] = useState<ServiceChargeTotal>();
@@ -33,6 +32,7 @@ const BillDetail = () => {
         fetchBill();
     }, [])
 
+    // GET: total of room
     const fetchBill = async () => {
         setIsLoading(true);
         try {
@@ -66,7 +66,7 @@ const BillDetail = () => {
             console.log(response);
             if (response.data.statusCode === 200) {
                 setGeneralBill(response.data.data);
-                setRoomId(response.data.data.roomId);
+                setStatus(response.data.data.status)
             } else {
                 ToastFail('Lấy thông tin hoá đơn thất bại');
             }
@@ -82,7 +82,7 @@ const BillDetail = () => {
         }
     }
 
-
+    // PUT: update service charge
     const updateBill = async () => {
         setIsLoading(true);
         try {
@@ -110,6 +110,7 @@ const BillDetail = () => {
             setIsLoading(false);
         }
     }
+    
     const deleteBill = async () => {
         setIsLoading(true);
         try {
@@ -191,7 +192,7 @@ const BillDetail = () => {
                         {/* {/* <Text style={{ color: '#9c9c9c', fontSize: 12, marginBottom: 10, }}>Họ và tên không được trống.</Text> */}
                         <Text style={{ color: '#9c9c9c', fontSize: 12, marginBottom: 10, }}>Số căn hộ không thể chỉnh sửa.</Text>
                         <Input
-                            value={params.roomNumber}
+                            value={`${params?.roomNumber}`}
                             style={[{ width: "100%", backgroundColor: COLORS.buttonDisable }]}
                             readOnly
                         ></Input>
@@ -217,7 +218,7 @@ const BillDetail = () => {
                             <Text style={{ marginBottom: 7, fontWeight: "600", fontSize: 16 }}>
                                 Trạng thái hoá đơn
                             </Text>
-                            <Select selectedValue={`${generalBill?.status}`} minWidth="200" accessibilityLabel="Choose Service" placeholder="Choose Service" _selectedItem={{
+                            <Select selectedValue={`${status}`} minWidth="200" accessibilityLabel="Choose Service" placeholder="Choose Service" _selectedItem={{
                                 bg: "teal.600",
                                 endIcon: <CheckIcon size="5" />
                             }} mt={1} onValueChange={itemValue => setStatus(itemValue)}>
@@ -243,19 +244,20 @@ const BillDetail = () => {
                     <View style={{ marginVertical: 12 }}>
                         <Text style={{ fontWeight: "600", fontSize: 16 }}>Chi tiết hoá đơn</Text>
                     </View>
-                    <TableComponent headers={headers}>
-                        <FlatList
-                            data={bill?.detail}
-                            renderItem={renderItem}
-                            keyExtractor={(item) => item.service_name}
-                        />
-                        <TableRow>
-                            <Cell>Tổng hoá đơn</Cell>
-                            <Cell>...</Cell>
-                            <Cell>...</Cell>
-                            <Cell><Badge variant="outline" colorScheme="success" _text={{fontSize: 14}}>{`${moneyFormat(bill?.total || 0)} VNĐ`}</Badge></Cell>
-                        </TableRow>
-                    </TableComponent>
+                    {bill?.detail.length || 0 > 0 ?
+                        <TableComponent headers={headers}>
+                            <FlatList
+                                data={bill?.detail}
+                                renderItem={renderItem}
+                                keyExtractor={(item) => item.service_name}
+                            />
+                            <TableRow>
+                                <Cell>Tổng hoá đơn</Cell>
+                                <Cell>...</Cell>
+                                <Cell>...</Cell>
+                                <Cell><Badge variant="outline" colorScheme="success" _text={{fontSize: 14}}>{`${moneyFormat(bill?.total || 0)} VNĐ`}</Badge></Cell>
+                            </TableRow>
+                        </TableComponent> : <View><Text style={{ fontSize: SIZES.medium, color: COLORS.gray, fontStyle: 'italic', textAlign: 'center' }}>Hiện chưa có chi phí nào.</Text></View>}
                     {/* <Divider mt={4} /> */}
                     <View style={{ flexDirection: 'row', marginTop: 10, gap: 8, justifyContent: 'center' }}>
                         <ButtonBase colorScheme="success" onPress={handleUpdateBill}>Cập nhập hoá đơn</ButtonBase>
