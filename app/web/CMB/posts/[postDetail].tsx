@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { Box, Text, FormControl, Input, Divider, TextArea, Image, Button as ButtonBase, Icon, Select, CheckIcon } from "native-base";
 import { View, SafeAreaView, ScrollView, ActivityIndicator } from 'react-native';
-import { SIZES, icons } from '../../../../constants';
+import { COLORS, SIZES, icons } from '../../../../constants';
 import Button from '../../../../components/ui/button';
 import * as ImagePicker from "expo-image-picker"
 import { Ionicons } from "@expo/vector-icons";
@@ -16,6 +16,7 @@ import { ToastFail, ToastSuccess } from '../../../../constants/toastMessage';
 import { firebase } from '../../../../config';
 
 const PostDetail = () => {
+  // State
   const [isLoading, setIsLoading] = useState(false);
   const [content, setContent] = useState("");
   const [title, setTitle] = useState("");
@@ -23,61 +24,13 @@ const PostDetail = () => {
   const [type, setType] = useState("");
   const [firstImage, setFirstImage] = useState("");
 
+  // Others
   const navigation = useNavigation();
   const item = useLocalSearchParams();
   const { session } = useAuth();
   const user: user = jwtDecode(session as string)
 
-  //pick image
-  const pickImage = async () => {
-    const options: any = {
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowEditing: true,
-      aspect: [4, 3],
-      quality: 1,
-    };
-
-    try {
-      const result = await ImagePicker.launchImageLibraryAsync(options);
-      if (!result.canceled) {
-        setImage(result.assets[0].uri);
-      }
-    } catch (error) {
-      Toast.show({
-        type: 'error',
-        position: 'bottom',
-        text1: 'Lỗi',
-        text2: 'Không thể chọn ảnh',
-        autoHide: true,
-      })
-    } finally {
-    }
-  };
-
-  const uploadImage = async (uri: string) => {
-    try {
-      setIsLoading(true);
-      const response = await fetch(uri);
-      const blob = await response.blob();
-      const fileName = `posts/${title}_${new Date().getTime()}`;
-      const ref = firebase.storage().ref().child(fileName);
-      const snapshot = await ref.put(blob);
-      const downloadURL = await snapshot.ref.getDownloadURL();
-      return downloadURL;
-    } catch (error) {
-      console.error('Error uploading image:', error);
-      Toast.show({
-        type: 'error',
-        position: 'bottom',
-        text1: 'Lỗi',
-        text2: 'Không thể tải ảnh lên',
-        autoHide: true,
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
+  // GET: Post Detail
   const fetchPost = async () => {
     setIsLoading(true);
     try {
@@ -116,81 +69,59 @@ const PostDetail = () => {
     }
   }
 
-  // UPDATE: Post
-  const handleUpdatePost = async () => {
-    let uri = image;
-    // Only attempt to upload if an image has been selected
-    if (image && typeof image === 'string' && image !== firstImage) {
-      const uploadUri = await uploadImage(image);
-      if (!uploadUri) {
-        Toast.show({
-          type: 'error',
-          position: 'bottom',
-          text1: 'Lỗi',
-          text2: 'Không thể cập nhập ảnh',
-          autoHide: true,
-        });
-        return;
-      }
-      uri = uploadUri;
-    }
-    setIsLoading(true);
-    const bodyData = {
-      title: title,
-      buildingId: user?.BuildingId,
-      content: content,
-      image: uri,
-      type: type
-    }
-    try {
-      const response = await axios.put(`${API_BASE}/${actionController.POST}/update/${item?.postDetail}`, bodyData, {
-        timeout: 10000,
-        headers: {
-          'Authorization': `Bearer ${session}`
-        }
-      });
-      if (response.data.statusCode === 200) {
-        ToastSuccess('Cập nhập bài viết thành công')
-      } else {
-        ToastFail('Cập nhập bài viết không thành công')
-      }
-    } catch (error) {
-      if (axios.isCancel(error)) {
-        ToastFail('Hệ thống lỗi! Vui lòng thử lại sau')
-      }
-      console.error('Error updating post data:', error);
-      ToastFail('Lỗi cập nhập bài viết')
-    } finally {
-      setIsLoading(false); // Set loading state to false regardless of success or failure
-    }
-  }
 
-  // DELETE: POST
-  const handleDeletePost = async () => {
+  // PUT: Approve Post
+  const handleApprovePost = async () => {
     setIsLoading(true);
     try {
-      const response = await axios.delete(`${API_BASE}/${actionController.POST}/delete/${item?.postDetail}`, {
+      const response = await axios.put(`${API_BASE}/${actionController.POST}/approve/${item?.postDetail}?status=1`, {}, {
         timeout: 10000,
         headers: {
           'Authorization': `Bearer ${session}`
         }
       });
       if (response.data.statusCode === 200) {
-        ToastSuccess('Xoá bài viết thành công')
+        ToastSuccess('Phê duyệt bài viết thành công')
         router.push({ pathname: `/web/CMB/posts/` })
       } else {
-        ToastFail('Xoá bài viết không thành công')
+        ToastFail('Phê duyệt bài viết không thành công')
       }
     } catch (error) {
       if (axios.isCancel(error)) {
         ToastFail('Hệ thống lỗi! Vui lòng thử lại sau')
       }
       console.error('Error deleting post data:', error);
-      ToastFail('Lỗi xoá bài viết')
+      ToastFail('Lỗi phê duyệt bài viết')
     } finally {
       setIsLoading(false); // Set loading state to false regardless of success or failure
     }
+  }
 
+  // PUT: Approve Post
+  const handleDisapprovePost = async () => {
+    setIsLoading(true);
+    try {
+      const response = await axios.put(`${API_BASE}/${actionController.POST}/approve/${item?.postDetail}?status=4`, {}, {
+        timeout: 10000,
+        headers: {
+          'Authorization': `Bearer ${session}`
+        }
+      });
+      if (response.data.statusCode === 200) {
+        ToastSuccess('Từ chối phê duyệt bài viết thành công')
+        router.push({ pathname: `/web/CMB/posts/` })
+      } else {
+        ToastFail('Từ chối phê duyệt bài viết không thành công')
+      }
+    } catch (error) {
+      if (axios.isCancel(error)) {
+        ToastFail('Hệ thống lỗi! Vui lòng thử lại sau')
+      }
+      console.error('Error deleting post data:', error);
+      ToastFail('Lỗi từ chối phê duyệt bài viết')
+    } finally {
+      setIsLoading(false); // Set loading state to false regardless of success or failure
+    }
   }
 
   useEffect(() => {
@@ -221,42 +152,34 @@ const PostDetail = () => {
             <Box>
               <FormControl mb="3">
                 <FormControl.Label>Tiêu đề bài viết</FormControl.Label>
-                <Input shadow={1} value={title} onChangeText={(text) => setTitle(text)} />
+                <Input backgroundColor={COLORS.buttonDisable}
+                  isReadOnly shadow={1} value={title} />
               </FormControl>
               <FormControl mb="3">
                 <FormControl.Label>Nội dung bài viết</FormControl.Label>
                 <TextArea
+                  backgroundColor={COLORS.buttonDisable}
+                  isReadOnly
                   shadow={1}
                   totalLines={5}
                   autoCompleteType={""}
                   value={content}
-                  onChangeText={text => setContent(text)} // for android and ios
                   w="100%" maxW="100%" />
               </FormControl>
               <FormControl mb="3" isRequired>
                 <FormControl.Label>Thể loại</FormControl.Label>
-                <Select selectedValue={`${type}`} onValueChange={itemValue => setType(itemValue)} minWidth="200" accessibilityLabel="Chọn thể loại" placeholder="Chọn thể loại" _selectedItem={{
-                  bg: "teal.600",
-                  endIcon: <CheckIcon size={5} />
-                }} mt="1" >
-                  <Select.Item label="Thông báo" value="2" />
-                  <Select.Item label="Bài viết" value="1" />
-                </Select>
+                <Input backgroundColor={COLORS.buttonDisable}
+                  isReadOnly shadow={1} value={`${type}` === '1' ? "Bài viết" : "Thông báo"} />
               </FormControl>
-              <FormControl mb="3">
-                <ButtonBase onPress={pickImage} leftIcon={<Icon as={Ionicons} name="cloud-upload-outline" size="sm" />}>
-                  Tải lên
-                </ButtonBase>
-              </FormControl>
-              <Image mt={2} source={{ uri: image }} size="md" />
+              <Image mt={2} mb={1} source={{ uri: image }} size="xl" />
               <FormControl>
                 <Divider mt={1} />
 
                 {isLoading && <ActivityIndicator style={{ paddingVertical: SIZES.xSmall }} size={'small'} color={'#171717'}></ActivityIndicator>}
 
                 <ButtonBase.Group space={2} style={{ flexDirection: 'row', justifyContent: 'center' }} mt={3}>
-                  <ButtonBase colorScheme="danger" onPress={handleDeletePost}>Xoá bài viết</ButtonBase>
-                  <ButtonBase colorScheme="success" onPress={handleUpdatePost}> Cập nhập bài viết </ButtonBase>
+                  <ButtonBase colorScheme="danger" onPress={handleDisapprovePost}>Từ chối phê duyệt</ButtonBase>
+                  <ButtonBase colorScheme="success" onPress={handleApprovePost}> Phê duyệt </ButtonBase>
                 </ButtonBase.Group>
               </FormControl>
             </Box>
