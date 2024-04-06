@@ -5,7 +5,7 @@ import { SIZES } from '../../../../constants';
 import Button from '../../../../components/ui/button';
 import * as ImagePicker from "expo-image-picker"
 import { Ionicons } from "@expo/vector-icons";
-import { useNavigation } from 'expo-router';
+import { router, useNavigation } from 'expo-router';
 import axios from 'axios';
 import { API_BASE, actionController } from '../../../../constants/action';
 import { useAuth } from '../../context/AuthContext';
@@ -148,7 +148,7 @@ const CreatePost = () => {
                     <Button
                         style={{ width: 100, marginBottom: 20 }}
                         text="Quay Lại"
-                        onPress={() => navigation.goBack()}
+                        onPress={() => router.push(`/web/Receptionist/posts/`)}
                     ></Button>
                     <View style={{ marginBottom: 20 }}>
                         <Text style={{ fontWeight: "bold", fontSize: 20, marginBottom: 5 }}>

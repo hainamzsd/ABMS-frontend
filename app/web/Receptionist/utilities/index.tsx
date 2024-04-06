@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { Text, View, SafeAreaView, ScrollView, TouchableOpacity, Image, FlatList, Pressable } from 'react-native'
 import { COLORS, ColorPalettes, SIZES } from '../../../../constants'
 import { useTheme } from '../../../(mobile)/context/ThemeContext'
-import {ICON_MAP} from '../../../../constants/iconUtility'
+import { ICON_MAP } from '../../../../constants/iconUtility'
 import axios from 'axios'
 import Toast from 'react-native-toast-message'
 import { Utility } from '../../../../interface/utilityType'
@@ -12,10 +12,12 @@ import { user } from '../../../../interface/accountType'
 import { jwtDecode } from 'jwt-decode'
 import { SHADOWS } from '../../../../constants'
 import Button from '../../../../components/ui/button'
-import { Modal, Button as ButtonNative, Input, VStack, Text as TextNative, FormControl } from "native-base";
+import { Modal, Button as ButtonNative, Input, VStack, Text as TextNative, FormControl, Select, CheckIcon } from "native-base";
 import { ToastFail } from '../../../../constants/toastMessage'
+import { utilityComboBox } from "../../../../constants/comboBox"
 
 const Utilities = () => {
+  // Others
   const { theme } = useTheme();
   const { session } = useAuth();
   const user: user = jwtDecode(session as string);
@@ -27,6 +29,8 @@ const Utilities = () => {
   const [isUpdate, setIsUpdate] = useState(false);
   const [utilityId, setUtilityId] = useState("");
   const [name, setName] = useState("");
+  const [isOtherName, setIsOtherName] = useState(false);
+  const [otherName, setOtherName] = useState("");
   const [openTime, setOpenTime] = useState("");
   const [closeTime, setCloseTime] = useState("");
   const [slots, setSlots] = useState("");
@@ -37,18 +41,31 @@ const Utilities = () => {
   const [isDeleteModal, setIsDeleteModal] = useState(false);
   const [isTrash, setIsTrash] = useState(false);
 
+  // UseEffect: first fetch
   useEffect(() => {
     fetchUtilities();
     fetchUtilitiesTrash();
   }, [])
 
+  //
+  useEffect(() => {
+    if (name === "Khác") {
+      setIsOtherName(true);
+    } else {
+      setOtherName("");
+      setIsOtherName(false);
+    }
+
+  }, [name])
+
+  // GET: Get all utilites by buildingId
   const fetchUtilities = async () => {
     setIsLoading(true);
     try {
       const response = await axios.get(`https://abmscapstone2024.azurewebsites.net/api/v1/utility/get-all?buildingId=${user?.BuildingId}&status=1`, {
         timeout: 10000,
       });
-      if (response.data.statusCode  === 200) {
+      if (response.data.statusCode === 200) {
         setUtilities(response.data.data);
       } else {
         Toast.show({
@@ -76,13 +93,14 @@ const Utilities = () => {
     }
   }
 
+  // GET: Utility have status === 0
   const fetchUtilitiesTrash = async () => {
     setIsLoading(true);
     try {
       const response = await axios.get(`https://abmscapstone2024.azurewebsites.net/api/v1/utility/get-all?buildingId=${user?.BuildingId}&status=0`, {
         timeout: 10000,
       });
-      if (response.data.statusCode  === 200) {
+      if (response.data.statusCode === 200) {
         setUtilitiesTrash(response.data.data);
       } else {
         ToastFail('Lỗi lấy thông tin thùng rác')
@@ -102,7 +120,7 @@ const Utilities = () => {
   const createUtility = async () => {
     setIsLoading(true);
     const bodyData = {
-      name: name,
+      name: otherName !== "" ? otherName : name,
       buildingId: user?.BuildingId,
       openTime: openTime,
       closeTime: closeTime,
@@ -117,7 +135,7 @@ const Utilities = () => {
           'Authorization': `Bearer ${session}`
         }
       })
-      if (response.data.statusCode  === 200) {
+      if (response.data.statusCode === 200) {
         Toast.show({
           type: 'success',
           text1: 'Tạo tiện ích mới thành công',
@@ -146,6 +164,7 @@ const Utilities = () => {
         position: 'bottom'
       })
     } finally {
+      setOtherName("");
       setIsLoading(false); // Set loading state to false regardless of success or failure
     }
   }
@@ -154,7 +173,7 @@ const Utilities = () => {
   const updateUtility = async () => {
     setIsLoading(true);
     const bodyData = {
-      name: name,
+      name: otherName !== "" ? otherName : name,
       buildingId: user?.BuildingId,
       openTime: openTime,
       closeTime: closeTime,
@@ -170,7 +189,7 @@ const Utilities = () => {
           'Authorization': `Bearer ${session}`
         }
       })
-      if (response.data.statusCode  === 200) {
+      if (response.data.statusCode === 200) {
         Toast.show({
           type: 'success',
           text1: 'Cập nhập tiện ích thành công',
@@ -199,6 +218,7 @@ const Utilities = () => {
         position: 'bottom'
       })
     } finally {
+      setOtherName("");
       setIsLoading(false); // Set loading state to false regardless of success or failure
     }
   }
@@ -213,7 +233,7 @@ const Utilities = () => {
           'Authorization': `Bearer ${session}`
         }
       })
-      if (response.data.statusCode  === 200) {
+      if (response.data.statusCode === 200) {
         Toast.show({
           type: 'success',
           text1: 'Xoá tiện ích thành công',
@@ -256,17 +276,17 @@ const Utilities = () => {
           'Authorization': `Bearer ${session}`
         }
       })
-      if (response.data.statusCode  === 200) {
+      if (response.data.statusCode === 200) {
         Toast.show({
           type: 'success',
-          text1: 'Xoá tiện ích thành công',
+          text1: 'Phục hồi tiện ích thành công',
           position: 'bottom'
         })
         fetchUtilities();
       } else {
         Toast.show({
           type: 'error',
-          text1: 'Lỗi xoá tiện ích',
+          text1: 'Phục hồi tiện ích không thành công',
           position: 'bottom'
         })
       }
@@ -281,14 +301,14 @@ const Utilities = () => {
       console.error('Error updating utility:', error);
       Toast.show({
         type: 'error',
-        text1: 'Lỗi xoá tiện ích',
+        text1: 'Lỗi phục hồi tiện ích',
         position: 'bottom'
       })
     } finally {
       setIsLoading(false); // Set loading state to false regardless of success or failure
     }
   }
-  
+
 
   //Toggle
   const toggleUpdateMode = () => {
@@ -296,14 +316,25 @@ const Utilities = () => {
   }
 
   const handleUpdateUtility = (item: any) => {
+    let isMatched = false;
     setIsUpdateModal(true);
-    setName(item?.name);
+    for(const i in utilityComboBox){
+      if(i === item?.name){
+        isMatched = true;
+        break;
+      }
+    }
+    if(isMatched){
+      setName(item?.name);
+    } else setName("Khác");
+    
     setOpenTime(item?.openTime);
     setCloseTime(item?.closeTime);
     setSlots(item?.numberOfSlot);
     setPrice(item?.pricePerSlot);
     setDescription(item?.description);
     setUtilityId(item?.id);
+    setOtherName(item?.name);
   }
 
   const handleRestoreUtility = (item: any) => {
@@ -327,7 +358,16 @@ const Utilities = () => {
   }
 
   const renderItem = ({ item }: { item: Utility }) => {
-    const icon = ICON_MAP[item?.name];
+    const firstIcon = item?.name;
+    let isMatched = false;
+    for (const item of utilityComboBox) {
+      if (firstIcon === item) {
+        isMatched = true;
+        break;
+      }
+    }
+    const icon = isMatched ? ICON_MAP[firstIcon] : ICON_MAP["Khác"];
+
     return (
       <TouchableOpacity style={{ marginBottom: 20, padding: 10, width: '23%', alignSelf: 'flex-start', borderRadius: 15, alignItems: 'center', flexDirection: 'column', ...SHADOWS.small, backgroundColor: ColorPalettes.summer.sub }}>
         <Pressable
@@ -402,8 +442,20 @@ const Utilities = () => {
           <Modal.Body>
             <FormControl mt="3">
               <FormControl.Label>Tên tiện ích</FormControl.Label>
-              <Input value={name} onChangeText={(text) => setName(text)} />
+              <Select selectedValue={name} accessibilityLabel="Tên tiện ích" placeholder="Tên tiện ích" _selectedItem={{
+                bg: "teal.600",
+                endIcon: <CheckIcon size="5" />
+              }} mt={1} onValueChange={itemValue => setName(itemValue)}>
+                {utilityComboBox.map((item) => (
+                  <Select.Item key={item} label={item} value={item} />
+                ))}
+              </Select>
             </FormControl>
+            {isOtherName &&
+              <FormControl mt="3">
+                <FormControl.Label>Tên biểu phí khác</FormControl.Label>
+                <Input placeholder='Nhập tên biểu phí khác' onChangeText={(text) => setOtherName(text)} />
+              </FormControl>}
             <FormControl mt="3">
               <FormControl.Label>Thời gian bắt đầu (h:mm AM/PM)</FormControl.Label>
               <Input value={openTime} onChangeText={(text) => setOpenTime(text)} />
@@ -440,12 +492,24 @@ const Utilities = () => {
       <Modal isOpen={isUpdateModal} onClose={() => setIsUpdateModal(false)} avoidKeyboard justifyContent="center" bottom="4" size="lg">
         <Modal.Content>
           <Modal.CloseButton />
-          <Modal.Header>Tạo địa điểm tiện ích</Modal.Header>
+          <Modal.Header>Cập nhập địa điểm tiện ích</Modal.Header>
           <Modal.Body>
             <FormControl mt="3">
               <FormControl.Label>Tên tiện ích</FormControl.Label>
-              <Input value={name} onChangeText={(text) => setName(text)} />
+              <Select selectedValue={name} accessibilityLabel="Tên tiện ích" placeholder="Tên tiện ích" _selectedItem={{
+                bg: "teal.600",
+                endIcon: <CheckIcon size="5" />
+              }} mt={1} onValueChange={itemValue => setName(itemValue)}>
+                {utilityComboBox.map((item) => (
+                  <Select.Item key={item} label={item} value={item} />
+                ))}
+              </Select>
             </FormControl>
+            {isOtherName &&
+              <FormControl mt="3">
+                <FormControl.Label>Tên biểu phí khác</FormControl.Label>
+                <Input placeholder={otherName} onChangeText={(text) => setOtherName(text)} />
+              </FormControl>}
             <FormControl mt="3">
               <FormControl.Label>Thời gian bắt đầu (h:mm AM/PM)</FormControl.Label>
               <Input value={openTime} onChangeText={(text) => setOpenTime(text)} />

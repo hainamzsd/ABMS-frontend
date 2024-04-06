@@ -270,7 +270,7 @@ const feedbackList = () => {
                     <Button
                         style={{ width: 100, marginBottom: 20 }}
                         text="Quay Lại"
-                        onPress={() => navigate.goBack()}
+                        onPress={() => router.push(`/web/Receptionist/services/feedback/`)}
                     ></Button>
                     <View style={{ marginBottom: 20 }}>
                         <Text style={{ fontWeight: 'bold', fontSize: 20, marginBottom: 5 }}>Danh sách phiếu phản ánh</Text>

@@ -4,7 +4,7 @@ import Button from '../../../../components/ui/button'
 import Input from '../../../../components/ui/input'
 import { Select, CheckIcon, Box, Badge, Radio } from "native-base";
 import { COLORS, SHADOWS } from '../../../../constants';
-import { Link, useLocalSearchParams, useNavigation, useRouter } from 'expo-router'
+import { Link, router, useLocalSearchParams, useNavigation, useRouter } from 'expo-router'
 import { SIZES } from '../../../../constants'
 import axios from 'axios'
 import Toast from 'react-native-toast-message'
@@ -604,7 +604,7 @@ const RoomDetail = () => {
                     <Button
                         style={{ width: 100, marginBottom: 20 }}
                         text="Quay Lại"
-                        onPress={() => navigation.goBack()}
+                        onPress={() => router.push(`/web/Receptionist/rooms/`)}
                     ></Button>
                     <View style={{ marginBottom: 20 }}>
                         <Text style={{ fontWeight: "bold", fontSize: 20, marginBottom: 5 }}>

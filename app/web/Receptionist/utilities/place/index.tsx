@@ -263,7 +263,7 @@ const Place = () => {
                  <Button
                  style={{ width: 100, marginBottom: 20 }}
                  text="Quay Lại"
-                 onPress={() => router.back}
+                 onPress={() => router.push('/web/Receptionist/utilities/')}
              ></Button>}
                     <View style={{ marginBottom: 20 }}>
                         <Text style={{ fontWeight: 'bold', fontSize: 20, marginBottom: 5 }}>Danh sách vị trí tiện ích</Text>
