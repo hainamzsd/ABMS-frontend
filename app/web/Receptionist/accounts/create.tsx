@@ -305,7 +305,7 @@ const page = () => {
                     <Button
                         style={{ width: 100, marginBottom: 20 }}
                         text="Quay Lại"
-                        onPress={() => router.back}
+                        onPress={() => router.push('/web/Receptionist/accounts/')}
                     ></Button>
                     {/* <Button
                         style={{ width: 150, marginBottom: 20 }}

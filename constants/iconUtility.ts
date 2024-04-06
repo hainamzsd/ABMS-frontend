@@ -7,6 +7,7 @@ export const ICON_MAP: Record<string, any> = {
   'Bể bơi':require('../assets/images/swimming-pool.png'),
   'Bóng bàn':require('../assets/images/table-tennis.png'),
   'Sân tennis':require('../assets/images/tennis.png'),
+  'Khác': require('../assets/images/utility.png')
 };
 
 export const ICON_COLOR: Record<string, any> = {
@@ -17,5 +18,6 @@ export const ICON_COLOR: Record<string, any> = {
   'Sân cầu lông':"#12372A",
   'Bể bơi':"#436850",
   'Bóng bàn':"#ADBC9F",
-  'Sân tennis':"#474F7A"
+  'Sân tennis':"#474F7A",
+  'Khác': "#003C43"
 };

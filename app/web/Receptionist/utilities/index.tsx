@@ -164,6 +164,7 @@ const Utilities = () => {
         position: 'bottom'
       })
     } finally {
+      setOtherName("");
       setIsLoading(false); // Set loading state to false regardless of success or failure
     }
   }
@@ -172,7 +173,7 @@ const Utilities = () => {
   const updateUtility = async () => {
     setIsLoading(true);
     const bodyData = {
-      name: name,
+      name: otherName !== "" ? otherName : name,
       buildingId: user?.BuildingId,
       openTime: openTime,
       closeTime: closeTime,
@@ -217,6 +218,7 @@ const Utilities = () => {
         position: 'bottom'
       })
     } finally {
+      setOtherName("");
       setIsLoading(false); // Set loading state to false regardless of success or failure
     }
   }
@@ -314,14 +316,25 @@ const Utilities = () => {
   }
 
   const handleUpdateUtility = (item: any) => {
+    let isMatched = false;
     setIsUpdateModal(true);
-    setName(item?.name);
+    for(const i in utilityComboBox){
+      if(i === item?.name){
+        isMatched = true;
+        break;
+      }
+    }
+    if(isMatched){
+      setName(item?.name);
+    } else setName("Khác");
+    
     setOpenTime(item?.openTime);
     setCloseTime(item?.closeTime);
     setSlots(item?.numberOfSlot);
     setPrice(item?.pricePerSlot);
     setDescription(item?.description);
     setUtilityId(item?.id);
+    setOtherName(item?.name);
   }
 
   const handleRestoreUtility = (item: any) => {
@@ -345,7 +358,16 @@ const Utilities = () => {
   }
 
   const renderItem = ({ item }: { item: Utility }) => {
-    const icon = ICON_MAP[item?.name];
+    const firstIcon = item?.name;
+    let isMatched = false;
+    for (const item of utilityComboBox) {
+      if (firstIcon === item) {
+        isMatched = true;
+        break;
+      }
+    }
+    const icon = isMatched ? ICON_MAP[firstIcon] : ICON_MAP["Khác"];
+
     return (
       <TouchableOpacity style={{ marginBottom: 20, padding: 10, width: '23%', alignSelf: 'flex-start', borderRadius: 15, alignItems: 'center', flexDirection: 'column', ...SHADOWS.small, backgroundColor: ColorPalettes.summer.sub }}>
         <Pressable
@@ -473,7 +495,8 @@ const Utilities = () => {
           <Modal.Header>Cập nhập địa điểm tiện ích</Modal.Header>
           <Modal.Body>
             <FormControl mt="3">
-              <Select selectedValue={name} maxWidth={200} accessibilityLabel="Tên tiện ích" placeholder="Tên tiện ích" _selectedItem={{
+              <FormControl.Label>Tên tiện ích</FormControl.Label>
+              <Select selectedValue={name} accessibilityLabel="Tên tiện ích" placeholder="Tên tiện ích" _selectedItem={{
                 bg: "teal.600",
                 endIcon: <CheckIcon size="5" />
               }} mt={1} onValueChange={itemValue => setName(itemValue)}>
@@ -482,6 +505,11 @@ const Utilities = () => {
                 ))}
               </Select>
             </FormControl>
+            {isOtherName &&
+              <FormControl mt="3">
+                <FormControl.Label>Tên biểu phí khác</FormControl.Label>
+                <Input placeholder={otherName} onChangeText={(text) => setOtherName(text)} />
+              </FormControl>}
             <FormControl mt="3">
               <FormControl.Label>Thời gian bắt đầu (h:mm AM/PM)</FormControl.Label>
               <Input value={openTime} onChangeText={(text) => setOpenTime(text)} />
