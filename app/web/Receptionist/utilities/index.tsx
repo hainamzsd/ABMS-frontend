@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { Text, View, SafeAreaView, ScrollView, TouchableOpacity, Image, FlatList, Pressable } from 'react-native'
 import { COLORS, ColorPalettes, SIZES } from '../../../../constants'
 import { useTheme } from '../../../(mobile)/context/ThemeContext'
-import {ICON_MAP} from '../../../../constants/iconUtility'
+import { ICON_MAP } from '../../../../constants/iconUtility'
 import axios from 'axios'
 import Toast from 'react-native-toast-message'
 import { Utility } from '../../../../interface/utilityType'
@@ -12,10 +12,12 @@ import { user } from '../../../../interface/accountType'
 import { jwtDecode } from 'jwt-decode'
 import { SHADOWS } from '../../../../constants'
 import Button from '../../../../components/ui/button'
-import { Modal, Button as ButtonNative, Input, VStack, Text as TextNative, FormControl } from "native-base";
+import { Modal, Button as ButtonNative, Input, VStack, Text as TextNative, FormControl, Select, CheckIcon } from "native-base";
 import { ToastFail } from '../../../../constants/toastMessage'
+import { utilityComboBox } from "../../../../constants/comboBox"
 
 const Utilities = () => {
+  // Others
   const { theme } = useTheme();
   const { session } = useAuth();
   const user: user = jwtDecode(session as string);
@@ -37,18 +39,20 @@ const Utilities = () => {
   const [isDeleteModal, setIsDeleteModal] = useState(false);
   const [isTrash, setIsTrash] = useState(false);
 
+  // UseEffect: first fetch
   useEffect(() => {
     fetchUtilities();
     fetchUtilitiesTrash();
   }, [])
 
+  // GET: Get all utilites by buildingId
   const fetchUtilities = async () => {
     setIsLoading(true);
     try {
       const response = await axios.get(`https://abmscapstone2024.azurewebsites.net/api/v1/utility/get-all?buildingId=${user?.BuildingId}&status=1`, {
         timeout: 10000,
       });
-      if (response.data.statusCode  === 200) {
+      if (response.data.statusCode === 200) {
         setUtilities(response.data.data);
       } else {
         Toast.show({
@@ -76,13 +80,14 @@ const Utilities = () => {
     }
   }
 
+  // GET: Utility have status === 0
   const fetchUtilitiesTrash = async () => {
     setIsLoading(true);
     try {
       const response = await axios.get(`https://abmscapstone2024.azurewebsites.net/api/v1/utility/get-all?buildingId=${user?.BuildingId}&status=0`, {
         timeout: 10000,
       });
-      if (response.data.statusCode  === 200) {
+      if (response.data.statusCode === 200) {
         setUtilitiesTrash(response.data.data);
       } else {
         ToastFail('Lỗi lấy thông tin thùng rác')
@@ -117,7 +122,7 @@ const Utilities = () => {
           'Authorization': `Bearer ${session}`
         }
       })
-      if (response.data.statusCode  === 200) {
+      if (response.data.statusCode === 200) {
         Toast.show({
           type: 'success',
           text1: 'Tạo tiện ích mới thành công',
@@ -170,7 +175,7 @@ const Utilities = () => {
           'Authorization': `Bearer ${session}`
         }
       })
-      if (response.data.statusCode  === 200) {
+      if (response.data.statusCode === 200) {
         Toast.show({
           type: 'success',
           text1: 'Cập nhập tiện ích thành công',
@@ -213,7 +218,7 @@ const Utilities = () => {
           'Authorization': `Bearer ${session}`
         }
       })
-      if (response.data.statusCode  === 200) {
+      if (response.data.statusCode === 200) {
         Toast.show({
           type: 'success',
           text1: 'Xoá tiện ích thành công',
@@ -256,17 +261,17 @@ const Utilities = () => {
           'Authorization': `Bearer ${session}`
         }
       })
-      if (response.data.statusCode  === 200) {
+      if (response.data.statusCode === 200) {
         Toast.show({
           type: 'success',
-          text1: 'Xoá tiện ích thành công',
+          text1: 'Phục hồi tiện ích thành công',
           position: 'bottom'
         })
         fetchUtilities();
       } else {
         Toast.show({
           type: 'error',
-          text1: 'Lỗi xoá tiện ích',
+          text1: 'Phục hồi tiện ích không thành công',
           position: 'bottom'
         })
       }
@@ -281,14 +286,14 @@ const Utilities = () => {
       console.error('Error updating utility:', error);
       Toast.show({
         type: 'error',
-        text1: 'Lỗi xoá tiện ích',
+        text1: 'Lỗi phục hồi tiện ích',
         position: 'bottom'
       })
     } finally {
       setIsLoading(false); // Set loading state to false regardless of success or failure
     }
   }
-  
+
 
   //Toggle
   const toggleUpdateMode = () => {
@@ -402,7 +407,14 @@ const Utilities = () => {
           <Modal.Body>
             <FormControl mt="3">
               <FormControl.Label>Tên tiện ích</FormControl.Label>
-              <Input value={name} onChangeText={(text) => setName(text)} />
+              <Select selectedValue={name} maxWidth={200} accessibilityLabel="Tên tiện ích" placeholder="Tên tiện ích" _selectedItem={{
+                bg: "teal.600",
+                endIcon: <CheckIcon size="5" />
+              }} mt={1} onValueChange={itemValue => setName(itemValue)}>
+                {utilityComboBox.map((item) => (
+                  <Select.Item key={item} label={item} value={item} />
+                ))}
+              </Select>
             </FormControl>
             <FormControl mt="3">
               <FormControl.Label>Thời gian bắt đầu (h:mm AM/PM)</FormControl.Label>
@@ -440,11 +452,17 @@ const Utilities = () => {
       <Modal isOpen={isUpdateModal} onClose={() => setIsUpdateModal(false)} avoidKeyboard justifyContent="center" bottom="4" size="lg">
         <Modal.Content>
           <Modal.CloseButton />
-          <Modal.Header>Tạo địa điểm tiện ích</Modal.Header>
+          <Modal.Header>Cập nhập địa điểm tiện ích</Modal.Header>
           <Modal.Body>
             <FormControl mt="3">
-              <FormControl.Label>Tên tiện ích</FormControl.Label>
-              <Input value={name} onChangeText={(text) => setName(text)} />
+              <Select selectedValue={name} maxWidth={200} accessibilityLabel="Tên tiện ích" placeholder="Tên tiện ích" _selectedItem={{
+                bg: "teal.600",
+                endIcon: <CheckIcon size="5" />
+              }} mt={1} onValueChange={itemValue => setName(itemValue)}>
+                {utilityComboBox.map((item) => (
+                  <Select.Item key={item} label={item} value={item} />
+                ))}
+              </Select>
             </FormControl>
             <FormControl mt="3">
               <FormControl.Label>Thời gian bắt đầu (h:mm AM/PM)</FormControl.Label>
