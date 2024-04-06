@@ -29,6 +29,8 @@ const Utilities = () => {
   const [isUpdate, setIsUpdate] = useState(false);
   const [utilityId, setUtilityId] = useState("");
   const [name, setName] = useState("");
+  const [isOtherName, setIsOtherName] = useState(false);
+  const [otherName, setOtherName] = useState("");
   const [openTime, setOpenTime] = useState("");
   const [closeTime, setCloseTime] = useState("");
   const [slots, setSlots] = useState("");
@@ -44,6 +46,17 @@ const Utilities = () => {
     fetchUtilities();
     fetchUtilitiesTrash();
   }, [])
+
+  //
+  useEffect(() => {
+    if (name === "Khác") {
+      setIsOtherName(true);
+    } else {
+      setOtherName("");
+      setIsOtherName(false);
+    }
+
+  }, [name])
 
   // GET: Get all utilites by buildingId
   const fetchUtilities = async () => {
@@ -107,7 +120,7 @@ const Utilities = () => {
   const createUtility = async () => {
     setIsLoading(true);
     const bodyData = {
-      name: name,
+      name: otherName !== "" ? otherName : name,
       buildingId: user?.BuildingId,
       openTime: openTime,
       closeTime: closeTime,
@@ -407,7 +420,7 @@ const Utilities = () => {
           <Modal.Body>
             <FormControl mt="3">
               <FormControl.Label>Tên tiện ích</FormControl.Label>
-              <Select selectedValue={name} maxWidth={200} accessibilityLabel="Tên tiện ích" placeholder="Tên tiện ích" _selectedItem={{
+              <Select selectedValue={name} accessibilityLabel="Tên tiện ích" placeholder="Tên tiện ích" _selectedItem={{
                 bg: "teal.600",
                 endIcon: <CheckIcon size="5" />
               }} mt={1} onValueChange={itemValue => setName(itemValue)}>
@@ -416,6 +429,11 @@ const Utilities = () => {
                 ))}
               </Select>
             </FormControl>
+            {isOtherName &&
+              <FormControl mt="3">
+                <FormControl.Label>Tên biểu phí khác</FormControl.Label>
+                <Input placeholder='Nhập tên biểu phí khác' onChangeText={(text) => setOtherName(text)} />
+              </FormControl>}
             <FormControl mt="3">
               <FormControl.Label>Thời gian bắt đầu (h:mm AM/PM)</FormControl.Label>
               <Input value={openTime} onChangeText={(text) => setOpenTime(text)} />
