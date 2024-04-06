@@ -166,7 +166,7 @@ useEffect(() => {
       setLoading(true);
       setErrorText("");
       try {
-          const response = await axios.get(`https://abmscapstone2024.azurewebsites.net/api/v1/post/get-all?buildingId=${user.BuildingId}`,{
+          const response = await axios.get(`https://abmscapstone2024.azurewebsites.net/api/v1/post/get-all?buildingId=${user.BuildingId}&status=1`,{
               timeout:10000
           });
           const hotline = await axios.get(`https://abmscapstone2024.azurewebsites.net/api/v1/hotline/get-all?buildingId=${user.BuildingId}`,{
