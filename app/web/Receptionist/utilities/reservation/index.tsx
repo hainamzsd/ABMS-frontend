@@ -22,7 +22,7 @@ const StatusData = [
 
 const ReservationUtility = () => {
     const item = useLocalSearchParams();
-    const headers = ['Căn hộ', 'Tên sân', 'Khung giờ', 'Ghi chú', 'Ngày đặt', 'Tổng tiền', 'Trạng thái', ''];
+    const headers = ['Căn hộ', 'Tên sân', 'Khung giờ', 'Ngày đặt', 'Tổng tiền', 'Trạng thái', ''];
     //   STATE
     const [isLoading, setIsLoading] = useState(false);
     const [utilityReservation, setUtilityReservation] = useState<Reservation[]>([]);
@@ -30,22 +30,21 @@ const ReservationUtility = () => {
     const [status, setStatus] = useState<number | null>(2);
     const navigate = useNavigation();
     const [searchQuery, setSearchQuery] = useState('');
-    const { currentItems, totalPages } = paginate(utilityReservation, currentPage, 7)
-
-    // const [filteredRequests, setFilteredRequests] = useState<Reservation[]>([]);
-    // useEffect(() => {
-    //   if (searchQuery.trim() !== '') {
-    //     const filtered = utilityReservation.filter(item =>
-    //       item.ro.toLowerCase().includes(searchQuery.toLowerCase())
-    //     );
-    //     setFilteredRequests(filtered);
-    //   } else {
-    //     setFilteredRequests(request);
-    //   }
-    // }, [searchQuery, request]);
-    // useEffect(() => {
-    //     fetchData();
-    // }, [status])
+    const [filteredRequests, setFilteredRequests] = useState<Reservation[]>([]);
+    const { currentItems, totalPages } = paginate(filteredRequests, currentPage, 5);
+    useEffect(() => {
+      if (searchQuery.trim() !== '') {
+        const filtered = utilityReservation.filter(item =>
+          item.room_number.toLowerCase().includes(searchQuery.toLowerCase())
+        );
+        setFilteredRequests(filtered);
+      } else {
+        setFilteredRequests(utilityReservation);
+      }
+    }, [searchQuery, utilityReservation]);
+    useEffect(() => {
+        fetchData();
+    }, [status])
 
 
 
@@ -117,14 +116,13 @@ const ReservationUtility = () => {
                     {isLoading && <ActivityIndicator size={'large'} color={'#171717'}></ActivityIndicator>}
                     {utilityReservation != null ?
                         <TableComponent headers={headers}>
-                            <FlatList data={utilityReservation}
+                            <FlatList data={currentItems}
                                 renderItem={({ item }: { item: Reservation }) => {
                                     return (
                                         <TableRow>
-                                            <Cell>{item?.room_id}</Cell>
+                                            <Cell>{item?.room_number}</Cell>
                                             <Cell>{item?.utility_detail_name}</Cell>
                                             <Cell>{item?.slot}</Cell>
-                                            <Cell>{item?.description}</Cell>
                                             <Cell>{item?.booking_date}</Cell>
                                             <Cell>{item?.total_price}</Cell>
                                             <Cell>
@@ -147,7 +145,7 @@ const ReservationUtility = () => {
                             />
 
                         </TableComponent> : <Text style={{ marginBottom: 10, fontSize: 18, fontWeight: '600' }}>Chưa có dữ liệu</Text>}
-                    {/* <View style={{ flexDirection: 'row', alignItems: "center", justifyContent: 'center', marginTop: 20 }}>
+                    <View style={{ flexDirection: 'row', alignItems: "center", justifyContent: 'center', marginTop: 20 }}>
                         <Button text="Trước"
                             style={{ width: 50 }}
                             onPress={() => setCurrentPage((prev) => Math.max(prev - 1, 1))} disabled={currentPage === 1} />
@@ -156,7 +154,7 @@ const ReservationUtility = () => {
                         </Text>
                         <Button text="Sau" onPress={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))} disabled={currentPage === totalPages} />
 
-                    </View> */}
+                    </View>
                 </ScrollView>
             </SafeAreaView>
         </View>

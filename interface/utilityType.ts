@@ -47,4 +47,5 @@ export interface Reservation {
   status: number;
   utility: string;
   utility_detail_name: string;
+  room_number:string;
 }
