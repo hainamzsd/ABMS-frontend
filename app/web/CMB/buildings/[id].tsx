@@ -150,7 +150,7 @@ const BuildingDetail = () => {
           <Button
             style={{ width: 100, marginBottom: 20 }}
             text="Quay Lại"
-            onPress={() => navigation.goBack()}
+            onPress={() => router.push(`/web/CMB/buildings/`)}
           ></Button>
           <View style={{ marginBottom: 20 }}>
             <Text style={{ fontWeight: "bold", fontSize: 20, marginBottom: 5 }}>
@@ -222,7 +222,7 @@ const BuildingDetail = () => {
                 width: 100, marginRight: 10,
               }]}></Button>
             <Button
-              onPress={() => navigation.goBack()}
+              onPress={() => router.push(`/web/CMB/buildings/`)}
               text="Hủy" style={{ width: 100, backgroundColor: '#9b2c2c' }}></Button>
           </View>
         </ScrollView>

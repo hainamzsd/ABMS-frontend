@@ -259,7 +259,7 @@ const handleDeleteConstruction = async () => {
           <Button
             style={{ width: 100, marginBottom: 20 }}
             text="Quay Lại"
-            onPress={() => navigation.goBack()}
+            onPress={() => router.push(`/web/Receptionist/services/construction/`)}
           ></Button>
           <View style={{ marginBottom: 20 }}>
             <Text style={{ fontWeight: "bold", fontSize: 20, marginBottom: 5 }}>
