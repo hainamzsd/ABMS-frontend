@@ -14,6 +14,7 @@ import { jwtDecode } from 'jwt-decode';
 import { user } from '../../../../interface/accountType';
 import { ToastFail, ToastSuccess } from '../../../../constants/toastMessage';
 import { firebase } from '../../../../config';
+import { postSchema } from '../../../../constants/schema';
 
 const PostDetail = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -21,6 +22,7 @@ const PostDetail = () => {
   const [title, setTitle] = useState("");
   const [image, setImage] = useState<any>();
   const [type, setType] = useState("");
+  const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
 
   const navigation = useNavigation();
   const item = useLocalSearchParams();
@@ -143,6 +145,7 @@ const PostDetail = () => {
       type: type
     }
     try {
+      await postSchema.validate({ title: title, content: content, image: uri, type: type }, { abortEarly: false })
       const response = await axios.put(`${API_BASE}/${actionController.POST}/update/${item?.postDetail}`, bodyData, {
         timeout: 10000,
         headers: {
@@ -154,12 +157,20 @@ const PostDetail = () => {
       } else {
         ToastFail('Cập nhập bài viết không thành công')
       }
-    } catch (error) {
+    } catch (error: any) {
+      if (error.name === 'ValidationError') {
+        const errors: any = {};
+        error.inner.forEach((err: any) => {
+          errors[err.path] = err.message;
+        });
+        setValidationErrors(errors);
+      }
       if (axios.isCancel(error)) {
         ToastFail('Hệ thống lỗi! Vui lòng thử lại sau')
+      } else {
+        console.error('Error updating post data:', error);
+        ToastFail('Lỗi cập nhập bài viết')
       }
-      console.error('Error updating post data:', error);
-      ToastFail('Lỗi cập nhập bài viết')
     } finally {
       setIsLoading(false); // Set loading state to false regardless of success or failure
     }
@@ -222,6 +233,12 @@ const PostDetail = () => {
               <FormControl mb="3">
                 <FormControl.Label>Tiêu đề bài viết</FormControl.Label>
                 <Input shadow={1} value={title} onChangeText={(text) => setTitle(text)} />
+                {validationErrors.title && (
+                  <Text style={{
+                    color: 'red',
+                    fontSize: 14
+                  }}>{validationErrors.title}</Text>
+                )}
               </FormControl>
               <FormControl mb="3">
                 <FormControl.Label>Nội dung bài viết</FormControl.Label>
@@ -232,6 +249,12 @@ const PostDetail = () => {
                   value={content}
                   onChangeText={text => setContent(text)} // for android and ios
                   w="100%" maxW="100%" />
+                {validationErrors.content && (
+                  <Text style={{
+                    color: 'red',
+                    fontSize: 14
+                  }}>{validationErrors.content}</Text>
+                )}
               </FormControl>
               <FormControl mb="3" isRequired>
                 <FormControl.Label>Thể loại</FormControl.Label>
@@ -242,6 +265,12 @@ const PostDetail = () => {
                   <Select.Item label="Bài viết" value="1" />
                   <Select.Item label="Thông báo" value="2" />
                 </Select>
+                {validationErrors.type && (
+                  <Text style={{
+                    color: 'red',
+                    fontSize: 14
+                  }}>{validationErrors.type}</Text>
+                )}
                 {/* <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>
                                     Bắt buộc chọn thể loại
                                 </FormControl.ErrorMessage> */}
@@ -250,8 +279,8 @@ const PostDetail = () => {
                 <ButtonBase onPress={pickImage} leftIcon={<Icon as={Ionicons} name="cloud-upload-outline" size="sm" />}>
                   Tải lên
                 </ButtonBase>
+                <Image mt={2} source={{ uri: image }} size="md" />
               </FormControl>
-              <Image mt={2} source={{ uri: image }} size="md" />
 
               <FormControl>
                 <Divider mt={1} />

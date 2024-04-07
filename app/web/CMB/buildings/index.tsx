@@ -27,7 +27,7 @@ const Page = () => {
             const response = await axios.get(`https://abmscapstone2024.azurewebsites.net/api/v1/building/get/${user?.BuildingId}`, {
                 timeout: 10000,
             });
-            if (response.data.statusCode  === 200) {
+            if (response.data.statusCode === 200) {
                 setBuilding(response.data.data);
             } else {
                 Toast.show({
@@ -62,11 +62,17 @@ const Page = () => {
         <View style={{ flex: 1, backgroundColor: '#F9FAFB' }}>
             <SafeAreaView style={{ flex: 1 }}>
                 <ScrollView style={{ paddingHorizontal: 30, paddingVertical: 30, flex: 1 }}>
-                    <View style={{ marginBottom: 20 }}>
-
-                        <Text style={{ fontWeight: 'bold', fontSize: 20, marginBottom: 5 }}>Thông tin tòa nhà</Text>
-                        {/* <Text>Thông tin tòa nhà <Text style={{ fontWeight: 'bold', fontSize: SIZES.medium }}>Ha Dong</Text></Text> */}
-                        <Text>Thông tin tòa nhà</Text>
+                    <View style={{ marginBottom: 20, flexDirection: 'row', justifyContent: 'space-between' }}>
+                        <View>
+                            <Text style={{ fontWeight: 'bold', fontSize: 20, marginBottom: 5 }}>Thông tin tòa nhà</Text>
+                            {/* <Text>Thông tin tòa nhà <Text style={{ fontWeight: 'bold', fontSize: SIZES.medium }}>Ha Dong</Text></Text> */}
+                            <Text>Thông tin tòa nhà</Text>
+                        </View>
+                        <View>
+                            <Link href={`/web/CMB/buildings/${building?.id}`}>
+                                <Button text='Cập nhập thông tin tòa nhà' />
+                            </Link>
+                        </View>
                     </View>
 
                     {isLoading && <ActivityIndicator size={'large'} color="#171717"></ActivityIndicator>}
@@ -94,11 +100,7 @@ const Page = () => {
                     </View>
 
                     {/* style={{ flexDirection: 'row', justifyContent: 'center' } */}
-                    <View>
-                        <Link href={`/web/CMB/buildings/${building?.id}`}>
-                            <Button text='Cập nhập thông tin tòa nhà' />
-                        </Link>
-                    </View>
+                    {/*  */}
                 </ScrollView>
             </SafeAreaView>
         </View>

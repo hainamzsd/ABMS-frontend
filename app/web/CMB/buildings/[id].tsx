@@ -6,16 +6,9 @@ import { router, useLocalSearchParams, useNavigation } from 'expo-router';
 import { SIZES } from '../../../../constants';
 import Toast from 'react-native-toast-message';
 import axios from 'axios';
-import * as Yup from 'yup';
 import { useAuth } from '../../context/AuthContext';
+import { buildingSchema } from '../../../../constants/schema';
 
-const validationSchema = Yup.object().shape({
-  name: Yup.string().required('Tên tòa nhà không được trống'),
-  address: Yup.string()
-    .required('Địa chỉ tòa nhà không được trống'),
-  floors: Yup.number().required('Số tầng không được trống'),
-  rooms: Yup.number().required('Số căn hộ mỗi tầng không được trống')
-});
 
 const BuildingDetail = () => {
   // States
@@ -82,7 +75,7 @@ const BuildingDetail = () => {
     }
     try {
       setIsLoading(true); // Set loading state to true
-      // await validationSchema.validate(bodyData, { abortEarly: false });
+      await buildingSchema.validate(bodyData, { abortEarly: false });
       const response = await axios.put(`https://abmscapstone2024.azurewebsites.net/api/v1/building/update/${item?.id}`, bodyData, {
         timeout: 10000,
         withCredentials: true,
@@ -90,7 +83,6 @@ const BuildingDetail = () => {
           'Authorization': `Bearer ${session}`
         }
       });
-      console.log(response);
       if (response.data.statusCode == 200) {
         Toast.show({
           type: 'success',
@@ -196,8 +188,8 @@ const BuildingDetail = () => {
               value={floors}
               onChangeText={(text) => setFloors(text)}
             ></Input>
-            {validationErrors.floors && (
-              <Text style={styles.errorText}>{validationErrors.floors}</Text>
+            {validationErrors.number_of_floor && (
+              <Text style={styles.errorText}>{validationErrors.number_of_floor}</Text>
             )}
           </View>
           <View>
@@ -210,8 +202,8 @@ const BuildingDetail = () => {
               value={rooms}
               onChangeText={(text) => setRooms(text)}
             ></Input>
-            {validationErrors.rooms && (
-              <Text style={styles.errorText}>{validationErrors.rooms}</Text>
+            {validationErrors.room_each_floor && (
+              <Text style={styles.errorText}>{validationErrors.room_each_floor}</Text>
             )}
           </View>
 

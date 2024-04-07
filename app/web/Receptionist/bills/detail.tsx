@@ -14,6 +14,7 @@ import { useAuth } from '../../context/AuthContext'
 import { ServiceCharge, ServiceChargeTotal } from '../../../../interface/serviceType'
 import { moneyFormat } from '../../../../utils/moneyFormat'
 import { Cell, TableComponent, TableRow } from '../../../../components/ui/table'
+import { billSchema } from '../../../../constants/schema'
 
 const BillDetail = () => {
     const [isLoading, setIsLoading] = useState(false);
@@ -21,9 +22,9 @@ const BillDetail = () => {
     const [status, setStatus] = useState('');
     const [bill, setBill] = useState<ServiceChargeTotal>();
     const [generalBill, setGeneralBill] = useState<ServiceCharge>();
+    const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
 
     const params = useLocalSearchParams();
-    console.log(params)
     const navigation = useNavigation();
     const headers = ["Tên chi phí", "Chi phí", "Số lượng", "Thành tiền"]
     const { session } = useAuth();
@@ -84,8 +85,10 @@ const BillDetail = () => {
 
 
     const updateBill = async () => {
-        setIsLoading(true);
+        setValidationErrors({});
         try {
+            setIsLoading(true);
+            await billSchema.validate({ description: description }, { abortEarly: false })
             const response = await axios.put(`${API_BASE}/${actionController.SERVICE_CHARGE}/update/${params?.id}?description=${description}&status=${status}`, {}, {
                 timeout: 10000,
                 withCredentials: true,
@@ -93,32 +96,67 @@ const BillDetail = () => {
                     'Authorization': `Bearer ${session}`
                 }
             })
-            console.log(response)
+
             if (response.data.statusCode === 200) {
                 ToastSuccess('Cập nhập hoá đơn thành công')
             } else {
                 ToastFail('Cập nhập hoá đơn thất bại');
             }
-        } catch (error) {
+        } catch (error: any) {
+            if (error.name === 'ValidationError') {
+                const errors: any = {};
+                error.inner.forEach((err: any) => {
+                    errors[err.path] = err.message;
+                });
+                setValidationErrors(errors);
+            }
             if (axios.isCancel(error)) {
                 ToastFail('Hệ thống lỗi! Vui lòng thử lại sau');
+            } else {
+                console.log("Fail to updating service charge data", error);
+                ToastFail("Lỗi lấy thông tin hoá đơn");
             }
-            console.log("Fail to updating service charge data", error);
-            ToastFail("Lỗi lấy thông tin hoá đơn");
         }
         finally {
             setIsLoading(false);
         }
     }
-    
+
 
     const handleUpdateBill = () => {
         updateBill();
     }
 
-    // const handleDeleteBill = () => {
-    //     deleteBill();
-    // }
+    const deleteBill = async () => {
+        setIsLoading(true);
+        try {
+            const response = await axios.delete(`${API_BASE}/${actionController.SERVICE_CHARGE}/delete/${params?.id}`, {
+                timeout: 10000,
+                headers: {
+                    'Authorization': `Bearer ${session}`
+                }
+            })
+            if (response.data.statusCode === 200) {
+                ToastSuccess('Xoá hoá đơn thành công')
+                router.push('/web/Receptionist/bills/')
+            } else {
+                ToastFail('Xoá hoá đơn thất bại');
+            }
+        } catch (error) {
+            if (axios.isCancel(error)) {
+                ToastFail('Hệ thống lỗi! Vui lòng thử lại sau');
+            }
+            console.log("Fail to deleting service charge data", error);
+            ToastFail("Lỗi xoá hoá đơn");
+        }
+        finally {
+            setIsLoading(false);
+        }
+    }
+
+    const handleDeleteBill = () => {
+        deleteBill();
+    }
 
     const renderItem = ({ item }: { item: any, index: number }) => {
         const feeBadge = `${moneyFormat(item.fee)} VNĐ`;
@@ -214,6 +252,12 @@ const BillDetail = () => {
                             value={description}
                             onChangeText={text => setDescription(text)}
                             w="100%" maxW="100%" />
+                        {validationErrors.description && (
+                            <Text style={{
+                                color: 'red',
+                                fontSize: 14
+                            }}>{validationErrors.description}</Text>
+                        )}
                     </View>
 
                     <View style={{ marginVertical: 12 }}>
@@ -230,12 +274,13 @@ const BillDetail = () => {
                                 <Cell>Tổng hoá đơn</Cell>
                                 <Cell>...</Cell>
                                 <Cell>...</Cell>
-                                <Cell><Badge variant="outline" colorScheme="success" _text={{fontSize: 14}}>{`${moneyFormat(bill?.total || 0)} VNĐ`}</Badge></Cell>
+                                <Cell><Badge variant="outline" colorScheme="success" _text={{ fontSize: 14 }}>{`${moneyFormat(bill?.total || 0)} VNĐ`}</Badge></Cell>
                             </TableRow>
                         </TableComponent> : <View><Text style={{ fontSize: SIZES.medium, color: COLORS.gray, fontStyle: 'italic', textAlign: 'center' }}>Hiện chưa có chi phí nào.</Text></View>}
                     {/* <Divider mt={4} /> */}
                     <View style={{ flexDirection: 'row', marginTop: 10, gap: 8, justifyContent: 'center' }}>
                         <ButtonBase colorScheme="success" onPress={handleUpdateBill}>Cập nhập hoá đơn</ButtonBase>
+                        <ButtonBase colorScheme="danger" onPress={handleDeleteBill}>Xoá hoá đơn</ButtonBase>
                     </View>
                 </ScrollView>
             </SafeAreaView>

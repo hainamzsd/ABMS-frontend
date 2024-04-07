@@ -15,6 +15,7 @@ import { AccountOwner, user } from '../../../../interface/accountType';
 import { jwtDecode } from 'jwt-decode';
 import moment from 'moment';
 import { ToastFail, ToastSuccess } from "../../../../constants/toastMessage"
+import { roomSchema, memberSchema } from "../../../../constants/schema"
 
 const RoomDetail = () => {
     const navigation = useNavigation();
@@ -38,6 +39,7 @@ const RoomDetail = () => {
     const [phone, setPhone] = useState("");
     const [isHouseholder, setIsHouseholder] = useState("No");
     const [isUpdate, setIsUpdate] = useState(false);
+    const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
 
     // SESSION
     const { session } = useAuth();
@@ -190,8 +192,7 @@ const RoomDetail = () => {
 
     // UPDATE ROOM INFORMATION
     const updateRoom = async () => {
-        // setError(null);
-        // setValidationErrors({});
+        setValidationErrors({});
         const bodyData = {
             accountId: roomData?.accountId,
             buildingId: buildingId,
@@ -201,7 +202,10 @@ const RoomDetail = () => {
         }
         try {
             setIsLoading(true); // Set loading state to true
-            //   await validationSchema.validate(bodyData, { abortEarly: false });
+            await roomSchema.validate({
+                roomNumber: roomNumber,
+                roomArea: roomArea,
+            }, { abortEarly: false });
             const response = await axios.put(`https://abmscapstone2024.azurewebsites.net/api/v1/resident-room/update/${roomData?.id}`, bodyData, {
                 timeout: 10000,
                 withCredentials: true,
@@ -221,7 +225,7 @@ const RoomDetail = () => {
                 error.inner.forEach((err: any) => {
                     errors[err.path] = err.message;
                 });
-                //   setValidationErrors(errors);
+                setValidationErrors(errors);
             }
             if (axios.isCancel(error)) {
                 ToastFail('Lỗi hệ thống! vui lòng thử lại sau')
@@ -238,7 +242,7 @@ const RoomDetail = () => {
     //ADD ROOM MEMBER
     const handleAddRoomMember = async () => {
         // setError(null);
-        // setValidationErrors({});
+        setValidationErrors({});
         const bodyData = {
             roomId: item?.roomDetail,
             fullName: fullName,
@@ -249,7 +253,12 @@ const RoomDetail = () => {
         }
         try {
             setIsLoading(true); // Set loading state to true
-            //   await validationSchema.validate(bodyData, { abortEarly: false });
+            await memberSchema.validate({
+                fullName: fullName,
+                dob: dob,
+                gender: gender,
+                phone: phone
+            }, { abortEarly: false });
             const response = await axios.post(`https://abmscapstone2024.azurewebsites.net/api/v1/resident-room-member/create`, bodyData, {
                 timeout: 10000,
                 headers: {
@@ -273,7 +282,7 @@ const RoomDetail = () => {
                 error.inner.forEach((err: any) => {
                     errors[err.path] = err.message;
                 });
-                //   setValidationErrors(errors);
+                setValidationErrors(errors);
             }
             if (axios.isCancel(error)) {
                 Toast.show({
@@ -299,7 +308,7 @@ const RoomDetail = () => {
     // ADD OWNER
     const handleAddOwner = async () => {
         // setError(null);
-        // setValidationErrors({});
+        setValidationErrors({});
         const bodyData = {
             roomId: item?.roomDetail,
             fullName: fullName,
@@ -310,7 +319,12 @@ const RoomDetail = () => {
         }
         try {
             setIsLoading(true); // Set loading state to true
-            //   await validationSchema.validate(bodyData, { abortEarly: false });
+            await memberSchema.validate({
+                fullName: fullName,
+                dob: dob,
+                gender: gender,
+                phone: phone
+            }, { abortEarly: false });
             const response = await axios.post(`https://abmscapstone2024.azurewebsites.net/api/v1/resident-room-member/create`, bodyData, {
                 timeout: 10000,
                 headers: {
@@ -345,7 +359,7 @@ const RoomDetail = () => {
                 error.inner.forEach((err: any) => {
                     errors[err.path] = err.message;
                 });
-                //   setValidationErrors(errors);
+                setValidationErrors(errors);
             }
             if (axios.isCancel(error)) {
                 Toast.show({
@@ -416,6 +430,7 @@ const RoomDetail = () => {
 
     // UPDATE: ROOM MEMBER
     const handleUpdateMember = async () => {
+        setValidationErrors({});
         const bodyData = {
             roomId: item?.roomDetail,
             fullName: fullName,
@@ -426,7 +441,12 @@ const RoomDetail = () => {
         }
         try {
             setIsLoading(true); // Set loading state to true
-            //   await validationSchema.validate(bodyData, { abortEarly: false });
+            await memberSchema.validate({
+                fullName: fullName,
+                dob: dob,
+                gender: gender,
+                phone: phone
+            }, { abortEarly: false });
             const response = await axios.put(`https://abmscapstone2024.azurewebsites.net/api/v1/resident-room-member/update/${roomMemberId}`, bodyData, {
                 timeout: 10000,
                 withCredentials: true,
@@ -465,7 +485,7 @@ const RoomDetail = () => {
                 error.inner.forEach((err: any) => {
                     errors[err.path] = err.message;
                 });
-                //   setValidationErrors(errors);
+                setValidationErrors(errors);
             }
             if (axios.isCancel(error)) {
                 Toast.show({
@@ -612,7 +632,7 @@ const RoomDetail = () => {
                         </Text>
                         <Text>Thông tin chi tiết của căn hộ <Text style={{ fontWeight: 'bold', fontSize: SIZES.medium - 2 }}>{roomNumber} </Text></Text>
                     </View>
-                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', width: '100%' }}>
+                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', width: '100%', marginBottom: 10 }}>
                         <View style={{ width: '48%' }}>
                             <Text style={{ marginBottom: 10, fontWeight: "600", fontSize: 16 }}>
                                 Số căn hộ
@@ -625,9 +645,12 @@ const RoomDetail = () => {
                                 placeholder="Số căn hộ" style={[{ width: "100%" }]}
 
                             ></Input>
-                            {/* {validationErrors.full_name && (
-              <Text style={styles.errorText}>{validationErrors.full_name}</Text>
-            )} */}
+                            {validationErrors.roomNumber && (
+                                <Text style={{
+                                    color: 'red',
+                                    fontSize: 14
+                                }}>{validationErrors.roomNumber}</Text>
+                            )}
                         </View>
                         <View style={{ width: '48%' }}>
                             <Text style={{ marginBottom: 10, fontWeight: "600", fontSize: 16 }}>
@@ -642,7 +665,7 @@ const RoomDetail = () => {
                             ></Input>
                         </View>
                     </View>
-                    <View>
+                    <View style={{ marginBottom: 10 }}>
                         <Text style={{ marginBottom: 10, fontWeight: "600", fontSize: 16 }}>
                             Diện tích căn hộ
                         </Text>
@@ -652,9 +675,12 @@ const RoomDetail = () => {
                             onChangeText={(text) => {
                                 setRoomArea(text);
                             }}></Input>
-                        {/* {validationErrors.user_name && (
-              <Text style={styles.errorText}>{validationErrors.user_name}</Text>
-            )} */}
+                        {validationErrors.roomArea && (
+                            <Text style={{
+                                color: 'red',
+                                fontSize: 14
+                            }}>{validationErrors.roomArea}</Text>
+                        )}
                     </View>
                     <View style={{ marginTop: 4 }}>
                         <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: SIZES.small }}>
@@ -685,6 +711,12 @@ const RoomDetail = () => {
                                     onChangeText={(text) => {
                                         setFullName(text);
                                     }}></Input>
+                                {validationErrors.fullName && (
+                                    <Text style={{
+                                        color: 'red',
+                                        fontSize: 14
+                                    }}>{validationErrors.fullName}</Text>
+                                )}
                                 <Text style={{ marginTop: SIZES.xSmall, fontWeight: "600", fontSize: 16 }}>
                                     Giới tính
                                 </Text>
@@ -704,6 +736,12 @@ const RoomDetail = () => {
                                         color='pink'
                                     />
                                 </View>
+                                {validationErrors.gender && (
+                                    <Text style={{
+                                        color: 'red',
+                                        fontSize: 14
+                                    }}>{validationErrors.gender}</Text>
+                                )}
                                 <Text style={{ marginBottom: 10, fontWeight: "600", fontSize: 16 }}>
                                     Ngày sinh (mm/dd/yyyy)
                                 </Text>
@@ -712,6 +750,12 @@ const RoomDetail = () => {
                                     onChangeText={(text) => {
                                         setDob(text);
                                     }}></Input>
+                                {validationErrors.dob && (
+                                    <Text style={{
+                                        color: 'red',
+                                        fontSize: 14
+                                    }}>{validationErrors.dob}</Text>
+                                )}
                                 <Text style={{ marginBottom: 10, fontWeight: "600", fontSize: 16 }}>
                                     Số điện thoại
                                 </Text>
@@ -721,10 +765,16 @@ const RoomDetail = () => {
                                     onChangeText={(text) => {
                                         setPhone(text)
                                     }}></Input>
+                                {validationErrors.phone && (
+                                    <Text style={{
+                                        color: 'red',
+                                        fontSize: 14
+                                    }}>{validationErrors.phone}</Text>
+                                )}
                                 <Button text="Thêm thành viên" onPress={handleAddRoomMember} />
                             </View>}
 
-                            {/* UPDATE FORM */}
+                            {/* UPDATE MEMBER */}
                             {isUpdate && <View style={{ borderWidth: 1, width: '60%', padding: SIZES.small, borderColor: COLORS.gray2, ...SHADOWS.small, borderRadius: SIZES.small }}>
                                 <Text style={{ marginBottom: 10, fontWeight: "600", fontSize: 16 }}>
                                     Họ và tên
@@ -734,6 +784,12 @@ const RoomDetail = () => {
                                     onChangeText={(text) => {
                                         setFullName(text);
                                     }}></Input>
+                                {validationErrors.fullName && (
+                                    <Text style={{
+                                        color: 'red',
+                                        fontSize: 14
+                                    }}>{validationErrors.fullName}</Text>
+                                )}
                                 <Text style={{ marginTop: SIZES.xSmall, fontWeight: "600", fontSize: 16 }}>
                                     Giới tính
                                 </Text>
@@ -753,6 +809,12 @@ const RoomDetail = () => {
                                         color='pink'
                                     />
                                 </View>
+                                {validationErrors.gender && (
+                                    <Text style={{
+                                        color: 'red',
+                                        fontSize: 14
+                                    }}>{validationErrors.gender}</Text>
+                                )}
                                 <Text style={{ marginBottom: 10, fontWeight: "600", fontSize: 16 }}>
                                     Ngày sinh (mm/dd/yyyy)
                                 </Text>
@@ -761,6 +823,12 @@ const RoomDetail = () => {
                                     onChangeText={(text) => {
                                         setDob(text);
                                     }}></Input>
+                                {validationErrors.dob && (
+                                    <Text style={{
+                                        color: 'red',
+                                        fontSize: 14
+                                    }}>{validationErrors.dob}</Text>
+                                )}
                                 <Text style={{ marginBottom: 10, fontWeight: "600", fontSize: 16 }}>
                                     Số điện thoại
                                 </Text>
@@ -770,6 +838,12 @@ const RoomDetail = () => {
                                     onChangeText={(text) => {
                                         setPhone(text)
                                     }}></Input>
+                                {validationErrors.phone && (
+                                    <Text style={{
+                                        color: 'red',
+                                        fontSize: 14
+                                    }}>{validationErrors.phone}</Text>
+                                )}
                                 <Button text="Cập nhập thông tin" onPress={numberOfResident === 0 ? handleAddOwner : handleUpdateMember} color="green" />
                                 <Button style={{ marginTop: 4 }} text="Huỷ" onPress={closeUpdate} color={COLORS.buttonRed} />
                             </View>}
