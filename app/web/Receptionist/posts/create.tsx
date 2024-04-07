@@ -14,6 +14,7 @@ import { jwtDecode } from 'jwt-decode';
 import { ToastFail, ToastSuccess } from '../../../../constants/toastMessage';
 import Toast from 'react-native-toast-message';
 import { firebase } from '../../../../config';
+import { postSchema } from '../../../../constants/schema';
 
 const CreatePost = () => {
     const [content, setContent] = useState("");
@@ -21,7 +22,7 @@ const CreatePost = () => {
     const [type, setType] = useState("");
     const [image, setImage] = useState('');
     const [isLoading, setIsLoading] = useState(false);
-
+    const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
 
     const { session } = useAuth();
     const user: user = jwtDecode(session as string)
@@ -106,6 +107,7 @@ const CreatePost = () => {
             type: type
         }
         try {
+            await postSchema.validate({ title: title, content: content, image: uri, type: type }, { abortEarly: false })
             const response = await axios.post(`${API_BASE}/${actionController.POST}/create`, bodyData, {
                 timeout: 10000,
                 headers: {
@@ -122,12 +124,20 @@ const CreatePost = () => {
             } else {
                 ToastFail('Tạo bài viết không thành công');
             }
-        } catch (error) {
+        } catch (error: any) {
+            if (error.name === 'ValidationError') {
+                const errors: any = {};
+                error.inner.forEach((err: any) => {
+                    errors[err.path] = err.message;
+                });
+                setValidationErrors(errors);
+            }
             if (axios.isCancel(error)) {
                 ToastFail('Hệ thống lỗi! Vui lòng thử lại sau')
+            } else {
+                console.error('Error creating post:', error);
+                ToastFail('Lỗi tạo bài viết')
             }
-            console.error('Error creating post:', error);
-            ToastFail('Lỗi tạo bài viết')
         } finally {
             setIsLoading(false); // Set loading state to false regardless of success or failure
         }
@@ -163,6 +173,12 @@ const CreatePost = () => {
                             <FormControl mb="3" isRequired>
                                 <FormControl.Label>Tiêu đề bài viết</FormControl.Label>
                                 <Input shadow={1} value={title} onChangeText={(text) => setTitle(text)} />
+                                {validationErrors.title && (
+                                    <Text style={{
+                                        color: 'red',
+                                        fontSize: 14
+                                    }}>{validationErrors.title}</Text>
+                                )}
                             </FormControl>
                             <FormControl mb="3" isRequired>
                                 <FormControl.Label>Nội dung bài viết</FormControl.Label>
@@ -173,6 +189,12 @@ const CreatePost = () => {
                                     value={content}
                                     onChangeText={text => setContent(text)}
                                     w="100%" maxW="100%" />
+                                {validationErrors.content && (
+                                    <Text style={{
+                                        color: 'red',
+                                        fontSize: 14
+                                    }}>{validationErrors.content}</Text>
+                                )}
                             </FormControl>
                             <FormControl mb="3" isRequired>
                                 <FormControl.Label>Thể loại</FormControl.Label>
@@ -186,19 +208,28 @@ const CreatePost = () => {
                                 {/* <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>
                                     Bắt buộc chọn thể loại
                                 </FormControl.ErrorMessage> */}
+                                {validationErrors.type && (
+                                    <Text style={{
+                                        color: 'red',
+                                        fontSize: 14
+                                    }}>{validationErrors.type}</Text>
+                                )}
                             </FormControl>
                             <FormControl mb="3">
-
                                 <ButtonBase onPress={pickImage} leftIcon={<Icon as={Ionicons} name="cloud-upload-outline" size="sm" />}>
                                     Tải lên
                                 </ButtonBase>
                                 {image && <Image mt={2} source={{ uri: image }} size="md" />}
+                                {validationErrors.image && (
+                                    <Text style={{
+                                        color: 'red',
+                                        fontSize: 14
+                                    }}>{validationErrors.image}</Text>
+                                )}
                             </FormControl>
                             <FormControl>
                                 <Divider mt={1} />
-
                                 {isLoading && <ActivityIndicator style={{ paddingVertical: SIZES.xSmall }} size={'small'} color={'#171717'}></ActivityIndicator>}
-
                                 <ButtonBase.Group space={2} style={{ flexDirection: 'row', justifyContent: 'center' }} mt={3}>
                                     <ButtonBase colorScheme="danger" onPress={handleCancelPost}>Huỷ bỏ</ButtonBase>
                                     <ButtonBase colorScheme="success" onPress={handleCreatePost}> Tạo bài viết </ButtonBase>
