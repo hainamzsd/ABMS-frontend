@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import {
+  ImageBackground,
   StyleSheet,
   Text,
   TextInput,
@@ -12,8 +13,9 @@ import { router } from "expo-router";
 import Toast from "react-native-toast-message";
 import { ActivityIndicator } from "react-native-paper";
 import { jwtDecode } from "jwt-decode";
-
-interface User{
+import { SHADOWS } from "../../constants";
+import { LinearGradient } from "expo-linear-gradient";
+interface User {
   PhoneNumber: string;
   Email: string;
   FullName: string;
@@ -22,32 +24,32 @@ interface User{
 
 const Login: React.FC = () => {
   const { signIn } = useAuth();
-  
+
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const onPress = async () => {
-    setIsLoading(true); 
+    setIsLoading(true);
     try {
-     
+
       const token = await signIn(phone, password)
       console.log(token);
-      if(token.data.statusCode===500) {
+      if (token.data.statusCode === 500) {
         Toast.show({
           type: "error",
           text1: "Lỗi",
           text2: "Sai tên đăng nhập hoặc mật khẩu",
         });
       }
-      else{
+      else {
         Toast.show({
           type: "success",
           text1: "Đăng nhập thành công",
-          position:'bottom'
+          position: 'bottom'
         });
-        const data:User =  jwtDecode(token.data.data);
-        console.log("dataUser",data);
-        if(data.Role===3){
+        const data: User = jwtDecode(token.data.data);
+        console.log("dataUser", data);
+        if (data.Role === 3) {
           Toast.show({
             type: "error",
             text1: "Lỗi",
@@ -55,55 +57,59 @@ const Login: React.FC = () => {
           });
           return;
         }
-        if(data.Role==1){
+        if (data.Role == 1) {
           router.replace('/web/CMB/')
         }
-        else if(data.Role==2){
+        else if (data.Role == 2) {
           router.replace('/web/Receptionist/')
         }
-        else{
+        else {
           router.replace('/web/Admin/')
         }
         console.log(data);
       }
-    } catch(e:any) {
+    } catch (e: any) {
       Toast.show({
         type: "error",
         text1: "Lỗi",
         text2: e.message || 'Lỗi hệ thống! Vui lòng thử lại sau.',
       });
     } finally {
-      setIsLoading(false); 
+      setIsLoading(false);
     }
   };
   return (
-    <View style={styles.container}>
-      <View style={{ marginBottom: 40 }}>
-        <Text style={styles.welcomeText}>Chào mừng quay lại</Text>
-        <Text>Cổng đăng nhập quản lý chung cư</Text>
-      </View>
-      <TextInput
-        style={styles.inputField}
-        placeholder="Số điện thoại"
-        value={phone}
-        onChangeText={setPhone}
-        placeholderTextColor="#A1A1A1"
-      />
-      <TextInput
-        style={styles.inputField}
-        placeholder="Mật khẩu"
-        value={password}
-        onChangeText={setPassword}
-        placeholderTextColor="#A1A1A1"
-        secureTextEntry
-      />
-      {isLoading && <ActivityIndicator size={'large'} color="#171717"></ActivityIndicator>} 
-      <Button
-        text="Đăng nhập"
-        style={{ width: 500 }}
-        onPress={onPress}
-      ></Button>
-    </View>
+    <LinearGradient colors={['#7265a5', '#a66a4b']} style={styles.container}>
+      <ImageBackground imageStyle={{ opacity: 0.1, marginVertical: 10 }} source={{ uri: "../../assets/images/logoGradient1.png" }} resizeMode="contain" style={styles.wrapper} >
+        <View style={{ marginBottom: 40 }}>
+          <Text style={styles.welcomeText}>Chào mừng quay lại</Text>
+          <Text style={{ textAlign: 'center', fontSize: 15 }}>Cổng đăng nhập quản lý chung cư</Text>
+        </View>
+        <TextInput
+          style={styles.inputField}
+          placeholder="Số điện thoại"
+          value={phone}
+          onChangeText={setPhone}
+          placeholderTextColor="#A1A1A1"
+        />
+        <TextInput
+          style={styles.inputField}
+          placeholder="Mật khẩu"
+          value={password}
+          onChangeText={setPassword}
+          placeholderTextColor="#A1A1A1"
+          secureTextEntry
+        />
+        {isLoading && <ActivityIndicator size={'large'} color="#171717"></ActivityIndicator>}
+        <Button
+          text="Đăng nhập"
+          style={{ width: 500, backgroundColor: 'rgba(90, 75, 144, 0.738)'}}
+          onPress={onPress}
+        ></Button>
+        {/* </ImageBackground> */}
+      </ImageBackground>
+    </LinearGradient >
+
   );
 };
 
@@ -112,12 +118,19 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#F9FAFB",
-    padding: 20,
+  },
+  wrapper: {
+    borderWidth: 1,
+    borderColor: '#fff',
+    borderRadius: 15,
+    paddingHorizontal: 75,
+    paddingVertical: 90,
+    backgroundColor: 'rgba(251, 251, 251, 0.9)',
+    ...SHADOWS.medium
   },
   welcomeText: {
     marginBottom: 10,
-    fontSize: 24,
+    fontSize: 30,
     fontWeight: "bold",
     textAlign: "center",
     color: "#333",
