@@ -12,7 +12,7 @@ import { jwtDecode } from "jwt-decode";
 import moment from "moment";
 import { AlertDialog, FormControl, HStack, Input, Modal } from "native-base";
 import * as Yup from "yup"
-import { formatVND } from "../../../../../utils/moneyFormat";
+import { formatVND, moneyFormat } from "../../../../../utils/moneyFormat";
 import { Download } from "lucide-react-native";
 import * as FileSystem from 'expo-file-system';
 interface Expense {
@@ -447,6 +447,7 @@ export default function ExpenseManagement() {
                                                         setExpenseSourceUpdate(item.expenseSource)
                                                         setDescriptionUpdate(item.description)
                                                         setMoneyUpdate(item.expense1)
+                                                        setDisplayMoneyUpdate(moneyFormat(item.expense1))
                                                     }
                                                     }
                                                         

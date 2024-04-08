@@ -212,14 +212,14 @@ const handleDeleteAccount = async () => {
     if (response.data.statusCode == 200) {
       Toast.show({
         type:'success',
-        text1:'Xóa tài khoản thành công',
+        text1:'Vô hiệu hóa thành công',
         position:'bottom'
       })
       router.replace('/web/Receptionist/accounts/');
     } else {
       Toast.show({
         type:'error',
-        text1:'Xóa tài khoản không thành công' ,
+        text1:'Vô hiệu hóa không thành công' ,
         position:'bottom'
       })
     }
@@ -283,6 +283,62 @@ const handleActiveAccount = async () => {
       })
   }
     console.error('Error update account:', error);
+    setError('An error occurred. Please try again.');
+  } finally {
+    setIsLoading(false);
+  }
+};
+
+const [isOpen, setIsOpen] = useState(false);
+
+const onClose = () => setIsOpen(false);
+
+const cancelRef = React.useRef(null);
+const handleRemove = async () => {
+  if (!accountId.accountDetail) {
+    Toast.show({
+      type:'error',
+      text1:'Không tìm thấy tài khoản',
+      position:'bottom'
+    })
+    return;
+  }
+  setIsLoading(true);
+  setError(null); 
+
+  try {
+  
+    const response = await axios.delete(`https://abmscapstone2024.azurewebsites.net/api/v1/account/delete/${accountId.accountDetail}`, {
+      timeout: 10000,
+      withCredentials:true,
+      headers:{
+        'Authorization': `Bearer ${session}`
+      }
+  });
+    console.log(response);
+    if (response.data.statusCode == 200) {
+      Toast.show({
+        type:'success',
+        text1:'Xóa tài khoản thành công',
+        position:'bottom'
+      })
+      router.replace('/web/Receptionist/accounts/');
+    } else {
+      Toast.show({
+        type:'error',
+        text1:'Xóa tài khoản không thành công' ,
+        position:'bottom'
+      })
+    }
+  } catch (error) {
+    if (axios.isCancel(error)) {
+      Toast.show({
+          type: 'error',
+          text1: 'Lỗi hệ thống! vui lòng thử lại sau',
+          position:'bottom'
+      })
+  }
+    console.error('Error deleting account:', error);
     setError('An error occurred. Please try again.');
   } finally {
     setIsLoading(false);

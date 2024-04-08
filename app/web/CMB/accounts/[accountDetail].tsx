@@ -1,4 +1,4 @@
-import { View, Text, SafeAreaView, StyleSheet, ActivityIndicator, InteractionManager } from "react-native";
+import { View, SafeAreaView, StyleSheet, ActivityIndicator, InteractionManager } from "react-native";
 import React, { useEffect, useState } from "react";
 import Button from "../../../../components/ui/button";
 import Input from "../../../../components/ui/input";
@@ -11,6 +11,7 @@ import * as Yup from 'yup';
 import { Alert } from "react-native";
 import { useAuth } from "../../context/AuthContext";
 import { jwtDecode } from "jwt-decode";
+import { AlertDialog,Text, VStack } from "native-base";
 
 
 interface Account {
@@ -185,17 +186,6 @@ const page = () => {
         setIsLoading(false);
     }
 };
-const handleDeleteConfirm = async () => {
-  Alert.alert(
-    'Xác nhận xóa',
-    'Bạn có muốn xóa tài khoản này không?',
-    [
-      { text: 'Hủy', onPress: () => console.log('Cancel Pressed'), style: 'cancel' },
-      { text: 'Xóa', onPress: () => handleDeleteAccount(), style: 'destructive' },
-    ],
-    { cancelable: true },
-  );
-};
 
 const handleDeleteAccount = async () => {
   if (!accountId.accountDetail) {
@@ -222,14 +212,14 @@ const handleDeleteAccount = async () => {
     if (response.data.statusCode == 200) {
       Toast.show({
         type:'success',
-        text1:'Xóa tài khoản thành công',
+        text1:'Vô hiệu hóa thành công',
         position:'bottom'
       })
       router.replace('/web/CMB/accounts/');
     } else {
       Toast.show({
         type:'error',
-        text1:'Xóa tài khoản không thành công' ,
+        text1:'Vô hiệu hóa không thành công' ,
         position:'bottom'
       })
     }
@@ -293,6 +283,64 @@ const handleActiveAccount = async () => {
       })
   }
     console.error('Error update account:', error);
+    setError('An error occurred. Please try again.');
+  } finally {
+    setIsLoading(false);
+  }
+};
+
+//handleRemoveAccount
+
+const [isOpen, setIsOpen] = useState(false);
+
+const onClose = () => setIsOpen(false);
+
+const cancelRef = React.useRef(null);
+const handleRemove = async () => {
+  if (!accountId.accountDetail) {
+    Toast.show({
+      type:'error',
+      text1:'Không tìm thấy tài khoản',
+      position:'bottom'
+    })
+    return;
+  }
+  setIsLoading(true);
+  setError(null); 
+
+  try {
+  
+    const response = await axios.delete(`https://abmscapstone2024.azurewebsites.net/api/v1/${accountId.accountDetail}`, {
+      timeout: 10000,
+      withCredentials:true,
+      headers:{
+        'Authorization': `Bearer ${session}`
+      }
+  });
+    console.log(response);
+    if (response.status == 200) {
+      Toast.show({
+        type:'success',
+        text1:'Xóa tài khoản thành công',
+        position:'bottom'
+      })
+      router.replace('/web/CMB/accounts/');
+    } else {
+      Toast.show({
+        type:'error',
+        text1:'Xóa tài khoản không thành công' ,
+        position:'bottom'
+      })
+    }
+  } catch (error) {
+    if (axios.isCancel(error)) {
+      Toast.show({
+          type: 'error',
+          text1: 'Lỗi hệ thống! vui lòng thử lại sau',
+          position:'bottom'
+      })
+  }
+    console.error('Error deleting account:', error);
     setError('An error occurred. Please try again.');
   } finally {
     setIsLoading(false);
@@ -386,6 +434,7 @@ const handleActiveAccount = async () => {
             )}
           </View>
 
+            <VStack space={2}>
           <View style={{ flexDirection: 'row', marginTop: 10 }}>
             <Button
             onPress={updateAccount}
@@ -400,8 +449,33 @@ const handleActiveAccount = async () => {
             onPress={handleDeleteAccount}
             text="Vô hiệu hóa" style={{ width: 100, backgroundColor: '#9b2c2c' }}></Button>
             }
+           
           </View>
+          {accountData?.status === 0 && 
+            <Button 
+            onPress={()=>setIsOpen(true)}
+            text="Xóa tài khoản" style={{ width: 120, backgroundColor: '#9b2c2c' }}></Button>
+            }
+            </VStack>
         </ScrollView>
+        <AlertDialog leastDestructiveRef={cancelRef} isOpen={isOpen} onClose={onClose}>
+                    <AlertDialog.Content>
+                        <AlertDialog.CloseButton />
+                        <AlertDialog.Header>Xóa tài khoản</AlertDialog.Header>
+                        <AlertDialog.Body>
+                        <Text>
+                            Hành động này sẽ xóa tài khoản và tất cả thông tin liên quan.
+                            Bạn sẽ <Text fontWeight={'bold'}>không thể</Text> khôi phục hành động này. Bạn có xác nhận không?
+                            </Text>
+                        </AlertDialog.Body>
+                        <AlertDialog.Footer>
+                                <Button text='Hủy' style={{marginRight:5}} onPress={onClose}>
+                                </Button>
+                                <Button text='Xóa' color='#9b2c2c'  onPress={handleRemove}>
+                                </Button>
+                        </AlertDialog.Footer>
+                    </AlertDialog.Content>
+                </AlertDialog>
       </SafeAreaView>
     </View>
   );
