@@ -46,7 +46,7 @@ interface Room {
 
 const databaseURL = "https://abms-47299.firebaseio.com/";
 const validationSchema = yup.object({
-    fullName: yup.string().required("This field is required").min(10,"Full name must be at least 10 characters").max(30),
+    fullName: yup.string().required("This field is required").min(5,"Full name must be at least 5 characters").max(30),
     arrivalDate: yup.date().required("This field is required"),
     departureDate: yup.date()
         .required("This field is required")

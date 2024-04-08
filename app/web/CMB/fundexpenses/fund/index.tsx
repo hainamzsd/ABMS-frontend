@@ -12,7 +12,7 @@ import { jwtDecode } from "jwt-decode";
 import moment from "moment";
 import { AlertDialog, FormControl, HStack, Input, Modal } from "native-base";
 import * as Yup from "yup"
-import { formatVND } from "../../../../../utils/moneyFormat";
+import { formatVND, moneyFormat } from "../../../../../utils/moneyFormat";
 import * as FileSystem from 'expo-file-system';
 import { Download } from "lucide-react-native";
 interface Fund {
@@ -221,9 +221,9 @@ export default function FundManagement() {
                     text1: 'Cập nhật thành công',
                     position: 'bottom',
                 })
-                setFundSourceCreate("");
-                setDescriptionCreate("");
-                setMoneyCreate(0);
+                setFundSourceUpdate("");
+                setDescriptionUpdate("");
+                setMoneyUpdate(0);
                 setShowModalCreate(false);
                 setValidationErrors({});
             } else {
@@ -447,6 +447,7 @@ export default function FundManagement() {
                                                         setFundSourceUpdate(item.fundSource)
                                                         setDescriptionUpdate(item.description)
                                                         setMoneyUpdate(item.fund1)
+                                                        setDisplayMoneyUpdate(moneyFormat(item.fund1))
                                                     }
                                                     }
                                                         

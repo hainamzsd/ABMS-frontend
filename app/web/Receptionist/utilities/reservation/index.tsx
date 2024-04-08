@@ -22,7 +22,7 @@ const StatusData = [
 
 const ReservationUtility = () => {
     const item = useLocalSearchParams();
-    const headers = ['Căn hộ', 'Tên sân', 'Khung giờ', 'Ngày đặt', 'Tổng tiền', 'Trạng thái', ''];
+    const headers = ['Căn hộ', 'Tên vị trí', 'Khung giờ', 'Ngày đặt', 'Tổng tiền', 'Trạng thái', ''];
     //   STATE
     const [isLoading, setIsLoading] = useState(false);
     const [utilityReservation, setUtilityReservation] = useState<Reservation[]>([]);

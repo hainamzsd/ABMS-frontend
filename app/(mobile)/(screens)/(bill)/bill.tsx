@@ -143,15 +143,22 @@ const transformData = (bills: Bill[]): YearData[] => {
         // Find or create the month entry
         let monthEntry = groupedByYear[bill.year].months.find(m => m.month === bill.month);
         if (!monthEntry) {
-            monthEntry = { month: bill.month, total: bill.total, details: bill.detail };
+            // Initialize the month entry with the month and an empty array for details
+            monthEntry = { month: bill.month, total: 0, details: [] };
             groupedByYear[bill.year].months.push(monthEntry);
-        } else {
-            // Assuming the total and details can be updated or are meant to accumulate
-            monthEntry.total += bill.total; // Adjust as needed, depending on your logic
-            monthEntry.details.push(...bill.detail);
         }
+
+        // Calculate the total from bill details for this bill
+        const billTotal = bill.detail.reduce((acc, detail) => acc + detail.total, 0);
+
+        // Add the calculated total to the month entry's total
+        monthEntry.total += billTotal;
+
+        // Concatenate current bill details to the month entry's details
+        monthEntry.details.push(...bill.detail);
     });
 
+    // Return the year data sorted by year in descending order
     return Object.values(groupedByYear).sort((a, b) => b.year - a.year);
 };
     useEffect(() => {
@@ -212,7 +219,7 @@ const transformData = (bills: Bill[]): YearData[] => {
                                     renderItem={({ item }) => (
                                         <Pressable style={[styles.monthItem,{backgroundColor:theme.sub}]}
                                         onPress={() => openModal(item)}>
-                                            <Text >Thang {item.month}</Text>
+                                            <Text >{t("Month")} {item.month}</Text>
                                             <Text style={{fontWeight:'600'}}>{moneyFormat(item.total)} VND</Text>
                                             {selectedItem && (
                                                 <BillModal
@@ -252,8 +259,8 @@ const transformData = (bills: Bill[]): YearData[] => {
                                 borderColor: theme.primary,
                             }]}>
                                 <View style={{ marginLeft: 10 }}>
-                                    <Text style={{ fontWeight: 'bold', fontSize: 16 }}>R2.2332</Text>
-                                    <Text style={{ color: '#9C9C9C', fontWeight: '300' }}>Times city, Hà Nội</Text>
+                                    <Text style={{ fontWeight: 'bold', fontSize: 16 }}>{room[0]?.roomNumber}</Text>
+                                    <Text style={{ color: '#9C9C9C', fontWeight: '300' }}>{room[0]?.buildingName +", " +room[0]?.buildingAddress}</Text>
                                 </View>
                             </View>
                         </View>
