@@ -300,11 +300,12 @@ const Utilities = () => {
     }
   }
 
-  // RESTORE - NOT FINISHED
-  const restoreUtility = async () => {
+  // RESTORE
+  const restoreUtility = async (id: any) => {
     setIsLoading(true);
+    const bodyData = [id]
     try {
-      const response = await axios.put(`https://abmscapstone2024.azurewebsites.net/api/v1/utility/restore/${utilityId}`, {
+      const response = await axios.put(`https://abmscapstone2024.azurewebsites.net/api/v1/utility/restore`, bodyData, {
         timeout: 10000,
         headers: {
           'Authorization': `Bearer ${session}`
@@ -316,6 +317,7 @@ const Utilities = () => {
           text1: 'Phục hồi tiện ích thành công',
           position: 'bottom'
         })
+        fetchUtilitiesTrash();
         fetchUtilities();
       } else {
         Toast.show({
@@ -371,10 +373,10 @@ const Utilities = () => {
     setOtherName(item?.name);
   }
 
-  const handleRestoreUtility = (item: any) => {
-    setUtilityId(item?.id);
-    restoreUtility();
-  }
+  // const handleRestoreUtility = (item: any) => {
+  //   setUtilityId(item?.id);
+  //   restoreUtility();
+  // }
 
   const handleDeleteUtility = (item: any) => {
     setIsDeleteModal(true);
@@ -439,7 +441,7 @@ const Utilities = () => {
             }
             {isUpdate && isTrash &&
               <View style={{ flexDirection: 'row', gap: 8, paddingVertical: SIZES.small }}>
-                <Button style={{ backgroundColor: ColorPalettes.ocean.primary }} text="Khôi phục tiện ích" onPress={() => handleRestoreUtility(item)} />
+                <Button style={{ backgroundColor: ColorPalettes.ocean.primary }} text="Khôi phục tiện ích" onPress={() => restoreUtility(item?.id)} />
                 <Button style={{ backgroundColor: ColorPalettes.ocean.primary }} text='Xoá vĩnh viễn' />
               </View>
             }
