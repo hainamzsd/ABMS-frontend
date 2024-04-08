@@ -302,7 +302,7 @@ const Place = () => {
                     <Modal.Body>
                         <FormControl mt="3">
                             <FormControl.Label>Tên địa điểm</FormControl.Label>
-                            <Input value={newPlace} onChangeText={(text) => setNewPlace(text)} />
+                            <Input placeholder="Nhập tên địa điểm" onChangeText={(text) => setNewPlace(text)} />
                             {validationErrors.place  && (
                             <Text style={{color:'red'}}>{validationErrors.place}</Text>
                         )}
@@ -327,7 +327,7 @@ const Place = () => {
                     <Modal.Body>
                         <FormControl mt="3">
                             <FormControl.Label>Tên địa điểm</FormControl.Label>
-                            <Input value={updatePlace} onChangeText={(text) => setUpdatePlace(text)} />
+                            <Input placeholder={updatePlace} onChangeText={(text) => setUpdatePlace(text)} />
                             {validationErrors.place  && (
                             <Text style={{color:'red'}}>{validationErrors.place}</Text>
                         )}
