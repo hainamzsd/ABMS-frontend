@@ -217,7 +217,6 @@ const Place = () => {
                     <View style={styles.textContainer}>
                         <View >
                             <Text numberOfLines={1} style={styles.title}>{item?.name}</Text>
-                            <Text numberOfLines={2} style={styles.content}>{params?.location}</Text>
                         </View>
                         <View style={{ flexDirection: 'row', gap: SIZES.small }}>
                             <Button text="Chỉnh sửa" onPress={() => {
@@ -403,7 +402,6 @@ const styles = StyleSheet.create({
     title: {
         fontWeight: 'bold',
         fontSize: 16,
-        marginBottom: 5,
         color: '#333333',
         overflow: 'hidden',
     },

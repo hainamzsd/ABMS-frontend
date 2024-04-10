@@ -100,7 +100,7 @@ const Login: React.FC = () => {
           placeholderTextColor="#A1A1A1"
           secureTextEntry
         />
-        {isLoading && <ActivityIndicator size={'large'} color="#171717"></ActivityIndicator>}
+        {isLoading && <ActivityIndicator style={{marginBottom: 8}} size={'large'} color="#171717"></ActivityIndicator>}
         <Button
           text="Đăng nhập"
           style={{ width: 500, backgroundColor: 'rgba(90, 75, 144, 0.738)'}}
