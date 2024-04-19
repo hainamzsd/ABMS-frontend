@@ -227,6 +227,7 @@ const visitorRegisterScreen = () => {
                         title: `Phòng ${room[0].roomNumber} đăng ký khách thăm mới `,
                         buildingId: user.BuildingId,
                         content: `/web/Receptionist/services/visitor/${response.data.data}`,
+                        serviceId: response.data.data,
                     },
                     {
                         timeout: 10000, 
@@ -282,7 +283,7 @@ const visitorRegisterScreen = () => {
     const currentDate = new Date();
     const maxDate = new Date(currentDate.getTime() + 14);
     maxDate.setDate(maxDate.getDate() + 14);
-    const isButtonDisabled = !gender ||
+    const isButtonDisabled = 
         selectedImages.length < 1 || !fullName || !phone || !identityNumber;
     const [showSuccess, setShowSuccess] = useState(false);
     const [showConfirm, setShowConfirm] = useState(false);

@@ -86,6 +86,7 @@ const Page = () => {
               }
         }
         );
+        const deleteNotification = await axios.delete(`https://abmscapstone2024.azurewebsites.net/api/v1/deleteByServiceId/${data?.id}`)
         console.log(response);
         if (response.data.statusCode == 200) {
             setShowConfirmBox(false);

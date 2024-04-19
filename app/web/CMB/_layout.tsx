@@ -47,10 +47,10 @@ const _layout = () => {
       name: "Quản lý bài viết",
       href: "/web/CMB/posts",
     },
-    {
-      name: "Quản lý biểu phí",
-      href: "/web/CMB/fees",
-    },
+    // {
+    //   name: "Quản lý biểu phí",
+    //   href: "/web/CMB/fees",
+    // },
     {
       name: "Quản lý hoá đơn",
       href: "/web/CMB/bills",

@@ -14,6 +14,7 @@ import { calculateSlots } from "../../../../utils/convertSlot";
 import { useSession } from "../../context/AuthContext";
 import { jwtDecode } from "jwt-decode";
 import AlertWithButton from "../../../../components/resident/AlertWithButton";
+import { Center, VStack } from "native-base";
 interface Utility {
   id: string;
   name: string;
@@ -140,8 +141,21 @@ export default function UtilityList() {
       <Header headerTitle={t("Utility list")} headerRight
       rightPath={"reservationUtilityList"}></Header>
       <SafeAreaView style={{ backgroundColor: theme.background, flex: 1 }}>
-        <View style={{ marginHorizontal: 26 }}>
+        <View style={{ marginHorizontal: 26,flex:1 }}>
+            {utilities.length === 0 && !isLoading ? 
+            <View style={{flex:1}}>
+            <Center flex={1}>
+                         <VStack space={4} alignItems="center">
+                         <Image source={require('../../../../assets/images/human2.png')}
+                        style={{width:200,height:300, opacity:0.7}}
+                        />
+                        <Text style={{color:'#9c9c9c', marginTop:5}}>{t("Utilities not available at the moment")+"."}</Text>
+                         </VStack>
+                     </Center>
+                     </View>
+            :(  
           <View style={styles.container}>
+            
             <View style={styles.row}>
               <FlatList
                 data={utilities}
@@ -149,8 +163,10 @@ export default function UtilityList() {
                 keyExtractor={(item) => item.id}
                 numColumns={3}
               />
-            </View>
+            </View>  
           </View>
+            )}
+           
         </View>
       </SafeAreaView>
     </>

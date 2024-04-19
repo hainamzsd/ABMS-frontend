@@ -36,30 +36,13 @@ const NotificationButton = () => {
   const {session} = useAuth();
   const user:User = jwtDecode(session as string);
   useEffect(() => {
-    fetchNotifications();
-    const connection = new HubConnectionBuilder()
-    .withUrl("https://abmscapstone2024.azurewebsites.net/notificationHub")
-    .configureLogging(signalR.LogLevel.Information)
-    .withAutomaticReconnect()
-    .build();
+    const intervalId = setInterval(() => {
+      fetchNotifications();
+    }, 3000); // Fetch notifications every 3 seconds
 
-  // Start the connection and handle new notifications
-  connection.start().then(() => {
-    console.log("Connected to SignalR hub.");
-
-    connection.on("ReceiveNotification", (newNotification) => {
-      const receivedTime = Date.now(); // Capture current time when notification arrives
-      console.log(`Notification received with timestamp: ${newNotification.createTime} (server)`);
-      console.log(`Received at: ${receivedTime} (client)`);
-      setNotifications(prevNotifications => [...prevNotifications, newNotification]);
-    });
-  
-  }).catch(err => console.error('SignalR Connection Error: ', err));
-
-  // Clean up on component unmount
-  return () => {
-    connection.stop();
-  };
+    return () => {
+      clearInterval(intervalId); 
+    };
   }, [session]);
   moment.locale('vi');
   const markNotificationsAsRead = async () => {
