@@ -105,6 +105,7 @@ const Checkout = () => {
                 title: `Phòng ${room[0].roomNumber} đăng ký sử dụng tiện ích ${item.utilityName} - ${item.utilityDetail} đã được tạo bởi ${user.FullName}`,
                 buildingId: user.BuildingId,
                 content: `/web/Receptionist/utilities/reservation/${response.data.data}`,
+                serviceId: response.data.data,
             },
             {
                 timeout: 10000, 

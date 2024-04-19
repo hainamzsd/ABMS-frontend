@@ -291,10 +291,32 @@ const BillDashboard = () => {
                     'Authorization': `Bearer ${session}`
                 }
             })
+            if(response.data.count==0){
+                Toast.show({
+                    type:"info",
+                    text1:"Không có hóa đơn nào được tạo",
+                    position:'bottom',
+                });
+                return;
+            }
             if (response.data.statusCode === 200) {
                 ToastSuccess("Tạo hoá đơn cho các căn hộ thành công");
                 fetchServiceCharge();
-            } else {
+                const createPost = await axios.post('https://abmscapstone2024.azurewebsites.net/api/v1/notification/create-for-resident',{
+                    title: "Bạn có hóa đơn mới cần thanh toán, vui lòng kiểm tra tại mục hóa đơn.",
+                    content: "Bill",
+                    buildingId: user.BuildingId,
+                    roomId: "Bill",
+                    serviceId: "Bill"
+                },  
+                {
+                    timeout: 10000, 
+                    headers:{
+                        'Authorization': `Bearer ${session}`
+                    }
+                  },)
+            } 
+            else {
                 ToastFail('Tạo hoá đơn cho các căn hộ không thành công');
             }
         } catch (error) {

@@ -87,6 +87,7 @@
     "react-native-screens": "~3.29.0",
     "react-native-select-dropdown": "^3.4.0",
     "react-native-svg": "^14.1.0",
+    "react-native-swipe-list-view": "^3.2.9",
     "react-native-toast-message": "^2.2.0",
     "react-native-web": "~0.19.6",
     "rn-fetch-blob": "^0.12.0",

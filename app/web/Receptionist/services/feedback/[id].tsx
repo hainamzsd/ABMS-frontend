@@ -27,11 +27,14 @@ interface Feedback{
     status: number;
     image:string;
     room:{
+      id:string;
         roomNumber:string;
     }
     serviceType:{
         name:string;
-    }
+        buildingId:string;
+    };
+    response:string;
 }
 interface Room{
   roomNumber:string;
@@ -58,8 +61,8 @@ const page = () => {
         });
         if (replyAxios.status === 200) {
           setFeedback(replyAxios.data.data)
-          if(replyAxios.data.data.reply){
-            setReply(replyAxios.data.data.reply);
+          if(replyAxios.data.data.response){
+            setReply(replyAxios.data.data.response);
           }
         }
         else {
@@ -104,6 +107,18 @@ const page = () => {
           }
         });
         if (replyAxios.data.statusCode == 200) {
+          const createNotification = await axios.post('https://abmscapstone2024.azurewebsites.net/api/v1/notification/create-for-resident',{
+            title: `Đơn phản ánh ${feedback?.title} đã được phản hồi`,
+            buildingId: feedback?.serviceType.buildingId,
+            content: `Đơn phản ánh ${feedback?.title} đã được phản hồi'}`,
+            roomId: feedback?.room.id
+        },
+        {
+            timeout: 10000, 
+            headers:{
+                'Authorization': `Bearer ${session}`
+            }
+          },)
             Toast.show({
                 type: 'success',
                 text1: 'Phê duyệt phản hồi thành công',

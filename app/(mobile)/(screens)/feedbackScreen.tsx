@@ -193,6 +193,18 @@ const [disableBtn, setDisableBtn]=useState(false);
       });
       console.log(response)
       if (response.data.statusCode == 200) {
+        const createPost = await axios.post('https://abmscapstone2024.azurewebsites.net/api/v1/notification/create-for-receptionist',{
+                        title: `Phòng ${room[0].roomNumber} gửi phản ánh `,
+                        buildingId: user.BuildingId,
+                        content: `/web/Receptionist/services/feedback/${response.data.data}`,
+                        serviceId: response.data.data,
+                    },
+                    {
+                        timeout: 10000, 
+                        headers:{
+                            'Authorization': `Bearer ${session}`
+                        }
+                      },)
         setTitle("");
         setDescription("");
         setImage("");

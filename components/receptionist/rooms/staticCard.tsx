@@ -20,7 +20,7 @@ const getIconName = (statisticName:string|undefined) => {
     }
 };
 
-const StatisticCard = ({ statisticName, number, route  }:{ statisticName:string|undefined, number:number|undefined, route:string}) => {
+const StatisticCard = ({ statisticName, number, route  }:{ statisticName:string|undefined, number:number|undefined, route?:string}) => {
     return (
       
         <Pressable
@@ -33,7 +33,9 @@ const StatisticCard = ({ statisticName, number, route  }:{ statisticName:string|
             px={5}
             py={3}
             onPress={()=>{
-                router.push(route as any)
+                if(route){
+                    router.push(route as any)
+                }
             }}
         >
             <HStack space={3} justifyContent="space-between" alignItems="center">

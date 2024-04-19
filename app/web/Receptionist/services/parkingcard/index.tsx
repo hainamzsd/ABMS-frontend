@@ -61,7 +61,7 @@ const index = () => {
     const [error, setError] = useState<string | null>(null);
     const [currentPage, setCurrentPage] = useState(1)
     const itemsPerPage = 7
-    const [status, setStatus] = useState<number | null>(2);
+    const [status, setStatus] = useState<number | null>(1);
     const {session} = useAuth(); 
     const User:User = jwtDecode(session as string);
     useEffect(() => {
