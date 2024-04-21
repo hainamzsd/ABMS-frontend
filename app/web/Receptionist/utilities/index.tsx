@@ -147,6 +147,13 @@ const Utilities = () => {
           text1: 'Tạo tiện ích mới thành công',
           position: 'bottom'
         })
+        setName("");
+        setOpenTime("");
+        setCloseTime("");
+        setSlots("");
+        setPrice("");
+        setDescription("");
+        validationErrors.hourMessage = "";
         fetchUtilities();
       } else {
         Toast.show({
@@ -216,6 +223,7 @@ const Utilities = () => {
           text1: 'Cập nhập tiện ích thành công',
           position: 'bottom'
         })
+        validationErrors.hourMessage = "";
         fetchUtilities();
       } else {
         Toast.show({
@@ -363,7 +371,7 @@ const Utilities = () => {
     if (isMatched) {
       setName(item?.name);
     } else setName("Khác");
-   
+
     setOpenTime(item?.openTime);
     setCloseTime(item?.closeTime);
     setSlots(item?.numberOfSlot);
@@ -515,7 +523,7 @@ const Utilities = () => {
                 )}
               </FormControl>}
             <FormControl mt="3">
-              <FormControl.Label>Thời gian bắt đầu (h:mm AM/PM)</FormControl.Label>
+              <FormControl.Label>Thời gian bắt đầu (hh:mm)</FormControl.Label>
               <Input value={openTime} onChangeText={(text) => setOpenTime(text)} />
               {validationErrors.openTime && (
                 <Text style={{
@@ -531,7 +539,7 @@ const Utilities = () => {
               )}
             </FormControl>
             <FormControl mt="3">
-              <FormControl.Label>Thời gian kết thúc (h: mm AM/PM)</FormControl.Label>
+              <FormControl.Label>Thời gian kết thúc (hh:mm)</FormControl.Label>
               <Input value={closeTime} onChangeText={(text) => setCloseTime(text)} />
               {validationErrors.closeTime && (
                 <Text style={{
@@ -576,7 +584,7 @@ const Utilities = () => {
               createUtility();
               setIsCreateModal(false);
             }}>
-              Create
+              Tạo tiện ích
             </ButtonNative>
           </Modal.Footer>
         </Modal.Content>
@@ -617,7 +625,7 @@ const Utilities = () => {
                 )}
               </FormControl>}
             <FormControl mt="3">
-              <FormControl.Label>Thời gian bắt đầu (h:mm AM/PM)</FormControl.Label>
+              <FormControl.Label>Thời gian bắt đầu (hh:mm)</FormControl.Label>
               <Input value={openTime} onChangeText={(text) => setOpenTime(text)} />
               {validationErrors.openTime && (
                 <Text style={{
@@ -633,7 +641,7 @@ const Utilities = () => {
               )}
             </FormControl>
             <FormControl mt="3">
-              <FormControl.Label>Thời gian kết thúc (h: mm AM/PM)</FormControl.Label>
+              <FormControl.Label>Thời gian kết thúc (hh:mm)</FormControl.Label>
               <Input value={closeTime} onChangeText={(text) => setCloseTime(text)} />
               {validationErrors.closeTime && (
                 <Text style={{

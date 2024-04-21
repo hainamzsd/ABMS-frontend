@@ -92,14 +92,54 @@ export const utilitySchema = yup.object().shape({
 });
 
 // Time Schema
+// const timeSchema = yup
+//   .string()
+//   .required("Thời gian là bắt buộc")
+//   .matches(
+//     /^(1[0-2]|0?[1-9]):([0-5][0-9]) (AM|PM)$/,
+//     "Thời gian không hợp lệ (h:mm AM/PM)"
+//   );
+
+// export const openingHoursSchema = yup
+//   .object()
+//   .shape({
+//     openTime: timeSchema,
+//     closeTime: timeSchema,
+//   })
+//   .test(
+//     "is-before",
+//     "Thời gian bắt đầu phải trước thời gian kết thúc",
+//     function (values) {
+//       const { openTime, closeTime } = values;
+//       console.log(openTime, closeTime);
+//       if (!openTime || !closeTime) {
+//         return true;
+//       }
+//       // Tách giờ và phút từ chuỗi thời gian
+//       const [openHourMinute, openPeriod] = openTime.split(" ");
+//       const [closeHourMinute, closePeriod] = closeTime.split(" ");
+//       console.log(closeHourMinute, closePeriod);
+
+//       // Tạo đối tượng Date cho openTime và closeTime
+//       const openDate = new Date(`2000-01-01T${openHourMinute} ${openPeriod}`);
+//       const closeDate = new Date(
+//         `2000-01-01T${closeHourMinute} ${closePeriod}`
+//       );
+
+//       // Kiểm tra nếu openTime trước closeTime
+//       return openDate < closeDate;
+//     }
+//   );
+
 const timeSchema = yup
   .string()
   .required("Thời gian là bắt buộc")
   .matches(
-    /^(1[0-2]|0?[1-9]):([0-5][0-9]) (AM|PM)$/,
-    "Thời gian không hợp lệ (h:mm AM/PM)"
+    /^(2[0-3]|[01]?[0-9]):([0-5][0-9])$/,
+    "Thời gian không hợp lệ (HH:mm)"
   );
-// Schema cho openTime và closeTime
+
+
 export const openingHoursSchema = yup
   .object()
   .shape({
@@ -112,16 +152,29 @@ export const openingHoursSchema = yup
     function (values) {
       const { openTime, closeTime } = values;
       if (!openTime || !closeTime) {
-        // Bỏ qua nếu một trong hai không được cung cấp
         return true;
       }
-      // Parse thời gian thành đối tượng Date để so sánh
-      const openDate = new Date(`2000-01-01T${openTime}`);
-      const closeDate = new Date(`2000-01-01T${closeTime}`);
+
+      // Tách giờ và phút từ chuỗi thời gian
+      const [openHour, openMinute] = openTime.split(':');
+      const [closeHour, closeMinute] = closeTime.split(':');
+
+      // Chuyển đổi giờ và phút thành số nguyên
+      const openHourInt = parseInt(openHour, 10);
+      const openMinuteInt = parseInt(openMinute, 10);
+      const closeHourInt = parseInt(closeHour, 10);
+      const closeMinuteInt = parseInt(closeMinute, 10);
+
+      // Tính tổng số phút của openTime và closeTime
+      const totalOpenMinutes = openHourInt * 60 + openMinuteInt;
+      const totalCloseMinutes = closeHourInt * 60 + closeMinuteInt;
+      console.log(totalOpenMinutes, totalCloseMinutes);
+
       // Kiểm tra nếu openTime trước closeTime
-      return openDate < closeDate;
+      return totalOpenMinutes < totalCloseMinutes;
     }
   );
+
 
 // const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
 // await billSchema.validate({ description: description }, { abortEarly: false })
