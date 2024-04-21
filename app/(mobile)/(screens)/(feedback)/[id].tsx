@@ -88,6 +88,7 @@ const Page = () => {
         }
         );
         if (response.data.statusCode == 200) {
+            const deleteNotification = await axios.delete(`https://abmscapstone2024.azurewebsites.net/api/v1/deleteByServiceId/${data?.id}`)
             setShowConfirmBox(false);
             setShowDeleteMsg(true);
             setTimeout(() => {
@@ -119,13 +120,13 @@ const Page = () => {
       title={t("Error")}
       visible={showError}
       content={error} onClose={() =>setShowError(false)}></AlertWithButton>
-         {/* <CustomAlert title={t("Delete confirmation")} 
+         <CustomAlert title={t("Delete confirmation")} 
             content={t("Do you want to delete this request")+"?"}
             visible={confirmBox}
             onClose={() => setShowConfirmBox(false)}
             onConfirm={handleDeleteReservation}
             disable={disableBtn}
-            ></CustomAlert> */}
+            ></CustomAlert>
             <Alert title={t("Successful")} content={t("Delete request successfuly")}
             visible={showDeleteMsg}></Alert>
       <LoadingComponent loading={isLoading}></LoadingComponent>
@@ -169,7 +170,7 @@ const Page = () => {
                         </View>
                     </ScrollView>
                 </View>
-                {/* {data?.status == 2 &&
+                {data?.status == 2 &&
                   <View style={{
                     justifyContent: 'center',
                     alignItems: 'center',
@@ -188,7 +189,7 @@ const Page = () => {
                     >
                         <Text style={{ fontWeight: "bold", fontSize: 20 }}>{t("Delete")}</Text>
                     </Pressable>
-                </View>} */}
+                </View>}
               
             </SafeAreaView>
         </>

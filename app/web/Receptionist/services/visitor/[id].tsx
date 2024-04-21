@@ -393,6 +393,7 @@ useEffect(() => {
               )}
               ></FlatList>
             }
+            {loadingImage && <ActivityIndicator color={"#191919"} size={'small'}></ActivityIndicator>}
           </View>
           <View style={{ marginBottom: 10,flexDirection:'row', alignItems:'center'}}>
             <Text style={{ fontWeight: "600", fontSize: 16, marginRight:5 }}>

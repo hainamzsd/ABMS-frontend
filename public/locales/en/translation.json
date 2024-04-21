@@ -244,6 +244,10 @@
     "Fee":"Fee",
     "Amount":"Amount",
     "Currently, you don't have any bills that have paid":"Currently, you don't have any bills that have paid",
-    "Month":"Month"
+    "Month":"Month",
+    "Utilities not available at the moment":"Utilities not available at the moment",
+    "Deleted successfully":"Deleted successfully",
+    "Failed to delete notifications":"Failed to delete notifications",
+    "Failed to retrieve notifications":"Failed to retrieve notifications"
   }
 }

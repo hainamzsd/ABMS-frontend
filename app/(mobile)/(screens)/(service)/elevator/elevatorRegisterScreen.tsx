@@ -137,6 +137,7 @@ const ElevatorRegisterScreen = () => {
           title: `Phòng ${room[0].roomNumber} đăng ký sử dụng thang máy bắt đầu vào lúc ${moment.utc(sendStartDate).format('DD/MM/YYYY HH:mm')}`,
           buildingId: user.BuildingId,
           content: `/web/Receptionist/services/elevator/${response.data.data}`,
+          serviceId: response.data.data,
       },
       {
           timeout: 10000, 

@@ -9,7 +9,8 @@
     messagingSenderId: "897112622676",
     appId: "1:897112622676:web:992c688c8066ecced78fc1",
     measurementId: "G-QXJM4W8RD4",
-    databaseURL: "https://abms-47299.firebaseio.com",
+    // databaseURL: "https://abms-47299.firebaseio.com",
+    databaseURL: "https://abms-47299-default-rtdb.asia-southeast1.firebasedatabase.app",
     };
 
     if (!firebase.apps.length) {

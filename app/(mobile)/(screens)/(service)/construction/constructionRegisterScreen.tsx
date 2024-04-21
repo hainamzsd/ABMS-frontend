@@ -146,6 +146,7 @@ const [errors, setErrors] = useState<any>({});
           title: `Phòng ${room[0].roomNumber} đăng ký thi công`,
           buildingId: user.BuildingId,
           content: `/web/Receptionist/services/construction/${response.data.data}`,
+          serviceId: response.data.data,
       },
       {
           timeout: 10000, 

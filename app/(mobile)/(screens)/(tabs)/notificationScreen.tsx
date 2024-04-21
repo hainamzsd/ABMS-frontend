@@ -1,7 +1,7 @@
 import {
   ScrollView,
-  Text,
   View,
+  Text,
   TouchableOpacity,
   SafeAreaView,
   Pressable,
@@ -22,8 +22,11 @@ import AlertWithButton from "../../../../components/resident/AlertWithButton";
 import LoadingComponent from "../../../../components/resident/loading";
 import moment from "moment";
 import { truncateText } from "../../../../utils/truncate";
-import { Clock } from "lucide-react-native";
+import { Clock, Trash } from "lucide-react-native";
 import { router } from "expo-router";
+import { Button, Checkbox, HStack } from 'native-base';
+import Toast from "react-native-toast-message";
+import { SwipeListView } from 'react-native-swipe-list-view';
 
 interface user {
   FullName: string;
@@ -41,7 +44,8 @@ interface Notification {
     type: number
     createTime: Date;
   },
-  isRead: boolean
+  isRead: boolean;
+  selected?: boolean; 
 }
 const NotificationScreen = () => {
   const { theme } = useTheme();
@@ -56,6 +60,15 @@ const NotificationScreen = () => {
   const { session } = useSession();
   const user: user = jwtDecode(session as string);
   const [displayCount, setDisplayCount] = useState(10);
+  const [deleteMode, setDeleteMode] = useState(false);
+
+const toggleDeleteMode = () => setDeleteMode(!deleteMode);
+
+useEffect(() => {
+  if (isFocused) {
+    fetchItems();
+  }
+}, [isFocused]);
   const fetchItems = async (count = 10) => {
     setIsLoading(true);
     setError("");
@@ -63,14 +76,18 @@ const NotificationScreen = () => {
       const response = await axios.get(`https://abmscapstone2024.azurewebsites.net/api/v1/notification/get-notification?accountId=${user.Id}&skip=0&take=${count}`, {
         timeout: 10000
       });
+      const notificationsWithSelection = response.data.map((item:any) => ({
+        ...item,
+        selected: false
+      }));
       setData(response.data); // Store all data
     } catch (error) {
       if (axios.isAxiosError(error)) {
         setShowError(true);
-        setError("Failed to retrieve posts" + ".");
+        setError("Failed to retrieve notifications" + ".");
       }
       setShowError(true);
-      setError(t('Failed to retrieve posts') + ".");
+      setError(t('Failed to retrieve notifications') + ".");
     } finally {
       setIsLoading(false);
     }
@@ -81,7 +98,51 @@ const NotificationScreen = () => {
     }
   }, [isFocused]);
 
-
+  const handleSelectNotification = (id:any) => {
+    console.log('Selecting notification with ID:', id);
+    const newData = data.map(item => {
+      if (item.notification.id === id) {
+        console.log('Toggling selection for item:', item);
+        return { ...item, selected: !item.selected };
+      }
+      return item;
+    });
+    setData(newData);
+  };
+  const isAnyItemSelected = () => {
+    return data.some(item => item.selected);
+  };
+  const deleteSelectedNotifications = async () => {
+    const selectedIds = data.filter(item => item.selected).map(item => item.notification.id);
+  
+    if (selectedIds.length === 0) {
+      alert('No notifications selected for deletion.');
+      return;
+    }
+  
+    try {
+      setIsLoading(true); // Show loading indicator during the process
+      const response = await axios.delete('https://abmscapstone2024.azurewebsites.net/api/v1/notification/DeleteMultiple', { data: selectedIds });
+      console.log('Delete response:', response.data);
+      Toast.show({
+        type:'success',
+        text1:'Deleted successfully',  
+      })
+  
+      const updatedData = data.filter(item => !item.selected);
+      setData(updatedData);
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        setShowError(true);
+        setError("Failed to delete notifications" + ".");
+      }
+      setShowError(true);
+      setError(t('Failed to delete notifications') + ".");
+    } finally {
+      setIsLoading(false); 
+      setDeleteMode(false);
+    }
+  };
   const loadMoreItems = async () => {
     const newDisplayCount = displayCount + 10;
     await fetchItems(newDisplayCount);
@@ -93,6 +154,7 @@ const NotificationScreen = () => {
     }
     return null;
   };
+  
   const render = ({ item }: { item: Notification }) => (
     <TouchableOpacity
       style={[
@@ -105,8 +167,15 @@ const NotificationScreen = () => {
         },
         SHADOW,
       ]}
-      // onPress={() => router.push(`/(mobile)/(screens)/(post)/${item.notification.id}`)}
-    >
+      onPress={() => 
+        {
+          if (deleteMode) {
+            handleSelectNotification(item.notification.id);
+          }
+        }
+      }
+    > 
+     
       <View
         style={{
           width: 20,
@@ -126,6 +195,7 @@ const NotificationScreen = () => {
               : ''}
           </Text> */}
         </View>
+        <HStack alignItems={'center'} justifyContent={'space-between'}>
         <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 5 }}>
           <Clock color={'#9c9c9c'} size={20} style={{ marginRight: 5 }}></Clock>
           <Text
@@ -133,6 +203,13 @@ const NotificationScreen = () => {
             {moment.utc(item?.notification.createTime).format("DD/MM/YYYY")}
           </Text>
         </View>
+        {/* <Checkbox
+  isChecked={item.selected}
+  onChange={() => handleSelectNotification(item.notification.id)}
+  value={item.notification.id.toString()}
+  accessibilityLabel="Select notification"  // Descriptive label for screen readers
+/> */}
+        </HStack>
       </View>
     </TouchableOpacity>
   )
@@ -150,6 +227,25 @@ const NotificationScreen = () => {
           >
             {t("Notification list")}
           </Text>
+          {isAnyItemSelected() && (
+    <TouchableOpacity
+      style={{
+        backgroundColor: 'red',
+        padding: 10,
+        width:200,
+        margin: 20,
+        borderRadius: 5,
+        alignItems: 'center'
+      }}
+      onPress={deleteSelectedNotifications}
+    >
+      <HStack alignItems={'center'}>
+      <Trash color={'white'}></Trash>
+      <Text style={{ color: 'white', fontWeight: 'bold' }}>Delete Selected</Text>
+
+      </HStack>
+    </TouchableOpacity>
+  )}
           {data?.length > 0 ? <FlatList
             style={{ paddingHorizontal: 26 }}
             data={data}

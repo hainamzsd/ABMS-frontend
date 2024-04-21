@@ -265,6 +265,7 @@ const parkingCardRegisterScreen = () => {
                 title: `Cư dân ${user.FullName} đăng ký sử dụng thẻ đỗ xe`,
                 buildingId: user.BuildingId,
                 content: `/web/Receptionist/services/parkingcard/${response.data.data}`,
+                serviceId: response.data.data,
             },
             {
               timeout: 10000, 

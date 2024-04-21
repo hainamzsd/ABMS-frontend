@@ -50,8 +50,7 @@ const Dashboard = () => {
   const [utilityReport, setUtilityReport] = useState<UitlityReport[]>([]);
   const currentDate = new Date();
   const formattedCurrentDate = currentDate.toISOString().split("T")[0];
-  const [isHotlineAlert, setIsHotlineAlert] = useState(false);
-  const [isUtilityAlert, setIsUtilityAlert] = useState(false);
+  const [isBuildingAlert, setIsBuildingAlert] = useState(false);
   setCalendarLocale('vi')
   useEffect(() => {
     const report = async () => {
@@ -59,17 +58,14 @@ const Dashboard = () => {
         const response = await axios.get(`https://abmscapstone2024.azurewebsites.net/api/v1/report/building-report/${user.BuildingId}`);
         const utilityResponse = await axios.get(`https://abmscapstone2024.azurewebsites.net/api/v1/report/utility-report/${user.BuildingId}`);
         const building = await axios.get(`https://abmscapstone2024.azurewebsites.net/api/v1/building/get/${user.BuildingId}`)
-        const hotline = await axios.get(`https://abmscapstone2024.azurewebsites.net/api/v1/hotline/get-all?buildingId=${user.BuildingId}`)
         console.log(utilityResponse.data);
         if (response.data.statusCode == 200 && utilityResponse.data.statusCode == 200)  {
           setReport(response.data.data);
           setUtilityReport(utilityResponse.data.data);
           setBuilding(building.data.data);
-          if(hotline.data.data.length == 0){
-            setIsHotlineAlert(true);
-          }
-          if(response.data.data.totalUtilities==0){
-            setIsUtilityAlert(true);
+        
+          if(!building.data.data.name || !building.data.data.address || !building.data.data.numberOfFloor || !building.data.data.roomEachFloor){
+            setIsBuildingAlert(true);
           }
         }
         else {
@@ -111,58 +107,33 @@ const Dashboard = () => {
             </HStack>
             <Text fontSize={24}
               fontWeight={'bold'} color={'white'}>Trang chủ</Text>
-              {isHotlineAlert &&  <Box p={3} borderRadius={'lg'} backgroundColor={'white'} shadow={4} w="40%" >
+              {isBuildingAlert &&  <Box p={3} borderRadius={'lg'} backgroundColor={'white'} shadow={4} w="40%" >
             <TouchableOpacity
-            onPress={()=>{
-              router.push('/web/Receptionist/services/hotline/')
-            }}>
+            >
               <HStack justifyContent="space-between" alignItems="center">
                 <VStack>
                   <HStack alignItems="center">
                     <AlertTriangle  color="red"  />
                     <Text fontSize="sm" color="red.500" fontWeight="semibold"
                     numberOfLines={2} ellipsizeMode="tail">
-                      Nhắc nhở: Tòa nhà chưa có số điện thoại đường dây nóng!
+                      Nhắc nhở: Tòa nhà chưa có thông tin!
                     </Text>
                   </HStack>
-                  <Text fontSize="xs" color="gray.500">Vui lòng tạo ngay.</Text>
+                  <Text fontSize="xs" color="gray.500">Vui lòng cập nhật thông tin ngay.</Text>
                 </VStack>
                 </HStack>
                 </TouchableOpacity>
               </Box>}
-              {isUtilityAlert &&
-               <Box p={3} borderRadius={'lg'} backgroundColor={'white'} shadow={4} w="20%" >
-               <TouchableOpacity
-                onPress={()=>{
-                  router.push('/web/Receptionist/utilities/')
-                }}>
-             <HStack justifyContent="space-between" alignItems="center">
-               <VStack>
-                 <HStack alignItems="center">
-                   <AlertTriangle  color="red"  />
-                   <Text fontSize="sm" color="red.500" fontWeight="semibold"
-                   numberOfLines={2} ellipsizeMode="tail">
-                     Nhắc nhở: Tòa nhà chưa có tiện ích!
-                   </Text>
-                 </HStack>
-                 <Text fontSize="xs" color="gray.500"
-                 numberOfLines={2}>Tạo tiện ích để cư dân có thể sử dụng.</Text>
-                 <Text fontSize="xs" color="gray.500">Vui lòng tạo ngay.</Text>
-               </VStack>
-               </HStack>
-               </TouchableOpacity>
-             </Box>}
-           
              
             <HStack space={2}>
               <StatisticCard number={report?.totalRooms} statisticName='Phòng'
-                route='/web/Receptionist/rooms'></StatisticCard>
+               ></StatisticCard>
               <StatisticCard number={report?.totalPosts} statisticName='Bài viết'
-                route='/web/Receptionist/posts'></StatisticCard>
+                ></StatisticCard>
               <StatisticCard number={report?.totalUtilities} statisticName='Tiện ích'
-                route='/web/Receptionist/utilities'></StatisticCard>
+                ></StatisticCard>
               <StatisticCard number={report?.totalUtilityRequests} statisticName='Đơn đặt tiện ích'
-                route='/web/Receptionist/utilities'></StatisticCard>
+              ></StatisticCard>
             </HStack>
           </VStack>
           <HStack justifyContent="space-between" alignItems="center"
@@ -183,7 +154,7 @@ const Dashboard = () => {
                 <Text fontSize={'xl'} color={'white'}
                   fontWeight={'semibold'}>Các loại dịch vụ</Text>
               </VStack>
-              <BarChart
+             <BarChart
                 yAxisSuffix=""
                 data={{
                   labels: ['Khách thăm', 'Thang máy', 'Thẻ gửi xe', 'Thi công'],
@@ -227,6 +198,7 @@ const Dashboard = () => {
                 }}
                 fromZero={true} // Ensures that the chart starts from 0
               />
+              
             </Box>
             {/* PieChart */}
             <Box padding={5} backgroundColor={'white'}
@@ -254,7 +226,9 @@ const Dashboard = () => {
               backgroundColor="transparent"
               paddingLeft="15"
               center={[10, 0]}
-            />
+            /> 
+               {/* {( report?.totalUtilityRequests && report?.totalUtilityRequests>0) && 
+               <Text>Chưa có đơn đặt tiện ích nào</Text>} */}
               </Box>
           </HStack>
           <HStack space={2} mb={10}>
