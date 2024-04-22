@@ -102,9 +102,9 @@ const LoginScreen = () => {
           <View style={{alignItems:'center', marginTop:5}}>
           <Text style={{color:'red', fontWeight:'600'}}>{t("Error")}: {errorText}</Text></View>}
 
-          <View style={{ alignItems: "flex-end" }}>
+          {/* <View style={{ alignItems: "flex-end" }}>
             <Text>{t("Forgot password")}</Text>
-          </View>
+          </View> */}
           <TouchableOpacity
             style={[styles.button, { backgroundColor: theme.primary }]}
             onPress={onPress}

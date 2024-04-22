@@ -573,7 +573,7 @@ const RoomDetail = () => {
                         <Text>Giới tính: <Text style={{ fontWeight: 'bold' }}>{item.gender ? 'Nam' : 'Nữ'}</Text></Text>
                         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4, paddingTop: 2 }}>
                             {item?.isHouseholder == false && <Button text="Xoá thành viên" onPress={() => handleDeleteMember(item.id)} color={COLORS.buttonRed} />}
-                            <Button text="Cập nhập" onPress={() => openUpdate(item)} color={COLORS.buttonYellow} />
+                            <Button text="Cập nhật" onPress={() => openUpdate(item)} color={COLORS.buttonYellow} />
                         </View>
                     </View>}
                 </View>
@@ -603,7 +603,7 @@ const RoomDetail = () => {
                     <Text>Giới tính: <Text style={{ fontWeight: 'bold' }}></Text></Text>
                     <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
                         {/* <Button text="Xoá thành viên" onPress={() => handleDeleteMember(item.id)} color={COLORS.buttonRed} /> */}
-                        <Button text="Cập nhập" onPress={() => openUpdateOwner()} color={COLORS.buttonYellow} />
+                        <Button text="Cập nhật" onPress={() => openUpdateOwner()} color={COLORS.buttonYellow} />
                     </View>
                 </View>}
             </View>
@@ -844,7 +844,7 @@ const RoomDetail = () => {
                                         fontSize: 14
                                     }}>{validationErrors.phone}</Text>
                                 )}
-                                <Button text="Cập nhập thông tin" onPress={numberOfResident === 0 ? handleAddOwner : handleUpdateMember} color="green" />
+                                <Button text="Cập nhật thông tin" onPress={numberOfResident === 0 ? handleAddOwner : handleUpdateMember} color="green" />
                                 <Button style={{ marginTop: 4 }} text="Huỷ" onPress={closeUpdate} color={COLORS.buttonRed} />
                             </View>}
                         </View>

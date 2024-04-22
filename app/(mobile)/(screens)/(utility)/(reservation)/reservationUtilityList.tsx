@@ -13,6 +13,7 @@ import { useIsFocused } from '@react-navigation/native';
 import { useSession } from '../../../context/AuthContext';
 import { jwtDecode } from 'jwt-decode';
 import AlertWithButton from '../../../../../components/resident/AlertWithButton';
+import { utilityComboBox } from '../../../../../constants/comboBox';
 
 interface Reservation {
         id:string,
@@ -135,7 +136,15 @@ const ReservationUtilityList = () => {
     return null;
   };
     const render = ({ item }: {item:Reservation}) => {
-        const icon = ICON_MAP[item.utility];
+        const firstIcon = item?.utility;
+        let isMatched = false;
+        for (const item of utilityComboBox) {
+          if (firstIcon === item) {
+            isMatched = true;
+            break;
+          }
+        }
+        const icon = isMatched ? ICON_MAP[firstIcon] : ICON_MAP["Khác"];
         const statusText = statusUtility?.[item?.status];
         return(
         <Pressable style={[SHADOW, { backgroundColor: 'white', borderRadius: 10, marginTop: 20 }]}

@@ -15,11 +15,13 @@ import { useSession } from "../../context/AuthContext";
 import { jwtDecode } from "jwt-decode";
 import AlertWithButton from "../../../../components/resident/AlertWithButton";
 import { Center, VStack } from "native-base";
+import { utilityComboBox } from "../../../../constants/comboBox";
 interface Utility {
   id: string;
   name: string;
   openTime: string;
   closeTime: string;
+  utility:string;
   numberOfSlot: number;
   pricePerSlot: number;
   description: string;
@@ -99,7 +101,15 @@ export default function UtilityList() {
     }
   }
   const renderItem = ({item}:{item:Utility}) => {
-    const icon = ICON_MAP[item.name];
+    const firstIcon = item?.name;
+    let isMatched = false;
+    for (const item of utilityComboBox) {
+      if (firstIcon === item) {
+        isMatched = true;
+        break;
+      }
+    }
+    const icon = isMatched ? ICON_MAP[firstIcon] : ICON_MAP["Khác"];
     return(
     <Pressable
       style={{

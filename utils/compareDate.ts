@@ -32,27 +32,33 @@ export function isSecondDateLarger(date1:string, date2:string) {
       return false;
     }
   }
-
- export function isDateInFuture(dateString:string) {
-    // Split the date string into day, month, and year components
+  export const convertTo24Hour = (time:any) => {
+    const [timePart, period] = time.split(' ');
+    let [hours, minutes] = timePart.split(':');
+    hours = parseInt(hours, 10);
+    if (period === 'PM' && hours !== 12) {
+      hours += 12;
+    } else if (period === 'AM' && hours === 12) {
+      hours = 0;
+    }
+    return hours;
+  };
+  export function isDateInFuture(dateString: string) {
     const dateParts = dateString.split('/');
   
-    // Ensure the date has a valid format (assuming dd/mm/yyyy)
     if (dateParts.length !== 3) {
-      return false;
+      return false; // Return false if the date format is incorrect or incomplete
     }
   
-    // Convert each part to a number
-    const year = parseInt(dateParts[2], 10);
-    const month = parseInt(dateParts[1], 10) - 1; // Months are 0-indexed
-    const day = parseInt(dateParts[0], 10);
+    // Correct indices for mm/dd/yyyy format
+    const month = parseInt(dateParts[0], 10) - 1; // month is at index 0; subtract 1 for zero-indexed months
+    const day = parseInt(dateParts[1], 10); // day is at index 1
+    const year = parseInt(dateParts[2], 10); // year is at index 2
   
-    // Get today's date
     const today = new Date();
+    today.setHours(0, 0, 0, 0); // Normalize today's date to the start of the day for fair comparison
   
-    // Create a date object from the input string
     const inputDate = new Date(year, month, day);
   
-    // Check if the input date is after today's date
     return inputDate > today;
-  }
+}

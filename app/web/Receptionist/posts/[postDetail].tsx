@@ -129,7 +129,7 @@ const PostDetail = () => {
           type: 'error',
           position: 'bottom',
           text1: 'Lỗi',
-          text2: 'Không thể cập nhập ảnh',
+          text2: 'Không thể Cập nhật ảnh',
           autoHide: true,
         });
         return;
@@ -153,9 +153,9 @@ const PostDetail = () => {
         }
       });
       if (response.data.statusCode === 200) {
-        ToastSuccess('Cập nhập bài viết thành công')
+        ToastSuccess('Cập nhật bài viết thành công')
       } else {
-        ToastFail('Cập nhập bài viết không thành công')
+        ToastFail('Cập nhật bài viết không thành công')
       }
     } catch (error: any) {
       if (error.name === 'ValidationError') {
@@ -169,7 +169,7 @@ const PostDetail = () => {
         ToastFail('Hệ thống lỗi! Vui lòng thử lại sau')
       } else {
         console.error('Error updating post data:', error);
-        ToastFail('Lỗi cập nhập bài viết')
+        ToastFail('Lỗi Cập nhật bài viết')
       }
     } finally {
       setIsLoading(false); // Set loading state to false regardless of success or failure
@@ -289,7 +289,7 @@ const PostDetail = () => {
 
                 <ButtonBase.Group space={2} style={{ flexDirection: 'row', justifyContent: 'center' }} mt={3}>
                   <ButtonBase colorScheme="danger" onPress={handleDeletePost}>Xoá bài viết</ButtonBase>
-                  <ButtonBase colorScheme="success" onPress={handleUpdatePost}> Cập nhập bài viết </ButtonBase>
+                  <ButtonBase colorScheme="success" onPress={handleUpdatePost}> Cập nhật bài viết </ButtonBase>
                 </ButtonBase.Group>
               </FormControl>
             </Box>

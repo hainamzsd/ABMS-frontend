@@ -451,11 +451,11 @@ const handleRemove = async () => {
             }
            
           </View>
-          {accountData?.status === 0 && 
+          {/* {accountData?.status === 0 && 
             <Button 
             onPress={()=>setIsOpen(true)}
             text="Xóa tài khoản" style={{ width: 120, backgroundColor: '#9b2c2c' }}></Button>
-            }
+            } */}
             </VStack>
         </ScrollView>
         <AlertDialog leastDestructiveRef={cancelRef} isOpen={isOpen} onClose={onClose}>

@@ -98,9 +98,9 @@ const BillDetail = () => {
             })
 
             if (response.data.statusCode === 200) {
-                ToastSuccess('Cập nhập hoá đơn thành công')
+                ToastSuccess('Cập nhật hoá đơn thành công')
             } else {
-                ToastFail('Cập nhập hoá đơn thất bại');
+                ToastFail('Cập nhật hoá đơn thất bại');
             }
         } catch (error: any) {
             if (error.name === 'ValidationError') {
@@ -279,7 +279,7 @@ const BillDetail = () => {
                         </TableComponent> : <View><Text style={{ fontSize: SIZES.medium, color: COLORS.gray, fontStyle: 'italic', textAlign: 'center' }}>Hiện chưa có chi phí nào.</Text></View>}
                     {/* <Divider mt={4} /> */}
                     <View style={{ flexDirection: 'row', marginTop: 10, gap: 8, justifyContent: 'center' }}>
-                        <ButtonBase colorScheme="success" onPress={handleUpdateBill}>Cập nhập hoá đơn</ButtonBase>
+                        <ButtonBase colorScheme="success" onPress={handleUpdateBill}>Cập nhật hoá đơn</ButtonBase>
                         <ButtonBase colorScheme="danger" onPress={handleDeleteBill}>Xoá hoá đơn</ButtonBase>
                     </View>
                 </ScrollView>

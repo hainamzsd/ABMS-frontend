@@ -1,3 +1,5 @@
+import moment from "moment";
+
 function convertTime(timeString: string): number {
     const timeParts = timeString.split(' ');
     let hours = parseInt(timeParts[0].split(':')[0]);
@@ -17,32 +19,49 @@ function convertTime(timeString: string): number {
 
     return hours; // Return converted hour in 24-hour format
   }
+
+
   export function calculateSlots(openTime: string, closeTime: string, numberOfSlots: number): string[] {
+    const currentDateTime = new Date(); // Get the current date and time
+  
     const openingHour = convertTime(openTime);
     const closingHour = convertTime(closeTime);
-    const openTimeDate = new Date(`2024-03-04 ${openingHour}:00`);
-    const closeTimeDate = new Date(`2024-03-04 ${closingHour}:00`);
   
-    if (openTimeDate >= closeTimeDate) {
-      throw new Error('Open time must be before close time.');
+    // Use today's date for open and close times
+    const openTimeDate = new Date(currentDateTime.getFullYear(), currentDateTime.getMonth(), currentDateTime.getDate(), openingHour);
+    const closeTimeDate = new Date(currentDateTime.getFullYear(), currentDateTime.getMonth(), currentDateTime.getDate(), closingHour);
+  
+    // Adjust the open and close times if they are set in the past
+    if (openTimeDate < currentDateTime) {
+      openTimeDate.setDate(currentDateTime.getDate() + 1);
+      closeTimeDate.setDate(currentDateTime.getDate() + 1);
     }
   
+    // if (openTimeDate >= closeTimeDate) {
+    //   throw new Error('Open time must be before close time.');
+    // }
+
     const totalTime = (closeTimeDate.getTime() - openTimeDate.getTime()) / (1000 * 60 * 60);
-    if (numberOfSlots > totalTime) {
-      throw new Error('Number of slots cannot exceed available hours.');
-    }
-  
-    const slots: string[] = [];
+    // if (numberOfSlots > totalTime) {
+    //     throw new Error('Number of slots cannot exceed available hours.');
+    // }
+
+    const slots = [];
     const increment = totalTime / numberOfSlots;
     let currentTime = openTimeDate;
-    const currentDateTime = new Date();
+   console.log(openTimeDate)
     for (let i = 0; i < numberOfSlots; i++) {
       const endDateTime = new Date(currentTime.getTime() + increment * 60 * 60 * 1000);
-      // Check if the end time exceeds the closing time
+      if (endDateTime <= currentDateTime) {
+        // Skip this slot because it's in the past or current
+        currentTime = endDateTime;
+        continue;
+      }
+  
       if (endDateTime > closeTimeDate) {
         break; // Do not add the slot if it exceeds the closing time
       }
-   
+  
       const startHour = currentTime.getHours();
       const endHour = endDateTime.getHours();
       const slotString = `${startHour < 10 ? '0' + startHour : startHour}:00 - ${endHour < 10 ? '0' + endHour : endHour}:00`;
@@ -50,5 +69,6 @@ function convertTime(timeString: string): number {
       currentTime = endDateTime;
     }
   
+    console.log("Final Slots:", slots);
     return slots;
 }

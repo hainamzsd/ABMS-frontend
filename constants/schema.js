@@ -135,12 +135,11 @@ const timeSchema = yup
   .string()
   .required("Thời gian là bắt buộc")
   .matches(
-    /^(2[0-3]|[01]?[0-9]):([0-5][0-9])$/,
-    "Thời gian không hợp lệ (HH:mm)"
+    /^(0?[1-9]|1[0-2]):([0-5][0-9]) (AM|PM)$/,
+    "Thời gian không hợp lệ (HH:mm AM/PM)"
   );
 
-
-export const openingHoursSchema = yup
+  export const openingHoursSchema = yup
   .object()
   .shape({
     openTime: timeSchema,
@@ -155,26 +154,32 @@ export const openingHoursSchema = yup
         return true;
       }
 
-      // Tách giờ và phút từ chuỗi thời gian
-      const [openHour, openMinute] = openTime.split(':');
-      const [closeHour, closeMinute] = closeTime.split(':');
+      // Convert 12-hour AM/PM time to 24-hour time for comparison
+      const convertTo24Hour = (time) => {
+        const [timePart, period] = time.split(' ');
+        let [hours, minutes] = timePart.split(':');
+        hours = parseInt(hours, 10);
+        minutes = parseInt(minutes, 10);
 
-      // Chuyển đổi giờ và phút thành số nguyên
-      const openHourInt = parseInt(openHour, 10);
-      const openMinuteInt = parseInt(openMinute, 10);
-      const closeHourInt = parseInt(closeHour, 10);
-      const closeMinuteInt = parseInt(closeMinute, 10);
+        if (period === 'PM' && hours !== 12) {
+          hours += 12;
+        } else if (period === 'AM' && hours === 12) {
+          hours = 0;
+        }
 
-      // Tính tổng số phút của openTime và closeTime
-      const totalOpenMinutes = openHourInt * 60 + openMinuteInt;
-      const totalCloseMinutes = closeHourInt * 60 + closeMinuteInt;
-      console.log(totalOpenMinutes, totalCloseMinutes);
+        return hours * 60 + minutes;
+      };
 
-      // Kiểm tra nếu openTime trước closeTime
+      const totalOpenMinutes = convertTo24Hour(openTime);
+      const totalCloseMinutes = convertTo24Hour(closeTime);
+
+      // Log for debugging
+      console.log(`Open Minutes: ${totalOpenMinutes}, Close Minutes: ${totalCloseMinutes}`);
+
+      // Check if openTime is before closeTime
       return totalOpenMinutes < totalCloseMinutes;
     }
   );
-
 
 // const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
 // await billSchema.validate({ description: description }, { abortEarly: false })

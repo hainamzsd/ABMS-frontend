@@ -38,6 +38,10 @@ const accountStatus: StatusUtility = {
 }
 
 const statusForReceptionist: StatusUtility = {
+  0:{
+    status: "Vô hiệu hóa",
+    color: "#808080"
+  },
   1: {
     status: "Đã xác minh",
     color: "#276749"

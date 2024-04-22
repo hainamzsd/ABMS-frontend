@@ -26,6 +26,7 @@ interface Schedule{
   openTime: string;
   closeTime: string;
   numberOfSlot: number;
+  status:number;
 }
 
 interface Utility{
@@ -103,7 +104,8 @@ export default function Schedule() {
   // }, [utilityData]);
 
   const currentDate = new Date();
-  const formattedCurrentDate = currentDate.toISOString().split("T")[0];
+  const nextDate = new Date(currentDate.getTime() + (24 * 60 * 60 * 1000)); // Adds 24 hours in milliseconds
+  const formattedNextDate = nextDate.toISOString().split("T")[0];
   setCalendarLocale(currentLanguage);
 
   const [selectedDate, setSelectedDate] = useState<any | undefined>(undefined);
@@ -148,24 +150,6 @@ export default function Schedule() {
               utilityData.closeTime,
               numSlots
             );
-  
-            // Filter out slots that conflict with reservations
-            // calculatedSlots = calculatedSlots.filter((slot) => {
-            //   const [slotStart, slotEnd] = slot.split(" - ").map(time => selectedDate + "T" + time + ":00");
-            //   const slotStartTime = new Date(slotStart);
-            //   const slotEndTime = new Date(slotEnd);
-            //   return !reservations.some((reservation: any) => {
-            //     const [reservationStart, reservationEnd] = reservation.slot.split(" - ");
-            //     const reservationDate = new Date(reservation.booking_date);
-            //     const reservationStartTime = new Date(reservationDate.setHours(parseInt(reservationStart.split(":")[0]), parseInt(reservationStart.split(":")[1])));
-            //     const reservationEndTime = new Date(reservationDate.setHours(parseInt(reservationEnd.split(":")[0]), parseInt(reservationEnd.split(":")[1])));
-            //     return (
-            //       (slotStartTime < reservationEndTime && slotStartTime >= reservationStartTime) ||
-            //       (slotEndTime > reservationStartTime && slotEndTime <= reservationEndTime) ||
-            //       (slotStartTime <= reservationStartTime && slotEndTime >= reservationEndTime)
-            //     );
-            //   });
-            // });
             calculatedSlots = calculatedSlots.filter((slot) => {
               const [slotStart, slotEnd] = slot.split(" - ");
 
@@ -173,6 +157,9 @@ export default function Schedule() {
               const slotStartTime = moment.utc(`${selectedDate}T${slotStart}:00`).toDate();
               const slotEndTime = moment.utc(`${selectedDate}T${slotEnd}:00`).toDate();
               return !reservations.some((reservation:any) => {
+                if (reservation.status !== 2 && reservation.status !==3) {
+                  return false;
+                }
                 const [reservationStart, reservationEnd] = reservation.slot.split(" - ");
                 // Parsing reservation times
                 console.log(moment.utc(`3/10/2024T08:00:00`,'M/D/YYYYTHH:mm:ss').toDate())
@@ -188,10 +175,8 @@ export default function Schedule() {
                 );
               });
             });
-  
-            // Map slots to include an index
             const slotsWithIndex = calculatedSlots.map((slot, index) => ({
-              index: index + 1, // Start index from 1
+              index: index + 1, 
               slot,
             }));
             setSlots(slotsWithIndex);
@@ -238,7 +223,7 @@ export default function Schedule() {
           <View style={{ marginTop: 30, marginHorizontal: 26 }}>
             <View style={styles.schedule}>
               <Calendar
-                minDate={formattedCurrentDate}
+                minDate={formattedNextDate}
                 maxDate={formattedMaxDate}
                 onDayPress={(day) => handleDayPress(day)}
                 theme={{

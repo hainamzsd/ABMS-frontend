@@ -78,16 +78,16 @@ const FeeDashboard = () => {
                 }
             });
             if (response.data.statusCode  === 200) {
-                ToastSuccess('Cập nhập thông tin khoản phí thành công')
+                ToastSuccess('Cập nhật thông tin khoản phí thành công')
             } else {
-                ToastFail('Lỗi lấy cập nhập thông tin khoản phí');
+                ToastFail('Lỗi lấy Cập nhật thông tin khoản phí');
             }
         } catch (error) {
             if (axios.isCancel(error)) {
                 ToastFail('Hệ thống lỗi! Vui lòng thử lại sau')
             }
             console.error('Error updating fees data:', error);
-            ToastFail('Lỗi lấy cập nhập thông tin các khoản phí')
+            ToastFail('Lỗi lấy Cập nhật thông tin các khoản phí')
         } finally {
             setIsLoading(false); // Set loading state to false regardless of success or failure
         }
@@ -216,7 +216,7 @@ const FeeDashboard = () => {
             <Modal isOpen={isUpdateModal} onClose={() => setIsUpdateModal(false)} justifyContent="center" top="4" size="lg">
                 <Modal.Content>
                     <Modal.CloseButton />
-                    <Modal.Header>Cập nhập thông tin khoản phí</Modal.Header>
+                    <Modal.Header>Cập nhật thông tin khoản phí</Modal.Header>
                     <Modal.Body>
                         <FormControl mt="3">
                             <FormControl.Label>Tên khoản phí</FormControl.Label>
@@ -254,7 +254,7 @@ const FeeDashboard = () => {
                                 updateFee();
                                 setIsUpdateModal(false);
                             }}>
-                                Cập nhập
+                                Cập nhật
                             </ButtonNative>
                         </ButtonNative.Group>
                     </Modal.Footer>

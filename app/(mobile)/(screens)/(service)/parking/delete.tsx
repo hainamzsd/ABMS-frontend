@@ -48,6 +48,13 @@ interface ParkingCard{
     fullName:string;
 }
 }
+
+const vehicleType: { [key: number]: string } ={
+  1: "Xe máy",
+  2: "Ô tô",
+  3: "Xe đạp",
+  4:"Xe đạp điện"
+}
 const DeleteParkingCard = () => {
 
   const { t } = useTranslation();
@@ -129,21 +136,29 @@ const DeleteParkingCard = () => {
 const [disableBtn, setDisableBtn] = useState(false);
 const [showDeleteMsg, setShowDeleteMsg] = useState(false);
 const [confirmBox, setShowConfirmBox] = useState(false);
-const handleDeleteCard = async (id:string) => {
+const handleDeleteCard = async (item:ParkingCard) => {
   setDisableBtn(true);
   setIsLoading(true);
   setError("");
   try {
       const response = await axios.delete(
-          `https://abmscapstone2024.azurewebsites.net/api/v1/parking-card/delete/${id}`, {
+          `https://abmscapstone2024.azurewebsites.net/api/v1/parking-card/delete/${item.id}`, {
           timeout: 10000,
           headers:{
               'Authorization': `Bearer ${session}`
             }
       }
       );
+      const roomservice = await axios.post(
+        `https://abmscapstone2024.azurewebsites.net/api/v1/UpdateOrDeleteRoomService?roomId=${room[0]?.id}&feeType=${vehicleType[item.type]}`, {
+        timeout: 10000,
+        headers:{
+            'Authorization': `Bearer ${session}`
+          }
+    }
+    );
       console.log(response);
-      if (response.data.statusCode == 200) {
+      if (response.data.statusCode == 200 && roomservice.data.statusCode == 200) {
           setShowConfirmBox(false);
           setShowDeleteMsg(true);
           setTimeout(() => {
@@ -198,7 +213,7 @@ const handleDeleteCard = async (id:string) => {
             content={t("Do you want to cancle this card")+"?"}
             visible={confirmBox}
             onClose={() => setShowConfirmBox(false)}
-            onConfirm={()=>handleDeleteCard(item.id)}
+            onConfirm={()=>handleDeleteCard(item)}
             disable={disableBtn}
             ></CustomAlert>
                       <View style={styles.cardContainer}

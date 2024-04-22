@@ -86,7 +86,7 @@ const BuildingDetail = () => {
       if (response.data.statusCode == 200) {
         Toast.show({
           type: 'success',
-          text1: 'Cập nhật tài khoản thành công',
+          text1: 'Cập nhật tòa nhà thành công',
           position: 'bottom'
         })
         router.replace('/web/CMB/buildings/');
@@ -94,7 +94,7 @@ const BuildingDetail = () => {
       else {
         Toast.show({
           type: 'error',
-          text1: 'Cập nhật tài khoản không thành công',
+          text1: 'Cập nhật tòa nhà không thành công',
           position: 'bottom'
         })
       }
@@ -116,7 +116,7 @@ const BuildingDetail = () => {
       else {
         Toast.show({
           type: 'error',
-          text1: 'Lỗi cập nhật tài khoản',
+          text1: 'Lỗi cập nhật tòa nhà',
           position: 'bottom'
         })
       }

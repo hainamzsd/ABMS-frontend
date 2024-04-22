@@ -121,7 +121,7 @@ const page = () => {
         } catch (error) {
             Toast.show({
                 type: 'error',
-                text1: 'Lỗi cập nhập căn hộ! vui lòng thử lại sau',
+                text1: 'Lỗi Cập nhật căn hộ! vui lòng thử lại sau',
                 position: 'bottom'
             })
         }

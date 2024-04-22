@@ -70,7 +70,7 @@ const Page = () => {
                         </View>
                         <View>
                             <Link href={`/web/CMB/buildings/${building?.id}`}>
-                                <Button text='Cập nhập thông tin tòa nhà' />
+                                <Button text='Cập nhật thông tin tòa nhà' />
                             </Link>
                         </View>
                     </View>

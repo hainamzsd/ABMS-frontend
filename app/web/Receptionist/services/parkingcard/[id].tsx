@@ -11,7 +11,7 @@ import moment from 'moment';
 import Swal from 'sweetalert2'
 import { statusForReceptionist } from '../../../../../constants/status';
 import { useRoute } from '@react-navigation/native';
-import { FlatList } from 'native-base';
+import { AlertDialog, FlatList } from 'native-base';
 import {firebase} from '../../../../../config'
 import * as Yup from 'yup';
 import { jwtDecode } from 'jwt-decode';
@@ -250,7 +250,7 @@ const handleDeleteParkingCard = async () => {
   }
   try {
     setIsLoading(true);
-    const response = await axios.delete(`https://abmscapstone2024.azurewebsites.net/api/v1/parkingcard/delete/${item.id}`, {
+    const response = await axios.delete(`https://abmscapstone2024.azurewebsites.net/api/v1/parking-card/removee/${item.id}`, {
       timeout: 10000,
       withCredentials:true,
       headers:{
@@ -259,6 +259,8 @@ const handleDeleteParkingCard = async () => {
   });
     console.log(response);
     if (response.data.statusCode == 200) {
+      const deleteNotification = await axios.delete(`https://abmscapstone2024.azurewebsites.net/api/v1/deleteByServiceId/${item?.id}`)
+     
       Toast.show({
         type:'success',
         text1:'Xóa yêu cầu thành công',
@@ -314,6 +316,11 @@ useEffect(() => {
     fetchImage();
   }, [parkingcard]);
 
+  const [isOpen, setIsOpen] = useState(false);
+
+  const onClose = () => setIsOpen(false);
+
+  const cancelRef = React.useRef(null);
   return (
     <View
       style={{
@@ -477,7 +484,7 @@ useEffect(() => {
             <View style={{flexDirection:'row', alignItems:'center'}}>
               <Text>Trạng thái hiện tại:</Text>
               {parkingcard?.status &&
-                 <Button text={statusForReceptionist?.[parkingcard?.status as any].status}
+                 <Button text={statusForReceptionist?.[parkingcard?.status].status}
                  style={{borderRadius:20, 
                   marginLeft:10,
                   backgroundColor:statusForReceptionist?.[parkingcard?.status as any].color}}
@@ -517,28 +524,32 @@ useEffect(() => {
           }
           
           <View style={{ flexDirection: 'row', marginTop: 10 }}>
-            <Button
+          <Button
             onPress={approveParkingCard}
             disabled={disableBtn}
             text="Cập nhật" style={[{ width: 100, marginRight: 10,
             opacity:disableBtn?0.7:1}]}></Button>
-            {/* <Button 
-            onPress={()=>{
-              Swal.fire({
-                title: 'Xác nhận',
-                text: 'Bạn có muốn xóa phiếu đăng ký này?',
-                icon: 'warning',
-                showCloseButton:true,
-                confirmButtonText: 'Xóa',
-                confirmButtonColor:'#9b2c2c',
-              }).then((result) => {
-                if(result.isConfirmed){
-                  handleDeleteParkingCard();
-                }
-              })
-            }}
-            text="Xóa" style={{ width: 100, backgroundColor: '#9b2c2c' }}></Button> */}
+            {parkingcard?.status==0 && <Button 
+            onPress={()=>{setIsOpen(true)
+          }}
+            text="Xóa" style={{ width: 100, backgroundColor: '#9b2c2c' }}></Button>}
+           
           </View>
+          <AlertDialog leastDestructiveRef={cancelRef} isOpen={isOpen} onClose={onClose}>
+                    <AlertDialog.Content>
+                        <AlertDialog.CloseButton />
+                        <AlertDialog.Header>Xóa thẻ gửi xe</AlertDialog.Header>
+                        <AlertDialog.Body>
+                            Hành động này sẽ xóa vĩnh viễn thẻ gửi xe này. Bạn có xác nhận xóa không?
+                        </AlertDialog.Body>
+                        <AlertDialog.Footer>
+                                <Button text='Hủy' style={{marginRight:5}} onPress={onClose}>
+                                </Button>
+                                <Button text='Xóa' color='#9b2c2c'  onPress={handleDeleteParkingCard}>
+                                </Button>
+                        </AlertDialog.Footer>
+                    </AlertDialog.Content>
+                </AlertDialog>
         </ScrollView>
       </SafeAreaView>
     </View>

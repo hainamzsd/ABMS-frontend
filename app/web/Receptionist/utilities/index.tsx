@@ -4,7 +4,7 @@ import { COLORS, ColorPalettes, SIZES } from '../../../../constants'
 import { useTheme } from '../../../(mobile)/context/ThemeContext'
 import { ICON_MAP } from '../../../../constants/iconUtility'
 import axios from 'axios'
-import Toast from 'react-native-toast-message'
+import Toast, { ErrorToast, SuccessToast } from 'react-native-toast-message'
 import { Utility } from '../../../../interface/utilityType'
 import { router } from 'expo-router'
 import { useAuth } from '../../context/AuthContext'
@@ -12,10 +12,12 @@ import { user } from '../../../../interface/accountType'
 import { jwtDecode } from 'jwt-decode'
 import { SHADOWS } from '../../../../constants'
 import Button from '../../../../components/ui/button'
-import { Modal, Button as ButtonNative, Input, VStack, Text as TextNative, FormControl, Select, CheckIcon } from "native-base";
+import { Modal, Button as ButtonNative, Input, VStack, Text as TextNative, FormControl, Select, CheckIcon, AlertDialog } from "native-base";
 import { ToastFail } from '../../../../constants/toastMessage'
 import { utilityComboBox } from "../../../../constants/comboBox"
 import { openingHoursSchema, utilitySchema } from '../../../../constants/schema'
+import { calculateSlots } from '../../../../utils/convertSlot'
+const hourOptions = Array.from({length: 12}, (_, i) => ({ label: `${i+1}`, value: `${i+1}` }));
 
 const Utilities = () => {
   // Others
@@ -36,11 +38,27 @@ const Utilities = () => {
   const [closeTime, setCloseTime] = useState("");
   const [slots, setSlots] = useState("");
   const [price, setPrice] = useState("");
+  const [location, setLocation] = useState("");
   const [description, setDescription] = useState("");
   const [isCreateModal, setIsCreateModal] = useState(false);
   const [isUpdateModal, setIsUpdateModal] = useState(false);
   const [isDeleteModal, setIsDeleteModal] = useState(false);
   const [isTrash, setIsTrash] = useState(false);
+
+  const [openHour, setOpenHour] = useState('');
+    const [closeHour, setCloseHour] = useState('');
+    useEffect(() => {
+      if (openHour) {
+          setOpenTime(`${openHour.padStart(2, '0')}:00 AM`);
+      }
+  }, [openHour]);
+
+  useEffect(() => {
+      if (closeHour) {
+          setCloseTime(`${closeHour.padStart(2, '0')}:00 PM`);
+      }
+  }, [closeHour]);
+
   // const [errorMessage, setErrorMessage] = useState("");
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
 
@@ -130,6 +148,7 @@ const Utilities = () => {
       closeTime: closeTime,
       numberOfSlot: slots,
       pricePerSlot: price,
+      location:location,
       description: description
     }
     try {
@@ -152,6 +171,7 @@ const Utilities = () => {
         setCloseTime("");
         setSlots("");
         setPrice("");
+        setLocation("");
         setDescription("");
         validationErrors.hourMessage = "";
         fetchUtilities();
@@ -205,8 +225,10 @@ const Utilities = () => {
       closeTime: closeTime,
       numberOfSlot: slots,
       pricePerSlot: price,
-      description: description
+      description: description,
+      location:location
     }
+    console.log(bodyData);
     try {
       await utilitySchema.validate({ name: finalName, numberOfSlot: slots, pricePerSlot: price }, { abortEarly: false })
       await openingHoursSchema.validate({ openTime: openTime, closeTime: closeTime }, { abortEarly: false })
@@ -217,18 +239,20 @@ const Utilities = () => {
           'Authorization': `Bearer ${session}`
         }
       })
+      console.log(response)
       if (response.data.statusCode === 200) {
         Toast.show({
           type: 'success',
-          text1: 'Cập nhập tiện ích thành công',
+          text1: 'Cập nhật tiện ích thành công',
           position: 'bottom'
         })
         validationErrors.hourMessage = "";
         fetchUtilities();
+        setIsUpdateModal(false);
       } else {
         Toast.show({
           type: 'error',
-          text1: 'Lỗi cập nhập tiện ích',
+          text1: 'Lỗi Cập nhật tiện ích',
           position: 'bottom'
         })
       }
@@ -254,12 +278,11 @@ const Utilities = () => {
         console.error('Error updating utility:', error);
         Toast.show({
           type: 'error',
-          text1: 'Lỗi cập nhập tiện ích',
+          text1: 'Lỗi Cập nhật tiện ích',
           position: 'bottom'
         })
       }
     } finally {
-      setOtherName("");
       setIsLoading(false); // Set loading state to false regardless of success or failure
     }
   }
@@ -371,7 +394,7 @@ const Utilities = () => {
     if (isMatched) {
       setName(item?.name);
     } else setName("Khác");
-
+    setValidationErrors({});
     setOpenTime(item?.openTime);
     setCloseTime(item?.closeTime);
     setSlots(item?.numberOfSlot);
@@ -379,6 +402,7 @@ const Utilities = () => {
     setDescription(item?.description);
     setUtilityId(item?.id);
     setOtherName(item?.name);
+    setLocation(item?.location);
   }
 
   // const handleRestoreUtility = (item: any) => {
@@ -395,6 +419,7 @@ const Utilities = () => {
     setPrice(item?.pricePerSlot);
     setDescription(item?.description);
     setUtilityId(item?.id);
+    setLocation(item?.location);
   }
 
   const handleChangeToTrash = () => {
@@ -402,14 +427,79 @@ const Utilities = () => {
   }
 
   const handleAddUtility = () => {
-    // setName("");
-    // setOpenTime("");
-    // setCloseTime("");
-    // setSlots("");
-    // setPrice("");
-    // setDescription("");
+    setName("");
+    setOpenTime("");
+    setCloseTime("");
+    setSlots("");
+    setPrice("");
+    setDescription("");
+    setLocation("");
     setIsCreateModal(true);
   }
+
+  
+const handlePermanentDeleteUtility = async (utilityId:string) => {
+  setIsLoading(true);
+  try {
+    // Check if the utility has any schedules
+    const checkResponse = await axios.get(`https://abmscapstone2024.azurewebsites.net/api/v1/${utilityId}/has-schedules`, {
+      headers: {
+        'Authorization': `Bearer ${session}`
+      }
+    });
+
+    if (!checkResponse.data.data) {
+      deleteUtilityPermanently(utilityId);
+    } else {
+      alert('Tiện ích này đã có đơn đặt lịch. Bạn không thể xóa.');
+    }
+  } catch (error) {
+    console.error('Error checking schedules:', error);
+    alert('Failed to check for utility schedules.');
+  } finally {
+    setIsLoading(false);
+  }
+};
+
+const [isDeletePermanent, setIsDeletePermanent] = useState(false);
+
+const onClose = () => setIsDeletePermanent(false);
+
+const cancelRef = React.useRef(null);
+
+const deleteUtilityPermanently = async (utilityId:string) => {
+  setIsLoading(true);
+  try {
+    const response = await axios.delete(`https://abmscapstone2024.azurewebsites.net/api/v1/utility/remove`, {
+      data: [utilityId],
+      headers: {
+        'Authorization': `Bearer ${session}`
+      }
+    });
+
+    if (response.data.statusCode === 200) {
+      Toast.show({
+        type:'success',
+        text1: 'Tiện ích đã được xóa.',
+      });
+      setIsDeletePermanent(false);
+      fetchUtilitiesTrash();
+    } else {
+      Toast.show({
+        type:'error',
+        text1: 'Tiện ích xóa không thành công.',
+      });
+    }
+  } catch (error) {
+    console.error('Error deleting utility permanently:', error);
+    Toast.show({
+      type:'error',
+      text1: 'Lỗi xóa tiện ích.',
+    });
+  } finally {
+    setIsLoading(false);
+  }
+};
 
   const renderItem = ({ item }: { item: Utility }) => {
     const firstIcon = item?.name;
@@ -423,6 +513,7 @@ const Utilities = () => {
     const icon = isMatched ? ICON_MAP[firstIcon] : ICON_MAP["Khác"];
 
     return (
+      <>
       <TouchableOpacity style={{ marginBottom: 20, padding: 10, width: '23%', alignSelf: 'flex-start', borderRadius: 15, alignItems: 'center', flexDirection: 'column', ...SHADOWS.small, backgroundColor: ColorPalettes.summer.sub }}>
         <Pressable
           onPress={() =>
@@ -450,12 +541,29 @@ const Utilities = () => {
             {isUpdate && isTrash &&
               <View style={{ flexDirection: 'row', gap: 8, paddingVertical: SIZES.small }}>
                 <Button style={{ backgroundColor: ColorPalettes.ocean.primary }} text="Khôi phục tiện ích" onPress={() => restoreUtility(item?.id)} />
-                <Button style={{ backgroundColor: ColorPalettes.ocean.primary }} text='Xoá vĩnh viễn' />
+                <Button style={{ backgroundColor: ColorPalettes.ocean.primary }} text='Xoá vĩnh viễn' onPress={()=>setIsDeletePermanent(true)} />
               </View>
             }
           </View>
         </Pressable>
+        
       </TouchableOpacity>
+      <AlertDialog leastDestructiveRef={cancelRef} isOpen={isDeletePermanent} onClose={onClose}>
+                    <AlertDialog.Content>
+                        <AlertDialog.CloseButton />
+                        <AlertDialog.Header>Xóa vĩnh viễn tiện ích</AlertDialog.Header>
+                        <AlertDialog.Body>
+                            Hành động này sẽ xóa tiện ích vĩnh viễn. Bạn có xác nhận xóa không?
+                        </AlertDialog.Body>
+                        <AlertDialog.Footer>
+                                <Button text='Hủy' style={{marginRight:5}} onPress={onClose}>
+                                </Button>
+                                <Button text='Xóa' color='#9b2c2c'  onPress={()=>handlePermanentDeleteUtility(item.id)}>
+                                </Button>
+                        </AlertDialog.Footer>
+                    </AlertDialog.Content>
+                </AlertDialog>
+      </>
     )
   }
 
@@ -513,8 +621,8 @@ const Utilities = () => {
             </FormControl>
             {isOtherName &&
               <FormControl mt="3">
-                <FormControl.Label>Tên biểu phí khác</FormControl.Label>
-                <Input placeholder='Nhập tên biểu phí khác' onChangeText={(text) => setOtherName(text)} />
+                <FormControl.Label>Tên tiện ích khác</FormControl.Label>
+                <Input placeholder='Nhập tên tiện ích khác' onChangeText={(text) => setOtherName(text)} />
                 {validationErrors.name && (
                   <Text style={{
                     color: 'red',
@@ -522,38 +630,29 @@ const Utilities = () => {
                   }}>{validationErrors.name}</Text>
                 )}
               </FormControl>}
-            <FormControl mt="3">
-              <FormControl.Label>Thời gian bắt đầu (hh:mm)</FormControl.Label>
-              <Input value={openTime} onChangeText={(text) => setOpenTime(text)} />
-              {validationErrors.openTime && (
-                <Text style={{
+              <VStack space={3}>
+              <FormControl>
+                            <FormControl.Label>Thời gian bắt đầu {openTime}</FormControl.Label>
+                            <Select selectedValue={openHour} onValueChange={setOpenHour} placeholder="Hour">
+                                {hourOptions.map(option => <Select.Item key={option.value} label={option.label} value={option.value} />)}
+                            </Select>
+                          
+                            {validationErrors.openTime && <Text style={{
                   color: 'red',
                   fontSize: 14
-                }}>{validationErrors.openTime}</Text>
-              )}
-              {validationErrors.hourMessage && (
-                <Text style={{
+                }}>{validationErrors.openTime}</Text>}
+                        </FormControl>
+                        <FormControl>
+                            <FormControl.Label>Thời gian kết thúc {closeTime}</FormControl.Label>
+                            <Select selectedValue={closeHour} onValueChange={setCloseHour} placeholder="Hour">
+                                {hourOptions.map(option => <Select.Item key={option.value} label={option.label} value={option.value} />)}
+                            </Select>
+                            {validationErrors.closeTime && <Text style={{
                   color: 'red',
                   fontSize: 14
-                }}>{validationErrors.hourMessage}</Text>
-              )}
-            </FormControl>
-            <FormControl mt="3">
-              <FormControl.Label>Thời gian kết thúc (hh:mm)</FormControl.Label>
-              <Input value={closeTime} onChangeText={(text) => setCloseTime(text)} />
-              {validationErrors.closeTime && (
-                <Text style={{
-                  color: 'red',
-                  fontSize: 14
-                }}>{validationErrors.closeTime}</Text>
-              )}
-              {validationErrors.hourMessage && (
-                <Text style={{
-                  color: 'red',
-                  fontSize: 14
-                }}>{validationErrors.hourMessage}</Text>
-              )}
-            </FormControl>
+                }}>{validationErrors.closeTime}</Text>}
+                        </FormControl>
+                        </VStack>
             <FormControl mt="3">
               <FormControl.Label>Số lượng khung giờ</FormControl.Label>
               <Input value={slots} onChangeText={(text) => setSlots(text)} />
@@ -564,6 +663,16 @@ const Utilities = () => {
                 }}>{validationErrors.numberOfSlot}</Text>
               )}
             </FormControl>
+            {(openTime && closeTime && slots) && <Text style={{ color: 'gray', fontSize: 14 }}>Các khung giờ: </Text>}
+            {(openTime && closeTime && slots) && 
+            <FlatList
+            data={calculateSlots(openTime, closeTime,Number(slots))}
+            keyExtractor={item => item}
+            renderItem = {({item}) => (
+              <Text>{item}</Text>
+  )}
+            />}
+            
             <FormControl mt="3">
               <FormControl.Label>Giá thuê (mỗi khung giờ)</FormControl.Label>
               <Input value={price} onChangeText={(text) => setPrice(text)} />
@@ -578,11 +687,14 @@ const Utilities = () => {
               <FormControl.Label>Mô tả tiện ích</FormControl.Label>
               <Input value={description} onChangeText={(text) => setDescription(text)} />
             </FormControl>
+            <FormControl mt="3">
+              <FormControl.Label>Địa điểm</FormControl.Label>
+              <Input value={location} onChangeText={(text) => setLocation(text)} />
+            </FormControl>
           </Modal.Body>
           <Modal.Footer>
             <ButtonNative flex="1" onPress={() => {
               createUtility();
-              setIsCreateModal(false);
             }}>
               Tạo tiện ích
             </ButtonNative>
@@ -594,7 +706,7 @@ const Utilities = () => {
       <Modal isOpen={isUpdateModal} onClose={() => setIsUpdateModal(false)} avoidKeyboard justifyContent="center" bottom="4" size="lg">
         <Modal.Content>
           <Modal.CloseButton />
-          <Modal.Header>Cập nhập địa điểm tiện ích</Modal.Header>
+          <Modal.Header>Cập nhật địa điểm tiện ích</Modal.Header>
           <Modal.Body>
             <FormControl mt="3">
               <FormControl.Label>Tên tiện ích</FormControl.Label>
@@ -615,7 +727,7 @@ const Utilities = () => {
             </FormControl>
             {isOtherName &&
               <FormControl mt="3">
-                <FormControl.Label>Tên biểu phí khác</FormControl.Label>
+                <FormControl.Label>Tên tiện ích khác</FormControl.Label>
                 <Input placeholder={otherName} onChangeText={(text) => setOtherName(text)} />
                 {validationErrors.name && (
                   <Text style={{
@@ -624,38 +736,31 @@ const Utilities = () => {
                   }}>{validationErrors.name}</Text>
                 )}
               </FormControl>}
-            <FormControl mt="3">
-              <FormControl.Label>Thời gian bắt đầu (hh:mm)</FormControl.Label>
-              <Input value={openTime} onChangeText={(text) => setOpenTime(text)} />
-              {validationErrors.openTime && (
-                <Text style={{
+              <VStack space={3}>
+              <FormControl>
+                            <FormControl.Label>Thời gian bắt đầu {openTime}</FormControl.Label>
+                            <Select selectedValue={openHour} onValueChange={setOpenHour} placeholder="Hour">
+                                {hourOptions.map(option => <Select.Item key={option.value} label={option.label} value={option.value} />)}
+                            </Select>
+                          
+                            {validationErrors.openTime && <Text style={{
                   color: 'red',
                   fontSize: 14
-                }}>{validationErrors.openTime}</Text>
-              )}
-              {validationErrors.hourMessage && (
-                <Text style={{
+                }}>{validationErrors.openTime}</Text>}
+                        </FormControl>
+                        <FormControl>
+                            <FormControl.Label>Thời gian kết thúc {closeTime}</FormControl.Label>
+                            <Select selectedValue={closeHour} onValueChange={setCloseHour} placeholder="Hour">
+                                {hourOptions.map(option => <Select.Item key={option.value} label={option.label} value={option.value} />)}
+                            </Select>
+                            {validationErrors.closeTime && <Text style={{
                   color: 'red',
                   fontSize: 14
-                }}>{validationErrors.hourMessage}</Text>
-              )}
-            </FormControl>
-            <FormControl mt="3">
-              <FormControl.Label>Thời gian kết thúc (hh:mm)</FormControl.Label>
-              <Input value={closeTime} onChangeText={(text) => setCloseTime(text)} />
-              {validationErrors.closeTime && (
-                <Text style={{
-                  color: 'red',
-                  fontSize: 14
-                }}>{validationErrors.closeTime}</Text>
-              )}
-              {validationErrors.hourMessage && (
-                <Text style={{
-                  color: 'red',
-                  fontSize: 14
-                }}>{validationErrors.hourMessage}</Text>
-              )}
-            </FormControl>
+                }}>{validationErrors.closeTime}</Text>}
+                        </FormControl>
+                        </VStack>
+          
+
             <FormControl mt="3">
               <FormControl.Label>Số lượng khung giờ</FormControl.Label>
               <Input value={slots} onChangeText={(text) => setSlots(text)} />
@@ -666,6 +771,15 @@ const Utilities = () => {
                 }}>{validationErrors.numberOfSlot}</Text>
               )}
             </FormControl>
+            {(openTime && closeTime && slots) && <Text style={{ color: 'gray', fontSize: 14 }}>Các khung giờ: </Text>}
+            {(openTime && closeTime && slots) && 
+            <FlatList
+            data={calculateSlots(openTime, closeTime,Number(slots))}
+            keyExtractor={item => item}
+            renderItem = {({item}) => (
+              <Text>{item}</Text>
+  )}
+            />}
             <FormControl mt="3">
               <FormControl.Label>Giá thuê (mỗi khung giờ)</FormControl.Label>
               <Input value={price} onChangeText={(text) => setPrice(text)} />
@@ -680,6 +794,10 @@ const Utilities = () => {
               <FormControl.Label>Mô tả tiện ích</FormControl.Label>
               <Input value={description} onChangeText={(text) => setDescription(text)} />
             </FormControl>
+            <FormControl mt="3">
+              <FormControl.Label>Địa điểm</FormControl.Label>
+              <Input value={location} onChangeText={(text) => setLocation(text)} />
+            </FormControl>
           </Modal.Body>
           <Modal.Footer>
             <ButtonNative.Group space={2}>
@@ -690,9 +808,8 @@ const Utilities = () => {
               </ButtonNative>
               <ButtonNative onPress={() => {
                 updateUtility();
-                setIsUpdateModal(false);
               }}>
-                Cập nhập
+                Cập nhật
               </ButtonNative>
             </ButtonNative.Group>
           </Modal.Footer>
