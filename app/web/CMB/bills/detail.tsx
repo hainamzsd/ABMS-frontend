@@ -187,7 +187,7 @@ const BillDetail = () => {
                         style={{ width: 100, marginBottom: 20 }}
                         text="Quay Lại"
                         onPress={() => router.push({
-                            pathname: '/web/Receptionist/bills/'
+                            pathname: '/web/CMB/bills/'
                         })}
 
                     ></Button>
@@ -244,6 +244,7 @@ const BillDetail = () => {
                             Mô tả hoá đơn
                         </Text>
                         <TextArea
+                            placeholder='Nhập mô tả hóa đơn'
                             backgroundColor={'#fff'}
                             shadow={2}
                             totalLines={5}
