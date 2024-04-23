@@ -655,7 +655,7 @@ const deleteUtilityPermanently = async (utilityId:string) => {
                         </VStack>
             <FormControl mt="3">
               <FormControl.Label>Số lượng khung giờ</FormControl.Label>
-              <Input value={slots} onChangeText={(text) => setSlots(text)} />
+              <Input placeholder='Nhập số lượng khung giờ' value={slots} onChangeText={(text) => setSlots(text)} />
               {validationErrors.numberOfSlot && (
                 <Text style={{
                   color: 'red',
@@ -675,7 +675,7 @@ const deleteUtilityPermanently = async (utilityId:string) => {
             
             <FormControl mt="3">
               <FormControl.Label>Giá thuê (mỗi khung giờ)</FormControl.Label>
-              <Input value={price} onChangeText={(text) => setPrice(text)} />
+              <Input placeholder="Nhập giá thuê" value={price} onChangeText={(text) => setPrice(text)} />
               {validationErrors.pricePerSlot && (
                 <Text style={{
                   color: 'red',
@@ -685,11 +685,16 @@ const deleteUtilityPermanently = async (utilityId:string) => {
             </FormControl>
             <FormControl mt="3">
               <FormControl.Label>Mô tả tiện ích</FormControl.Label>
-              <Input value={description} onChangeText={(text) => setDescription(text)} />
+              <Input
+              placeholder="Nhập mô tả tiện ích" 
+              // value={description}
+              onChangeText={(text) => setDescription(text)} />
             </FormControl>
             <FormControl mt="3">
               <FormControl.Label>Địa điểm</FormControl.Label>
-              <Input value={location} onChangeText={(text) => setLocation(text)} />
+              <Input placeholder="Nhập địa điểm"
+              value={location}
+              onChangeText={(text) => setLocation(text)} />
             </FormControl>
           </Modal.Body>
           <Modal.Footer>
@@ -792,11 +797,11 @@ const deleteUtilityPermanently = async (utilityId:string) => {
             </FormControl>
             <FormControl mt="3">
               <FormControl.Label>Mô tả tiện ích</FormControl.Label>
-              <Input value={description} onChangeText={(text) => setDescription(text)} />
+              <Input placeholder={description} onChangeText={(text) => setDescription(text)} />
             </FormControl>
             <FormControl mt="3">
               <FormControl.Label>Địa điểm</FormControl.Label>
-              <Input value={location} onChangeText={(text) => setLocation(text)} />
+              <Input placeholder={location} onChangeText={(text) => setLocation(text)} />
             </FormControl>
           </Modal.Body>
           <Modal.Footer>
