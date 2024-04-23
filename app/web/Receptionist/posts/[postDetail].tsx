@@ -21,6 +21,7 @@ const PostDetail = () => {
   const [content, setContent] = useState("");
   const [title, setTitle] = useState("");
   const [image, setImage] = useState<any>();
+  const [firstImage, setFirstImage] = useState<any>();
   const [type, setType] = useState("");
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
 
@@ -87,11 +88,11 @@ const PostDetail = () => {
         timeout: 10000,
       });
       if (response.data.statusCode === 200) {
-        console.log(response.data.data);
         setContent(response.data.data.content);
         setTitle(response.data.data.title);
         setImage(response.data.data.image);
         setType(response.data.data.type);
+        setFirstImage(response.data.data.image);
       } else {
         Toast.show({
           type: 'error',
@@ -121,15 +122,20 @@ const PostDetail = () => {
   // UPDATE: Post
   const handleUpdatePost = async () => {
     let uri = image;
+    // console.log(uri);
+
+    // Check if image is different from the default URI
+    const isNewImage = uri !== firstImage;
+
     // Only attempt to upload if an image has been selected
-    if (image && typeof image === 'string') {
+    if (isNewImage) {
       const uploadUri = await uploadImage(image);
       if (!uploadUri) {
         Toast.show({
           type: 'error',
           position: 'bottom',
           text1: 'Lỗi',
-          text2: 'Không thể Cập nhật ảnh',
+          text2: 'Không thể cập nhật ảnh',
           autoHide: true,
         });
         return;
