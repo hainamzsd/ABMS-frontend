@@ -30,9 +30,9 @@ interface Hotline {
 
 
 const validationSchema = Yup.object().shape({
-    phone:  Yup.string().required('Số điện thoại không được trống').matches(/(84|0[3|5|7|8|9])+([0-9]{8})\b/g, 'Số điện thoại không hợp lệ'),
-      name: Yup.string()
-  });
+    phone: Yup.string().required('Số điện thoại không được trống').matches(/(84|0[3|5|7|8|9])+([0-9]{8})\b/g, 'Số điện thoại không hợp lệ'),
+    name: Yup.string()
+});
 const index = () => {
     const headers = ['Tên', 'Số điện thoại', 'Trạng thái', ''];
     const [request, setRequest] = useState<Hotline[]>([]);
@@ -72,24 +72,26 @@ const index = () => {
         }
     };
     useEffect(() => {
-       
+
         fetchData()
     }, [session])
 
-    const [nameCreate, setNameCreate]= useState("");
-    const [phoneCreate, setPhoneCreate]= useState("");
+    const [nameCreate, setNameCreate] = useState("");
+    const [phoneCreate, setPhoneCreate] = useState("");
     const handleCreate = async () => {
         setValidationErrors({});
         try {
             await validationSchema.validate({ phone: phoneCreate, name: nameCreate }, { abortEarly: false });
             const response = await axios.post(`https://abmscapstone2024.azurewebsites.net/api/v1/hotline/create`, {
                 phoneNumber: phoneCreate,
-                name: selectedValue!=="Other"? selectedValue : nameCreate,
+                name: selectedValue !== "Other" ? selectedValue : nameCreate,
                 buildingId: User.BuildingId
-            }, { timeout: 10000,
-            headers:{
-                'Authorization': `Bearer ${session}`
-            } })
+            }, {
+                timeout: 10000,
+                headers: {
+                    'Authorization': `Bearer ${session}`
+                }
+            })
             console.log(response);
             if (response.data.statusCode === 200) {
                 setRequest([...request, response.data.data])
@@ -109,14 +111,14 @@ const index = () => {
                     position: 'bottom',
                 })
             }
-        } catch (error:any) {
+        } catch (error: any) {
             if (error.name === 'ValidationError') {
-                const errors:any = {};
+                const errors: any = {};
                 error.inner.forEach((err: any) => {
-                  errors[err.path] = err.message;
+                    errors[err.path] = err.message;
                 });
                 setValidationErrors(errors);
-              }
+            }
             if (axios.isCancel(error)) {
                 Toast.show({
                     type: 'error',
@@ -132,11 +134,11 @@ const index = () => {
         } finally {
             setIsLoading(false)
             setShowModalCreate(false);
-            
+
         }
     }
-    const [nameUpdate, setNameUpdate]= useState("");
-    const [phoneUpdate, setPhoneUpdate]= useState("");
+    const [nameUpdate, setNameUpdate] = useState("");
+    const [phoneUpdate, setPhoneUpdate] = useState("");
     const handleUpdate = async () => {
         setValidationErrors({});
         try {
@@ -145,10 +147,12 @@ const index = () => {
                 name: nameUpdate,
                 phoneNumber: phoneUpdate,
                 buildingId: User.BuildingId
-            }, { timeout: 10000,
-            headers:{
-                'Authorization': `Bearer ${session}`
-            } })
+            }, {
+                timeout: 10000,
+                headers: {
+                    'Authorization': `Bearer ${session}`
+                }
+            })
             console.log(response)
             if (response.data.statusCode === 200) {
                 fetchData();
@@ -162,17 +166,17 @@ const index = () => {
                     type: 'error',
                     text1: 'Cập nhật đường dây nóng không thành công',
                     position: 'bottom',
-                    
+
                 })
             }
-        } catch (error:any) {
+        } catch (error: any) {
             if (error.name === 'ValidationError') {
-                const errors:any = {};
+                const errors: any = {};
                 error.inner.forEach((err: any) => {
-                  errors[err.path] = err.message;
+                    errors[err.path] = err.message;
                 });
                 setValidationErrors(errors);
-              }
+            }
             if (axios.isCancel(error)) {
                 Toast.show({
                     type: 'error',
@@ -195,15 +199,17 @@ const index = () => {
     const [isOpen, setIsOpen] = useState(false);
 
     const onClose = () => setIsOpen(false);
-  
+
     const cancelRef = React.useRef(null);
     const handleDelete = async () => {
         try {
-            const response = await axios.delete(`https://abmscapstone2024.azurewebsites.net/api/v1/hotline/delete/${selectedItem?.id}`, 
-             { timeout: 10000,
-            headers:{
-                'Authorization': `Bearer ${session}`
-            } })
+            const response = await axios.delete(`https://abmscapstone2024.azurewebsites.net/api/v1/hotline/delete/${selectedItem?.id}`,
+                {
+                    timeout: 10000,
+                    headers: {
+                        'Authorization': `Bearer ${session}`
+                    }
+                })
             console.log(response)
             if (response.data.statusCode === 200) {
                 fetchData();
@@ -217,7 +223,7 @@ const index = () => {
                     type: 'error',
                     text1: 'Xóa đường dây nóng không thành công',
                     position: 'bottom',
-                    
+
                 })
             }
         } catch (error) {
@@ -246,7 +252,7 @@ const index = () => {
     useEffect(() => {
         if (searchQuery.trim() !== '') {
             const filtered = request.filter(item =>
-                item.name.toLowerCase().includes(searchQuery.toLowerCase())||
+                item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
                 item.phoneNumber.toLowerCase().includes(searchQuery.toLowerCase())
             );
             setFilteredRequests(filtered);
@@ -267,11 +273,11 @@ const index = () => {
                     <Modal.Body>
                         <FormControl>
                             <FormControl.Label>Tên</FormControl.Label>
-                            <Input value={nameUpdate} onChangeText={setNameUpdate} isRequired/>
+                            <Input value={nameUpdate} onChangeText={setNameUpdate} isRequired />
                         </FormControl>
                         <FormControl>
                             <FormControl.Label>Số điện thoại</FormControl.Label>
-                            <Input value={phoneUpdate} onChangeText={setPhoneUpdate} isRequired/>
+                            <Input value={phoneUpdate} onChangeText={setPhoneUpdate} isRequired />
                         </FormControl>
                     </Modal.Body>
                     <Modal.Footer>
@@ -293,7 +299,7 @@ const index = () => {
                             placeholder="Choose Service"
                             _selectedItem={{
                                 bg: "teal.600",
-                                endIcon: <CheckIcon size="2" color={'#191919'}/>,
+                                endIcon: <CheckIcon size="2" color={'#191919'} />,
                             }}
                             mt={1}
                             onValueChange={(itemValue) => setSelectedValue(itemValue)}
@@ -304,23 +310,27 @@ const index = () => {
                         </Select>
                         {selectedValue === 'Other' && (
                             <FormControl>
-                            <FormControl.Label>Tên</FormControl.Label>
-                            <Input value={nameCreate}
-                                onChangeText={setNameCreate}
-                                isRequired />
-                                {validationErrors.name  && (
-                            <Text style={styles.errorText}>{validationErrors.name}</Text>
-                        )}
-                        </FormControl>
+                                <FormControl.Label>Tên</FormControl.Label>
+                                <Input
+                                    placeholder="Nhập tên"
+                                    // value={nameCreate}
+                                    onChangeText={setNameCreate}
+                                    isRequired />
+                                {validationErrors.name && (
+                                    <Text style={styles.errorText}>{validationErrors.name}</Text>
+                                )}
+                            </FormControl>
                         )}
                         <FormControl>
                             <FormControl.Label>Số điện thoại</FormControl.Label>
-                            <Input value={phoneCreate}
+                            <Input
+                                placeholder='Nhập số điện thoại'
+                                // value={phoneCreate}
                                 onChangeText={setPhoneCreate}
                                 isRequired />
-                                 {validationErrors.phone  && (
-                            <Text style={styles.errorText}>{validationErrors.phone}</Text>
-                        )}
+                            {validationErrors.phone && (
+                                <Text style={styles.errorText}>{validationErrors.phone}</Text>
+                            )}
                         </FormControl>
                     </Modal.Body>
                     <Modal.Footer>
@@ -355,7 +365,7 @@ const index = () => {
                             onChangeText={(text) => setSearchQuery(text)}
                         />
                     </View>
-                  
+
                     {isLoading && <ActivityIndicator size={'large'} color={'#171717'}></ActivityIndicator>}
                     {!filteredRequests.length ? (
                         <Text style={{ marginBottom: 10, fontSize: 18, fontWeight: '600' }}>Chưa có dữ liệu</Text>
@@ -377,19 +387,20 @@ const index = () => {
                                                     onPress={() => {
                                                         setSelectedItem(item);
                                                         setShowModal(true);
-                                                        if(selectedItem){
+                                                        if (selectedItem) {
                                                             setNameUpdate(selectedItem?.name);
                                                             setPhoneUpdate(selectedItem?.phoneNumber);
                                                         }
                                                     }}
-                                                        
+
                                                 />
                                                 <Button
                                                     text="Xóa"
                                                     color='#9b2c2c'
                                                     onPress={() => {
                                                         setSelectedItem(item);
-                                                        setIsOpen(true)}}
+                                                        setIsOpen(true)
+                                                    }}
                                                 />
                                             </Cell>
                                         </TableRow>
@@ -418,10 +429,10 @@ const index = () => {
                             Hành động này sẽ xóa đường dây nóng đã chọn. Bạn có xác nhận xóa không?
                         </AlertDialog.Body>
                         <AlertDialog.Footer>
-                                <Button text='Hủy' style={{marginRight:5}} onPress={onClose}>
-                                </Button>
-                                <Button text='Xóa' color='#9b2c2c'  onPress={handleDelete}>
-                                </Button>
+                            <Button text='Hủy' style={{ marginRight: 5 }} onPress={onClose}>
+                            </Button>
+                            <Button text='Xóa' color='#9b2c2c' onPress={handleDelete}>
+                            </Button>
                         </AlertDialog.Footer>
                     </AlertDialog.Content>
                 </AlertDialog>

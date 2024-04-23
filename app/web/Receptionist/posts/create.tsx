@@ -151,7 +151,7 @@ const CreatePost = () => {
     }
 
     return (
-        <View style={{ padding: SIZES.x30, flex: 1, backgroundColor: "#F9FAFB" }}>
+        <ScrollView style={{ padding: SIZES.x30, flex: 1, backgroundColor: "#F9FAFB" }}>
             <SafeAreaView >
                 <ScrollView>
                     {/* Header */}
@@ -239,7 +239,7 @@ const CreatePost = () => {
                     </View>
                 </ScrollView>
             </SafeAreaView>
-        </View>
+        </ScrollView>
     )
 }
 
