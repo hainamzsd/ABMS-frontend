@@ -19,6 +19,8 @@ const validationSchema = Yup.object().shape({
 })
 const Place = () => {
     const params = useLocalSearchParams();
+    console.log(params);
+
     const { session } = useAuth();
     const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
     const [isLoading, setIsLoading] = useState(false);
@@ -38,7 +40,7 @@ const Place = () => {
     const createUtilityDetail = async () => {
         setIsLoading(true);
         await validationSchema.validate({
-           place:newPlace
+            place: newPlace
         }, { abortEarly: false });
         const bodyData = {
             name: newPlace,
@@ -51,7 +53,7 @@ const Place = () => {
                     'Authorization': `Bearer ${session}`
                 }
             });
-            if (response.data.statusCode  === 200) {
+            if (response.data.statusCode === 200) {
                 Toast.show({
                     type: 'success',
                     text1: 'Tạo địa điểm tiện ích thành công',
@@ -66,21 +68,21 @@ const Place = () => {
                     position: 'bottom'
                 })
             }
-        } catch (error:any) {
+        } catch (error: any) {
             if (error.name === 'ValidationError') {
-                const errors:any = {};
+                const errors: any = {};
                 error.inner.forEach((err: any) => {
-                  errors[err.path] = err.message;
+                    errors[err.path] = err.message;
                 });
                 setValidationErrors(errors);
-              }
+            }
             Toast.show({
                 type: 'error',
                 text1: 'Lỗi tạo địa điểm tiện ích mới, vui lòng thử lại sau!',
                 position: 'bottom'
             })
         } finally {
-            
+
             setIsLoading(false); // Set loading state to false regardless of success or failure
         }
     }
@@ -88,16 +90,16 @@ const Place = () => {
     const updateUtilityDetail = async () => {
         setIsLoading(true);
         await validationSchema.validate({
-            place:updatePlace
-         }, { abortEarly: false });
+            place: updatePlace
+        }, { abortEarly: false });
         try {
-            const response = await axios.put(`https://abmscapstone2024.azurewebsites.net/api/v1/utility/update-utility-detail/${utilityDetailId}?name=${updatePlace}`,{}, {
+            const response = await axios.put(`https://abmscapstone2024.azurewebsites.net/api/v1/utility/update-utility-detail/${utilityDetailId}?name=${updatePlace}`, {}, {
                 timeout: 10000,
                 headers: {
                     'Authorization': `Bearer ${session}`
                 }
             });
-            if (response.data.statusCode  === 200) {
+            if (response.data.statusCode === 200) {
                 setNewPlace("");
                 Toast.show({
                     type: 'success',
@@ -114,21 +116,21 @@ const Place = () => {
                     position: 'bottom'
                 })
             }
-        } catch (error:any) {
+        } catch (error: any) {
             if (error.name === 'ValidationError') {
-                const errors:any = {};
+                const errors: any = {};
                 error.inner.forEach((err: any) => {
-                  errors[err.path] = err.message;
+                    errors[err.path] = err.message;
                 });
                 setValidationErrors(errors);
-              }
+            }
             Toast.show({
                 type: 'error',
                 text1: 'Lỗi cập nhật địa điểm tiện ích mới, vui lòng thử lại sau!',
                 position: 'bottom'
             })
         } finally {
-            
+
             setIsLoading(false); // Set loading state to false regardless of success or failure
         }
     }
@@ -142,7 +144,7 @@ const Place = () => {
                     'Authorization': `Bearer ${session}`
                 }
             });
-            if (response.data.statusCode  === 200) {
+            if (response.data.statusCode === 200) {
                 Toast.show({
                     type: 'success',
                     text1: 'Xóa địa điểm tiện ích thành công',
@@ -174,9 +176,9 @@ const Place = () => {
             const response = await axios.get(`https://abmscapstone2024.azurewebsites.net/api/v1/utility/get-utility-detail?utilityId=${params?.id}`, {
                 timeout: 10000,
             });
-            if (response.data.statusCode  === 200) {
+            if (response.data.statusCode === 200) {
                 setUtilityDetails(response.data.data);
-                
+
             } else {
                 Toast.show({
                     type: 'error',
@@ -238,47 +240,46 @@ const Place = () => {
     }
 
     const [searchQuery, setSearchQuery] = useState('');
-        const [filteredRequests, setFilteredRequests] = useState<UtilityDetail[]>([]);
+    const [filteredRequests, setFilteredRequests] = useState<UtilityDetail[]>([]);
     useEffect(() => {
-      if (searchQuery.trim() !== '' && utilityDetails) {
-        const filtered = utilityDetails.filter(item =>
-          item.name.toLowerCase().includes(searchQuery.toLowerCase())
-        );
-        setFilteredRequests(filtered);
-      } else {
-        setFilteredRequests(utilityDetails);
-      }
+        if (searchQuery.trim() !== '' && utilityDetails) {
+            const filtered = utilityDetails.filter(item =>
+                item.name.toLowerCase().includes(searchQuery.toLowerCase())
+            );
+            setFilteredRequests(filtered);
+        } else {
+            setFilteredRequests(utilityDetails);
+        }
     }, [searchQuery, utilityDetails]);
-  
+
 
 
     return (
         <View style={{ flex: 1, backgroundColor: '#F9FAFB' }}>
             <SafeAreaView style={{ flex: 1 }}>
-               
-           
+
+
                 <View style={{ paddingHorizontal: 30, paddingTop: 30 }}>
-                {router.canGoBack() &&
-                 <Button
-                 style={{ width: 100, marginBottom: 20 }}
-                 text="Quay Lại"
-                 onPress={() => router.push('/web/Receptionist/utilities/')}
-             ></Button>}
+                    <Button
+                        style={{ width: 100, marginBottom: 20 }}
+                        text="Quay Lại"
+                        onPress={() => router.push('/web/Receptionist/utilities/')}
+                    ></Button>
                     <View style={{ marginBottom: 20 }}>
                         <Text style={{ fontWeight: 'bold', fontSize: 20, marginBottom: 5 }}>Danh sách vị trí tiện ích</Text>
                         <Text>Thông tin các vị trí tiện ích</Text>
                     </View>
                     <View style={styles.searchContainer}>
-                    <View style={styles.searchWrapper}>
+                        <View style={styles.searchWrapper}>
                             <TextInput
-                                 style={styles.searchInput}
-                                 placeholderTextColor={'black'}
-                                 placeholder="Tìm theo theo họ tên hoặc số điện thoại"
-                                 value={searchQuery}
-                                 onChangeText={(text) => setSearchQuery(text)}
+                                style={styles.searchInput}
+                                placeholderTextColor={'black'}
+                                placeholder="Tìm theo theo họ tên hoặc số điện thoại"
+                                value={searchQuery}
+                                onChangeText={(text) => setSearchQuery(text)}
                             />
                         </View>
-                        </View>
+                    </View>
                     <View>
                         <Button text="Thêm địa điểm tiện ích" onPress={() =>
                             setModalVisible(!modalVisible)} />
@@ -302,9 +303,9 @@ const Place = () => {
                         <FormControl mt="3">
                             <FormControl.Label>Tên địa điểm</FormControl.Label>
                             <Input placeholder="Nhập tên địa điểm" onChangeText={(text) => setNewPlace(text)} />
-                            {validationErrors.place  && (
-                            <Text style={{color:'red'}}>{validationErrors.place}</Text>
-                        )}
+                            {validationErrors.place && (
+                                <Text style={{ color: 'red' }}>{validationErrors.place}</Text>
+                            )}
                         </FormControl>
                     </Modal.Body>
                     <Modal.Footer>
@@ -327,9 +328,9 @@ const Place = () => {
                         <FormControl mt="3">
                             <FormControl.Label>Tên địa điểm</FormControl.Label>
                             <Input placeholder={updatePlace} onChangeText={(text) => setUpdatePlace(text)} />
-                            {validationErrors.place  && (
-                            <Text style={{color:'red'}}>{validationErrors.place}</Text>
-                        )}
+                            {validationErrors.place && (
+                                <Text style={{ color: 'red' }}>{validationErrors.place}</Text>
+                            )}
                         </FormControl>
                     </Modal.Body>
                     <Modal.Footer>
@@ -435,6 +436,6 @@ const styles = StyleSheet.create({
         paddingHorizontal: SIZES.medium,
         borderWidth: 1,
         borderRadius: 10,
-        borderColor:'#9c9c9c'
+        borderColor: '#9c9c9c'
     },
 });

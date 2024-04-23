@@ -521,9 +521,6 @@ const deleteUtilityPermanently = async (utilityId:string) => {
               pathname: `./utilities/place`,
               params: {
                 id: item?.id,
-                location: item?.location,
-                utilityName: item?.name,
-                price: item?.pricePerSlot
               },
             })}
         >

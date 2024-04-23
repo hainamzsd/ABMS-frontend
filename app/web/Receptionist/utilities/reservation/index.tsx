@@ -12,11 +12,11 @@ import { statusForReceptionist, statusUtility } from '../../../../../constants/s
 import { Dropdown } from 'react-native-element-dropdown'
 import { Reservation, Utility } from '../../../../../interface/utilityType';
 import SearchWithButton from '../../../../../components/ui/searchWithButton'
-import { useAuth } from '../../../context/AuthContext'
+import Input from '../../../../../components/ui/input'
 
 const StatusData = [
     { label: "Phiếu đã được kiểm duyệt", value: 3 },
-    { label: "Phiếu phiếu chưa được kiểm duyệt", value: 4 },
+    { label: "Phiếu phiếu đã bị từ chối", value: 4 },
     { label: "Phiếu đang chờ được kiểm duyệt", value: 2 }
 ]
 
@@ -29,18 +29,18 @@ const ReservationUtility = () => {
     const [currentPage, setCurrentPage] = useState(1)
     const [status, setStatus] = useState<number | null>(2);
     const navigate = useNavigation();
-    const [searchQuery, setSearchQuery] = useState('');
+    const [searchQuery, setSearchQuery] = useState("");
     const [filteredRequests, setFilteredRequests] = useState<Reservation[]>([]);
     const { currentItems, totalPages } = paginate(filteredRequests, currentPage, 5);
     useEffect(() => {
-      if (searchQuery.trim() !== '') {
-        const filtered = utilityReservation.filter(item =>
-          item.room_number.toLowerCase().includes(searchQuery.toLowerCase())
-        );
-        setFilteredRequests(filtered);
-      } else {
-        setFilteredRequests(utilityReservation);
-      }
+        if (searchQuery.trim() !== '') {
+            const filtered = utilityReservation.filter(item =>
+                item.room_number.toLowerCase().includes(searchQuery.toLowerCase())
+            );
+            setFilteredRequests(filtered);
+        } else {
+            setFilteredRequests(utilityReservation);
+        }
     }, [searchQuery, utilityReservation]);
     useEffect(() => {
         fetchData();
@@ -56,7 +56,7 @@ const ReservationUtility = () => {
                 url += `&status=${status}`
             }
             const response = await axios.get(url, { timeout: 10000 })
-            if (response.data.statusCode  === 200) {
+            if (response.data.statusCode === 200) {
                 setUtilityReservation(response.data.data);
             } else {
                 Toast.show({
@@ -96,7 +96,8 @@ const ReservationUtility = () => {
                         <Text style={{ fontWeight: 'bold', fontSize: 20, marginBottom: 5 }}>Danh sách phiếu đặt chỗ tiện ích trong căn hộ</Text>
                         <Text>Thông tin những phiếu đặt chỗ trong bảng</Text>
                     </View>
-                    <SearchWithButton placeholder="Tìm theo tên căn hộ" />
+                    <Input placeholder="Tìm kiếm theo số căn hộ" value={searchQuery}
+                        onChangeText={(text) => setSearchQuery(text)} style={{ paddingVertical: 10 }} />
                     <Dropdown
                         style={styles.comboBox}
                         placeholderStyle={{ fontSize: 14, }}
