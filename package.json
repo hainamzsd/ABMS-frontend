@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@gluestack-ui/themed-native-base": "^0.1.107-alpha2",
+    "@google-cloud/storage": "^7.10.1",
     "@hookform/resolvers": "^3.3.4",
     "@microsoft/signalr": "^8.0.0",
     "@react-native-async-storage/async-storage": "1.21.0",
