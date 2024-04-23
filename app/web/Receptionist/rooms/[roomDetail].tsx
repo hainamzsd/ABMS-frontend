@@ -267,7 +267,7 @@ const RoomDetail = () => {
             });
             if (response.data.statusCode === 200) {
                 ToastSuccess('Cập nhật thành viên thành công')
-                console.log("response 200", response)
+                fetchRoom();
             }
             else {
                 Toast.show({
@@ -405,6 +405,7 @@ const RoomDetail = () => {
             });
             if (response.data.statusCode === 200) {
                 ToastSuccess('Xóa thành viên thành công');
+                fetchRoom();
                 fetchRoomMember();
             } else {
                 Toast.show({
@@ -558,11 +559,11 @@ const RoomDetail = () => {
                         <View style={{ flexDirection: 'row', gap: 10 }}>
                             <View style={{ flexDirection: 'column' }}>
                                 <Text style={{ fontWeight: 'bold' }}>{item.fullName}</Text>
-                                {item.isHouseholder ? <Badge colorScheme="danger" style={{ marginTop: 2 }}>Owner</Badge> :
-                                    <Badge colorScheme="info" style={{ marginTop: 2 }}>Member</Badge>
+                                {item.isHouseholder ? <Badge colorScheme="danger" style={{ marginTop: 2 }}>Chủ hộ</Badge> :
+                                    <Badge colorScheme="info" style={{ marginTop: 2 }}>Thành viên</Badge>
                                 }
                             </View>
-                            <Button text={isDetail ? 'Hide' : 'Detail'} onPress={toggleDetail} />
+                            <Button text={isDetail ? 'Ẩn' : 'Chi tiết'} onPress={toggleDetail} />
                         </View>
                     </View>
 
@@ -590,7 +591,7 @@ const RoomDetail = () => {
                     <View style={{ flexDirection: 'row', gap: 10 }}>
                         <View style={{ flexDirection: 'column' }}>
                             <Text style={{ fontWeight: 'bold' }}>{owner?.fullName}</Text>
-                            <Badge colorScheme="danger" style={{ marginTop: 2 }}>Owner</Badge>
+                            <Badge colorScheme="danger" style={{ marginTop: 2 }}>Chủ hộ</Badge>
                         </View>
                         <Button text={isDetail ? 'Hide' : 'Detail'} onPress={toggleDetail} />
                     </View>

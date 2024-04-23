@@ -14,7 +14,7 @@ import { ToastFail } from '../../../../constants/toastMessage';
 import { COLORS, SIZES } from '../../../../constants';
 import { paginate } from '../../../../utils/pagination';
 import { CheckIcon, Select, Button as ButtonBase } from 'native-base';
-import { filterPost } from '../../../../constants/filter';
+import { filterPost, filterPostStatus } from '../../../../constants/filter';
 
 const PostList = () => {
   // Others
@@ -27,6 +27,7 @@ const PostList = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [filterRequest, setFilterRequest] = useState<Post[]>([]);
   const [filterType, setFilterType] = useState("");
+  const [filterStatus, setFilterStatus] = useState("");
 
   // Paging
   const itemsPerPage = 10;
@@ -72,33 +73,25 @@ const PostList = () => {
     }
   }, [searchQuery, posts])
 
-  // Filter type
+  // Filter Type and Status
   useEffect(() => {
-    if (filterType !== "") {
-      let filtered: Post[] = []
-      switch (filterType) {
-        case '1':
-          filtered = posts?.filter(item =>
-            item.type === 1
-          );
-          break;
-        case '2':
-          filtered = posts?.filter(item =>
-            item.type === 2
-          );
-          break;
-      }
-      setFilterRequest(filtered);
-    } else {
-      setFilterRequest(posts);
-    }
-  }, [filterType, posts])
+    let filtered: Post[] = posts;
 
-  // Filter Date
+    if (filterType !== "") {
+      filtered = filtered.filter(item => item.type.toString() === filterType);
+    }
+  
+    if (filterStatus !== "") {
+      filtered = filtered.filter(item => item.status.toString() === filterStatus);
+    }
+  
+    setFilterRequest(filtered);
+  }, [filterType, filterStatus, posts])
 
   // Cancel Filter
   const handleCancelFilter = () => {
     setFilterType("");
+    setFilterStatus("");
     fetchPosts();
   }
 
@@ -114,16 +107,32 @@ const PostList = () => {
             <View>
               <Input placeholder="Tìm kiếm tiêu đề bài viết" style={{ width: '100%', paddingVertical: 10 }} value={searchQuery} onChangeText={(text) => setSearchQuery(text)} />
             </View>
-            <View style={{ flexDirection: 'row', gap: 8, marginBottom: 10 }}>
-              <Select selectedValue={filterType} maxWidth={150} accessibilityLabel="Phân loại" placeholder="Phân loại" _selectedItem={{
-                bg: "teal.600",
-                endIcon: <CheckIcon size="5" />
-              }} mt={1} onValueChange={itemValue => setFilterType(itemValue)}>
-                {filterPost.map((item) => (
-                  <Select.Item key={item.value} label={item.name} value={item.value} />
-                ))}
-              </Select>
-              {(filterType !== "") && <ButtonBase onPress={handleCancelFilter} style={{ marginTop: 4 }} height="35">Huỷ lọc</ButtonBase>}
+            <View style={{ flexDirection: 'row', gap: 8 }}>
+              {/* Category */}
+              <View style={{ flexDirection: 'row', gap: 8, marginBottom: 10 }}>
+                <Select selectedValue={filterType} maxWidth={150} accessibilityLabel="Phân loại" placeholder="Phân loại" _selectedItem={{
+                  bg: "teal.600",
+                  endIcon: <CheckIcon size="5" />
+                }} mt={1} onValueChange={itemValue => setFilterType(itemValue)}>
+                  {filterPost.map((item) => (
+                    <Select.Item key={item.value} label={item.name} value={item.value} />
+                  ))}
+                </Select>
+
+              </View>
+
+              {/* Status */}
+              <View style={{ flexDirection: 'row', gap: 8, marginBottom: 10 }}>
+                <Select selectedValue={filterStatus} maxWidth={150} accessibilityLabel="Trạng thái" placeholder="Trạng thái" _selectedItem={{
+                  bg: "teal.600",
+                  endIcon: <CheckIcon size="5" />
+                }} mt={1} onValueChange={itemValue => setFilterStatus(itemValue)}>
+                  {filterPostStatus.map((item) => (
+                    <Select.Item key={item.value} label={item.name} value={item.value} />
+                  ))}
+                </Select>
+              </View>
+              {(filterType !== "" || filterStatus !== "") && <ButtonBase onPress={handleCancelFilter} style={{ marginTop: 4 }} height="35">Huỷ lọc</ButtonBase>}
             </View>
             {isLoading ? <ActivityIndicator size={'large'} color={'#171717'}></ActivityIndicator> :
               filterRequest.length > 0 ?

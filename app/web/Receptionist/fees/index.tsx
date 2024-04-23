@@ -641,7 +641,7 @@ const FeeDashboard = () => {
             ) : (
                 <>
                 <Input
-                value={nameCreate}
+                // value={nameCreate}
                 onChangeText={setNameCreate}
                 placeholder="Nhập tên khoản phí"
               />
@@ -653,7 +653,7 @@ const FeeDashboard = () => {
             )}
           </FormControl>
                         <FormControl mt="3">
-                            <FormControl.Label>Chi phí</FormControl.Label>
+                            <FormControl.Label>Chi phí (vnđ)</FormControl.Label>
                             <Input
                               isRequired
                               value={displayMoneyCreate}
@@ -717,7 +717,7 @@ const FeeDashboard = () => {
                     {isLoading && <ActivityIndicator size={'large'} color='#191919'/>}
                         <FormControl mt="3">
                             <FormControl.Label>Tên khoản phí</FormControl.Label>
-                            <Input value={name} onChangeText={(text) => setName(text)} />
+                            <Input placeholder={name} onChangeText={(text) => setName(text)} />
                             {validationErrors.name  && (
                             <Text style={{color:'red'}}>{validationErrors.name}</Text>
                         )}

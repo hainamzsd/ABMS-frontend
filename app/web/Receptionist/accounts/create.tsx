@@ -171,7 +171,7 @@ const page = () => {
                     position: 'bottom'
                 })
                 updateRoom(response.data.data);
-                router.push('/web/Receptionist/rooms/');
+                router.replace('/web/Receptionist/accounts/');
             }
             else {
                 Toast.show({

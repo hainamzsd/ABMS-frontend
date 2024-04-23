@@ -68,20 +68,22 @@ const feedbackList = () => {
         }
     };
     useEffect(() => {
-       
+
         fetchData()
     }, [session])
 
-    const [nameCreate, setNameCreate]= useState("");
+    const [nameCreate, setNameCreate] = useState("");
     const handleCreate = async () => {
         try {
             const response = await axios.post(`https://abmscapstone2024.azurewebsites.net/api/v1/service-type/create`, {
                 name: nameCreate,
                 buildingId: User.BuildingId
-            }, { timeout: 10000,
-            headers:{
-                'Authorization': `Bearer ${session}`
-            } })
+            }, {
+                timeout: 10000,
+                headers: {
+                    'Authorization': `Bearer ${session}`
+                }
+            })
             console.log(response);
             if (response.data.statusCode === 200) {
                 setRequest([...request, response.data.data])
@@ -90,6 +92,7 @@ const feedbackList = () => {
                     text1: 'Tạo mới thành công',
                     position: 'bottom',
                 })
+                setNameCreate("");
                 setShowModalCreate(false);
             } else {
                 Toast.show({
@@ -115,16 +118,18 @@ const feedbackList = () => {
             setIsLoading(false)
         }
     }
-    const [nameUpdate, setNameUpdate]= useState("");
+    const [nameUpdate, setNameUpdate] = useState("");
     const handleUpdate = async () => {
         try {
             const response = await axios.put(`https://abmscapstone2024.azurewebsites.net/api/v1/service-type/update/${selectedItem?.id}`, {
                 name: nameUpdate,
                 buildingId: User.BuildingId
-            }, { timeout: 10000,
-            headers:{
-                'Authorization': `Bearer ${session}`
-            } })
+            }, {
+                timeout: 10000,
+                headers: {
+                    'Authorization': `Bearer ${session}`
+                }
+            })
             console.log(response)
             if (response.data.statusCode === 200) {
                 fetchData();
@@ -138,7 +143,7 @@ const feedbackList = () => {
                     type: 'error',
                     text1: 'Cập nhật phiếu phản ánh không thành công',
                     position: 'bottom',
-                    
+
                 })
             }
         } catch (error) {
@@ -165,15 +170,17 @@ const feedbackList = () => {
     const [isOpen, setIsOpen] = useState(false);
 
     const onClose = () => setIsOpen(false);
-  
+
     const cancelRef = React.useRef(null);
     const handleDelete = async () => {
         try {
-            const response = await axios.delete(`https://abmscapstone2024.azurewebsites.net/api/v1/service-type/delete/${selectedItem?.id}`, 
-             { timeout: 10000,
-            headers:{
-                'Authorization': `Bearer ${session}`
-            } })
+            const response = await axios.delete(`https://abmscapstone2024.azurewebsites.net/api/v1/service-type/delete/${selectedItem?.id}`,
+                {
+                    timeout: 10000,
+                    headers: {
+                        'Authorization': `Bearer ${session}`
+                    }
+                })
             console.log(response)
             if (response.data.statusCode === 200) {
                 fetchData();
@@ -187,7 +194,7 @@ const feedbackList = () => {
                     type: 'error',
                     text1: 'Xóa phiếu phản ánh không thành công',
                     position: 'bottom',
-                    
+
                 })
             }
         } catch (error) {
@@ -236,7 +243,10 @@ const feedbackList = () => {
                     <Modal.Body>
                         <FormControl>
                             <FormControl.Label>Tên</FormControl.Label>
-                            <Input value={nameUpdate} onChangeText={setNameUpdate} />
+                            <Input
+                                placeholder={nameUpdate}
+                                // value={nameUpdate}
+                                onChangeText={setNameUpdate} />
                         </FormControl>
                     </Modal.Body>
                     <Modal.Footer>
@@ -248,14 +258,16 @@ const feedbackList = () => {
             </Modal>
             <Modal isOpen={showModalCreate} onClose={() => setShowModal(false)}>
                 <Modal.Content maxWidth="400px">
-                    <Modal.CloseButton onPress={() => setShowModalCreate(false)}/>
+                    <Modal.CloseButton onPress={() => setShowModalCreate(false)} />
                     <Modal.Header>Tạo mới loại phản ánh</Modal.Header>
                     <Modal.Body>
                         <FormControl>
                             <FormControl.Label>Tên</FormControl.Label>
-                            <Input value={nameCreate}
-                            onChangeText={setNameCreate}
-                            isRequired/>
+                            <Input
+                                placeholder='Nhập tên loại phản ánh'
+                                // value={nameCreate}
+                                onChangeText={setNameCreate}
+                                isRequired />
                         </FormControl>
                     </Modal.Body>
                     <Modal.Footer>
@@ -290,7 +302,7 @@ const feedbackList = () => {
                             onChangeText={(text) => setSearchQuery(text)}
                         />
                     </View>
-                  
+
                     {isLoading && <ActivityIndicator size={'large'} color={'#171717'}></ActivityIndicator>}
                     {!filteredRequests.length ? (
                         <Text style={{ marginBottom: 10, fontSize: 18, fontWeight: '600' }}>Chưa có dữ liệu</Text>
@@ -311,14 +323,17 @@ const feedbackList = () => {
                                                     style={{ marginRight: 5 }}
                                                     onPress={() => {
                                                         setSelectedItem(item);
-                                                        setShowModal(true)}}
+                                                        setNameUpdate(item.name);
+                                                        setShowModal(true)
+                                                    }}
                                                 />
                                                 <Button
                                                     text="Xóa"
                                                     color='#9b2c2c'
                                                     onPress={() => {
                                                         setSelectedItem(item);
-                                                        setIsOpen(true)}}
+                                                        setIsOpen(true)
+                                                    }}
                                                 />
                                             </Cell>
                                         </TableRow>
@@ -347,10 +362,10 @@ const feedbackList = () => {
                             Hành động này sẽ xóa tiện ích đã chọn. Bạn có xác nhận xóa không?
                         </AlertDialog.Body>
                         <AlertDialog.Footer>
-                                <Button text='Hủy' style={{marginRight:5}} onPress={onClose}>
-                                </Button>
-                                <Button text='Xóa' color='#9b2c2c'  onPress={handleDelete}>
-                                </Button>
+                            <Button text='Hủy' style={{ marginRight: 5 }} onPress={onClose}>
+                            </Button>
+                            <Button text='Xóa' color='#9b2c2c' onPress={handleDelete}>
+                            </Button>
                         </AlertDialog.Footer>
                     </AlertDialog.Content>
                 </AlertDialog>

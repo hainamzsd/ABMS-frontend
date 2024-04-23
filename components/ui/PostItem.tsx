@@ -35,12 +35,12 @@ import { statusForReceptionist } from '../../constants/status';
           
           <Link href={href} style={{ marginTop: 10 }}>
             <VStack space={2}>
-          {/* <Badge p={2} borderRadius={'md'} backgroundColor={statusForReceptionist[status].color}
+          <Badge p={2} borderRadius={'md'} backgroundColor={statusForReceptionist[status].color}
             >
               <Text color={'white'}>
               {statusForReceptionist[status].status}
               </Text>
-            </Badge> */}
+            </Badge>
             <Button text='Chi tiết' style={{ width: 100 }}></Button>
             </VStack>
           </Link>
