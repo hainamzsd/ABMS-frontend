@@ -400,7 +400,7 @@ export default function FundManagement() {
             </Modal>
             <SafeAreaView style={{ flex: 1 }}>
                 <ScrollView style={{ paddingHorizontal: 30, paddingVertical: 30, flex: 1 }}>
-                <Link href={"/web/CMB/fundexpenses/expense/"}>
+                <Link href={"/web/CMB/fundexpenses/expense"}>
                         <Button text="Quản lý khoản chi" style={{ width: 200,marginBottom:20 }}></Button>
                     </Link>
                     <View style={{ marginBottom: 20 }}>
