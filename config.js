@@ -2,7 +2,8 @@
     import 'firebase/compat/auth';
     import 'firebase/storage';
     
-    
+     
+    //deploy
     const firebaseConfig = {
     apiKey: "AIzaSyBcKZ-rNW4E0qDU_h_AfuxCXNl__IPcSRc",
     authDomain: "abms-47299.firebaseapp.com",
