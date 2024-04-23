@@ -21,6 +21,9 @@ import AlertWithButton from '../../../../../components/resident/AlertWithButton'
 import moment from 'moment'
 import Toast from 'react-native-toast-message'
 import { router } from 'expo-router'
+import 'firebase/compat/storage';
+import 'firebase/compat/database';
+import 'firebase/storage';
 interface ImageInfo {
   uri: string;
   name: string | null | undefined;

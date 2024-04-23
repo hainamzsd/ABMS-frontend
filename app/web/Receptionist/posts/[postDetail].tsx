@@ -15,7 +15,9 @@ import { user } from '../../../../interface/accountType';
 import { ToastFail, ToastSuccess } from '../../../../constants/toastMessage';
 import { firebase } from '../../../../config';
 import { postSchema } from '../../../../constants/schema';
-
+import 'firebase/compat/storage';
+import 'firebase/compat/database';
+import 'firebase/storage';
 const PostDetail = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [content, setContent] = useState("");

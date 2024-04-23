@@ -8,6 +8,9 @@ import axios from 'axios';
 import { useAuth } from '../../../context/AuthContext';
 import Toast from 'react-native-toast-message';
 import moment from 'moment';
+import 'firebase/compat/storage';
+import 'firebase/compat/database';
+import 'firebase/storage';
 import Swal from 'sweetalert2'
 import QuillEditor, { QuillToolbar } from 'react-native-cn-quill';
 import { statusForReceptionist } from '../../../../../constants/status';

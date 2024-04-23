@@ -6,6 +6,9 @@ import Input from '../../../../../components/ui/input';
 import { Dropdown } from 'react-native-element-dropdown';
 import axios from 'axios';
 import { useAuth } from '../../../context/AuthContext';
+import 'firebase/compat/storage';
+import 'firebase/compat/database';
+import 'firebase/storage';
 import Toast from 'react-native-toast-message';
 import moment from 'moment';
 import Swal from 'sweetalert2'

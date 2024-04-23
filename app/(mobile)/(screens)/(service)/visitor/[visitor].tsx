@@ -17,7 +17,9 @@ import LoadingComponent from '../../../../../components/resident/loading';
 import moment from 'moment';
 import {firebase} from '../../../../../config';
 import { statusUtility } from '../../../../../constants/status';
-
+import 'firebase/compat/storage';
+import 'firebase/compat/database';
+import 'firebase/storage';
 interface Visitor{
     id: string;
     roomId: string;

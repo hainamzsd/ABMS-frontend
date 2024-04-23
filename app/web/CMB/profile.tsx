@@ -28,6 +28,9 @@
   import {firebase} from '../../../config';
   import * as yup from 'yup';
   import { router } from 'expo-router';
+  import 'firebase/compat/storage';
+import 'firebase/compat/database';
+import 'firebase/storage';
   interface User{
     Id: string;
     BuildingId:string;

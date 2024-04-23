@@ -17,6 +17,7 @@ import {
   ScrollView,
 } from 'native-base';
 
+import 'firebase/storage';
 import * as ImagePicker from "expo-image-picker";
 import { white } from 'react-native-paper/lib/typescript/styles/themes/v2/colors';
 import { Key, KeySquare, Settings, Upload, User } from 'lucide-react-native';

@@ -20,6 +20,7 @@ import axios from 'axios'
 import { firebase } from '../../../../../config';
 import 'firebase/compat/storage';
 import 'firebase/compat/database';
+import 'firebase/storage';
 import CustomAlert from '../../../../../components/resident/confirmAlert'
 import AlertWithButton from '../../../../../components/resident/AlertWithButton'
 import ProgressBar from '../../../../../components/resident/progressBar'

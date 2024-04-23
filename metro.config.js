@@ -1,7 +1,6 @@
-const { getDefaultConfig } = require('expo/metro-config');
-/** @type {import('expo/metro-config').MetroConfig} */
-const config = getDefaultConfig(__dirname, {
-  isCSSEnabled: true,
-});
+const { getDefaultConfig } = require('@expo/metro-config');
 
-module.exports = config;
+const defaultConfig = getDefaultConfig(__dirname);
+defaultConfig.resolver.sourceExts.push('cjs');
+
+module.exports = defaultConfig;

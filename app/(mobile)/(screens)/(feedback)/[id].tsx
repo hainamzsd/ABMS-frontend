@@ -16,7 +16,9 @@ import moment from 'moment';
 import { useSession } from '../../context/AuthContext';
 import CustomAlert from '../../../../components/resident/confirmAlert';
 import Alert from '../../../../components/resident/Alert';
-
+import 'firebase/compat/storage';
+import 'firebase/compat/database';
+import 'firebase/storage';
 interface Feedback{
     id: string;
     roomId: string;

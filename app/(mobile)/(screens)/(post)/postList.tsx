@@ -102,7 +102,7 @@ const index = () => {
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 10 }}>
                 <View style={[styles.iconTextContainer, { backgroundColor: theme.primary, borderRadius: 20, padding: 10 }]}>
                     <Info color={'white'} size={20}></Info>
-                    <Text style={{ color: 'white', marginLeft: 5 }}>{t("Post")}</Text>
+                    <Text style={{ color: 'white', marginLeft: 5 }}>{item?.type==1 ? t("Post"): t("Notification")}</Text>
                 </View>
                 <View style={styles.iconTextContainer}>
                     <Clock color={'#9C9C9c'} size={20}></Clock>

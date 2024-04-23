@@ -12,6 +12,9 @@ import Swal from 'sweetalert2'
 import { statusForReceptionist } from '../../../../../constants/status';
 import { useRoute } from '@react-navigation/native';
 import { FlatList } from 'native-base';
+import 'firebase/compat/storage';
+import 'firebase/compat/database';
+import 'firebase/storage';
 import {firebase} from '../../../../../config'
 import { jwtDecode } from 'jwt-decode';
 const StatusData = [
