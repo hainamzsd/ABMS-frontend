@@ -267,7 +267,7 @@ const RoomDetail = () => {
             });
             if (response.data.statusCode === 200) {
                 ToastSuccess('Cập nhật thành viên thành công')
-                console.log("response 200", response)
+                fetchRoom();
             }
             else {
                 Toast.show({
@@ -405,6 +405,7 @@ const RoomDetail = () => {
             });
             if (response.data.statusCode === 200) {
                 ToastSuccess('Xóa thành viên thành công');
+                fetchRoom();
                 fetchRoomMember();
             } else {
                 Toast.show({
