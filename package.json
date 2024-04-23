@@ -46,7 +46,7 @@
     "expo-secure-store": "~12.8.1",
     "expo-splash-screen": "~0.26.3",
     "expo-status-bar": "~1.11.1",
-    "firebase": "^10.8.1",
+    "firebase": "^10.11.0",
     "i18next": "^23.10.0",
     "i18next-browser-languagedetector": "^7.2.0",
     "i18next-http-backend": "^2.5.0",

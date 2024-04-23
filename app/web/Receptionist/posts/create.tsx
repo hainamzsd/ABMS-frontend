@@ -59,10 +59,15 @@ const CreatePost = () => {
         try {
             setIsLoading(true);
             const response = await fetch(uri);
+            console.log("response", response);
             const blob = await response.blob();
+            console.log("blob", blob);
             const fileName = `posts/${title}_${new Date().getTime()}`;
+            console.log("fileName", fileName);
             const ref = firebase.storage().ref().child(fileName);
+            console.log("ref", ref);
             const snapshot = await ref.put(blob);
+            console.log("snapshot", snapshot);
             const downloadURL = await snapshot.ref.getDownloadURL();
             console.log(downloadURL);
             return downloadURL;
