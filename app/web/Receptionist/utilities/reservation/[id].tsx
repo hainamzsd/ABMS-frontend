@@ -16,7 +16,6 @@ import { Reservation } from '../../../../../interface/utilityType';
 const StatusData = [
     { label: "Phê duyệt", value: 3 },
     { label: "Từ chối", value: 4 },
-    { label: "Để chờ", value: 2 }
 ]
 
 const UtilityDetail = () => {
@@ -130,7 +129,7 @@ const UtilityDetail = () => {
                     text1: 'Phê duyệt phiếu đặt chỗ thành công',
                     position: 'bottom'
                 })
-                // router.replace('/web/Receptionist/utilities/utility');
+                router.replace('/web/Receptionist/utilities/');
             }
             else {
                 console.error(response);
@@ -169,10 +168,10 @@ const UtilityDetail = () => {
     }, [utility])
 
     // DELETE: Cancel Status
-    const cancelUtility = async () => {
+    const deleteReservation = async () => {
         try {
             setIsLoading(true); // Set loading state to true
-            const response = await axios.put(`https://abmscapstone2024.azurewebsites.net/api/v1/reservation/manage/${utility?.id}?status=${status}`, {}, {
+            const response = await axios.delete(`https://abmscapstone2024.azurewebsites.net/api/v1/reservation/delete/${utility?.id}`, {
                 timeout: 10000,
                 headers: {
                     'Authorization': `Bearer ${session}`
@@ -183,16 +182,16 @@ const UtilityDetail = () => {
             if (response.data.statusCode == 200) {
                 Toast.show({
                     type: 'success',
-                    text1: 'Từ chối phiếu đặt chỗ thành công',
+                    text1: 'Xóa phiếu đặt chỗ thành công',
                     position: 'bottom'
                 })
-                // router.replace('/web/Receptionist/utilities/utility');
+                router.replace('/web/Receptionist/utilities/');
             }
             else {
                 console.error(response);
                 Toast.show({
                     type: 'error',
-                    text1: 'Từ chối yêu cầu không thành công',
+                    text1: 'Xóa phiếu đặt chỗ không thành công',
                     position: 'bottom'
                 })
             }
@@ -216,6 +215,8 @@ const UtilityDetail = () => {
             setIsLoading(false);
         }
     };
+
+
 
     return (
         <View
@@ -369,7 +370,7 @@ const UtilityDetail = () => {
                                     confirmButtonColor: '#9b2c2c',
                                 }).then((result) => {
                                     if (result.isConfirmed) {
-                                        cancelUtility();
+                                        deleteReservation();
                                     }
                                 })
                             }}
