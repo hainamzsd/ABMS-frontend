@@ -34,6 +34,7 @@ import LoadingComponent from "../../../../components/resident/loading";
 import AlertWithButton from "../../../../components/resident/AlertWithButton";
 import { useIsFocused } from "@react-navigation/native";
 import moment from "moment";
+import { HStack } from "native-base";
 
 interface user{
   FullName:string;
@@ -273,7 +274,7 @@ const firstTwoPosts = posts.slice(0, 2);
           </View>
           <Pressable style={stylesHomeScreen.room}>
             <Link href={"/(mobile)/(screens)/roomScreen"}>
-              <View style={{ alignItems: "center", flexDirection: "row" }}>
+              <HStack alignItems={'center'}>
                 <Image
                   style={{
                     width: 56,
@@ -289,9 +290,9 @@ const firstTwoPosts = posts.slice(0, 2);
                   <Text style={{ fontWeight: "bold", marginBottom: 5 }}>
                     {room[0]?.roomNumber}
                   </Text>
-                  <Text style={{ fontWeight: "300" }}>{room[0]?.buildingAddress}</Text>
+                  <Text style={{ fontWeight: "300", width:'80%' }} numberOfLines={2}>{room[0]?.buildingAddress}</Text>
                 </View>
-              </View>
+              </HStack>
             </Link>
           </Pressable>
 

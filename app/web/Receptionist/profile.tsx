@@ -16,8 +16,8 @@ import {
   FormControl,
   ScrollView,
 } from 'native-base';
-
-import 'firebase/storage';
+import 'firebase/compat/storage';
+import 'firebase/compat/database';
 import * as ImagePicker from "expo-image-picker";
 import { white } from 'react-native-paper/lib/typescript/styles/themes/v2/colors';
 import { Key, KeySquare, Settings, Upload, User } from 'lucide-react-native';

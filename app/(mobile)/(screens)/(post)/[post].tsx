@@ -78,7 +78,7 @@ const page = () => {
                 <View style={{ flex: 1 }}>
                     <ScrollView>
                     {data?.image && <Image source={{uri:data?.image}} 
-                            style={{width:'100%',height:200,objectFit:'cover'}}></Image>}
+                            style={{width:'100%',height:'100%'}}></Image>}
                         <View style={{ marginTop: 20, marginHorizontal: 10 }}>
                             
                             <View style={{flexDirection:'row', alignItems:'center'}}>

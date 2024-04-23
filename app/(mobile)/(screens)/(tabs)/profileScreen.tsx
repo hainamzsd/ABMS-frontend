@@ -210,7 +210,7 @@ useEffect(() => {
               <Text style={{ fontWeight: "bold", marginBottom: 5 }}>
                 {room[0]?.roomNumber}
               </Text>
-              <Text style={{ fontWeight: "300" }}>{room[0]?.buildingAddress}</Text>
+              <Text style={{ fontWeight: "300",width:'80%'  }}>{room[0]?.buildingAddress}</Text>
             </View>
           </TouchableOpacity>
 

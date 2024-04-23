@@ -14,6 +14,8 @@ import { jwtDecode } from 'jwt-decode';
 import { ToastFail, ToastSuccess } from '../../../../constants/toastMessage';
 import Toast from 'react-native-toast-message';
 import { firebase } from '../../../../config';
+import 'firebase/compat/storage';
+import 'firebase/compat/database';
 import 'firebase/storage';
 import { postSchema } from '../../../../constants/schema';
 
