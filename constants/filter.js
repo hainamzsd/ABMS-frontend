@@ -27,3 +27,18 @@ export const filterPost = [
         value: '2'
     }
 ]
+
+export const filterPostStatus = [
+    {
+        name: "Đang chờ",
+        value: '2'
+    },
+    {
+        name: "Đã xác minh",
+        value: '1'
+    },
+    {
+        name: "Đã từ chối",
+        value: '4'
+    }
+]
